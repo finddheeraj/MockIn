@@ -66,7 +66,10 @@ def ask_followup(client, topic: str, difficulty: str, history: list, candidate_a
     if adaptive_instructions:
         system += f"\n\nSTRATEGY DIRECTIVE (follow this for your next question):\n{adaptive_instructions}"
 
-    recent_history = history[-CONTEXT_WINDOW:]
+    recent_history = [
+    {"role": m["role"], "content": m["content"]}
+    for m in history[-CONTEXT_WINDOW:]
+    ]
 
     messages = (
         [{"role": "system", "content": system}]

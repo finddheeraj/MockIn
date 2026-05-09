@@ -225,7 +225,14 @@ def submit_answer():
             recruiter_reply = recruiter_future.result()
             coach_reply = coach_future.result()
 
-        history.append({"role": "user",      "content": candidate_answer})
+        history.append({
+            "role": "user",
+            "content": candidate_answer,
+            "coach_feedback": coach_reply,
+            "reference_data": reference_data,
+            "score": score_result,
+            "round": round_num,
+        })
         history.append({"role": "assistant", "content": recruiter_reply})
         session["history"] = history
 
@@ -266,7 +273,15 @@ def submit_answer():
                 results[(provider_name, agent_role)] = f"[Error from {provider_name}: {e}]"
 
     primary_recruiter = results.get(("grok", "recruiter")) or results.get(("local", "recruiter"), "")
-    history.append({"role": "user",      "content": candidate_answer})
+    primary_coach = results.get(("grok", "coach")) or results.get(("local", "coach"), "")
+    history.append({
+        "role": "user",
+        "content": candidate_answer,
+        "coach_feedback": primary_coach,
+        "reference_data": reference_data,
+        "score": score_result,
+        "round": round_num,
+    })
     history.append({"role": "assistant", "content": primary_recruiter})
     session["history"] = history
 
@@ -426,6 +441,10 @@ def download_pdf():
                             topMargin=2*cm, bottomMargin=2*cm)
 
     styles = getSampleStyleSheet()
+
+    def esc(t):
+        return t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
     title_style = ParagraphStyle("Title", parent=styles["Heading1"],
                                  fontSize=20, textColor=colors.HexColor("#1a1a2e"),
                                  spaceAfter=6, alignment=TA_CENTER)
@@ -435,15 +454,35 @@ def download_pdf():
     q_style     = ParagraphStyle("Q", parent=styles["Normal"],
                                  fontSize=11, textColor=colors.HexColor("#1a1a2e"),
                                  fontName="Helvetica-Bold", spaceAfter=4,
-                                 spaceBefore=14, leftIndent=0)
+                                 spaceBefore=16, leftIndent=0)
+    you_style   = ParagraphStyle("You", parent=q_style,
+                                 textColor=colors.HexColor("#2d6a4f"))
     a_style     = ParagraphStyle("A", parent=styles["Normal"],
                                  fontSize=10, textColor=colors.HexColor("#333333"),
-                                 spaceAfter=6, leftIndent=20,
-                                 leading=15)
+                                 spaceAfter=6, leftIndent=20, leading=15)
+    # Section label styles
+    section_label_style = ParagraphStyle("SectionLabel", parent=styles["Normal"],
+                                 fontSize=9, textColor=colors.HexColor("#ffffff"),
+                                 fontName="Helvetica-Bold", spaceAfter=4,
+                                 spaceBefore=10, leftIndent=8)
+    score_style = ParagraphStyle("Score", parent=styles["Normal"],
+                                 fontSize=10, textColor=colors.HexColor("#0f2a5e"),
+                                 fontName="Helvetica-Bold", spaceAfter=4,
+                                 spaceBefore=8, leftIndent=8)
+    coach_text_style = ParagraphStyle("CoachText", parent=styles["Normal"],
+                                 fontSize=9.5, textColor=colors.HexColor("#1a3a2e"),
+                                 spaceAfter=4, leftIndent=8, leading=14)
+    ref_text_style  = ParagraphStyle("RefText", parent=styles["Normal"],
+                                 fontSize=9.5, textColor=colors.HexColor("#1a1a3e"),
+                                 spaceAfter=3, leftIndent=16, leading=14)
+    ref_label_style = ParagraphStyle("RefLabel", parent=styles["Normal"],
+                                 fontSize=9, textColor=colors.HexColor("#555555"),
+                                 fontName="Helvetica-Bold", spaceAfter=3,
+                                 leftIndent=8)
 
     story = []
 
-    # Header
+    # ── Header ────────────────────────────────────────────────────────────────
     story.append(Paragraph("MockMind — Interview Transcript", title_style))
     story.append(Paragraph(f"Topic: {topic} &nbsp;|&nbsp; Level: {difficulty}", meta_style))
     if scores:
@@ -453,23 +492,86 @@ def download_pdf():
     story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#cccccc")))
     story.append(Spacer(1, 0.4*cm))
 
-    # Conversation
+    # ── Conversation ──────────────────────────────────────────────────────────
     q_num = 1
     for msg in history:
         role = msg.get("role")
         text = msg.get("content", "").strip()
         if not text:
             continue
-        # Escape special chars for reportlab
-        safe = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
         if role == "assistant":
             story.append(Paragraph(f"Q{q_num}: Interviewer", q_style))
-            story.append(Paragraph(safe, a_style))
+            story.append(Paragraph(esc(text), a_style))
             q_num += 1
+
         elif role == "user":
-            story.append(Paragraph("You:", ParagraphStyle("You", parent=q_style,
-                                    textColor=colors.HexColor("#2d6a4f"))))
-            story.append(Paragraph(safe, a_style))
+            story.append(Paragraph("You:", you_style))
+            story.append(Paragraph(esc(text), a_style))
+
+            # ── Score block ───────────────────────────────────────────────────
+            score = msg.get("score")
+            if score:
+                overall = score.get("overall", "—")
+                dims = score.get("dimensions", {})
+                dim_parts = " &nbsp;·&nbsp; ".join(
+                    f"{k.capitalize()}: {v}" for k, v in dims.items()
+                ) if dims else ""
+                story.append(HRFlowable(width="100%", thickness=0.5,
+                                        color=colors.HexColor("#dddddd"), spaceAfter=4))
+                story.append(Paragraph(
+                    f"Score: {overall}/10" + (f" &nbsp;—&nbsp; {dim_parts}" if dim_parts else ""),
+                    score_style
+                ))
+                rationale = score.get("rationale", "")
+                if rationale:
+                    story.append(Paragraph(esc(rationale),
+                        ParagraphStyle("Rationale", parent=styles["Normal"],
+                            fontSize=9, textColor=colors.HexColor("#666666"),
+                            fontStyle="italic", leftIndent=8, spaceAfter=4, leading=13)))
+
+            # ── Reference Answer block ────────────────────────────────────────
+            ref = msg.get("reference_data")
+            if ref:
+                story.append(HRFlowable(width="100%", thickness=0.5,
+                                        color=colors.HexColor("#c5cae9"), spaceAfter=4))
+                story.append(Paragraph("Reference Answer", ParagraphStyle("RefHead",
+                    parent=styles["Normal"], fontSize=9, fontName="Helvetica-Bold",
+                    textColor=colors.HexColor("#0f2a5e"), leftIndent=8, spaceAfter=4)))
+
+                key_concepts = ref.get("key_concepts", [])
+                if key_concepts:
+                    story.append(Paragraph("Key Concepts:", ref_label_style))
+                    for item in key_concepts:
+                        story.append(Paragraph(f"• {esc(str(item))}", ref_text_style))
+
+                ideal_pts = ref.get("ideal_answer_points", [])
+                if ideal_pts:
+                    story.append(Paragraph("Ideal Answer Points:", ref_label_style))
+                    for item in ideal_pts:
+                        story.append(Paragraph(f"• {esc(str(item))}", ref_text_style))
+
+                mistakes = ref.get("common_mistakes", [])
+                if mistakes:
+                    story.append(Paragraph("Common Mistakes:", ref_label_style))
+                    for item in mistakes:
+                        story.append(Paragraph(f"• {esc(str(item))}", ref_text_style))
+
+                diff_exp = ref.get("difficulty_expectation", "")
+                if diff_exp:
+                    story.append(Paragraph(f"Expectation ({difficulty}): {esc(diff_exp)}", ref_text_style))
+
+            # ── Coach Feedback block ──────────────────────────────────────────
+            coach = msg.get("coach_feedback", "")
+            if coach:
+                story.append(HRFlowable(width="100%", thickness=0.5,
+                                        color=colors.HexColor("#b2dfdb"), spaceAfter=4))
+                story.append(Paragraph("Coach Feedback", ParagraphStyle("CoachHead",
+                    parent=styles["Normal"], fontSize=9, fontName="Helvetica-Bold",
+                    textColor=colors.HexColor("#0a5040"), leftIndent=8, spaceAfter=4)))
+                story.append(Paragraph(esc(coach), coach_text_style))
+
+            story.append(Spacer(1, 0.3*cm))
 
     doc.build(story)
     buffer.seek(0)
