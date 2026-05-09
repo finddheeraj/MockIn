@@ -588,9 +588,14 @@ function initSpeechRecognition() {
   recognition.lang         = "en-US";
 
   let finalTranscript = "";
+  let existingText    = "";   // text already in the box before mic started
 
   recognition.onstart = () => {
     isListening = true;
+    // Capture whatever is already typed so we can prepend it
+    const input = document.getElementById("answer-input");
+    existingText   = input.value.trimEnd();
+    finalTranscript = "";
     document.getElementById("btn-mic").classList.add("listening");
     document.getElementById("mic-pulse").style.display = "block";
     document.getElementById("speech-status").textContent = "Listening…";
@@ -607,7 +612,9 @@ function initSpeechRecognition() {
       }
     }
     const input = document.getElementById("answer-input");
-    input.value = finalTranscript + interim;
+    // Preserve existing text: prefix it with a space separator if needed
+    const prefix = existingText ? existingText + " " : "";
+    input.value = prefix + finalTranscript + interim;
     updateCharCount(input);
   };
 
@@ -616,7 +623,8 @@ function initSpeechRecognition() {
     document.getElementById("btn-mic").classList.remove("listening");
     document.getElementById("mic-pulse").style.display = "none";
     document.getElementById("speech-status").textContent = "";
-    finalTranscript = "";
+    // Don't reset finalTranscript here — onstart resets it fresh next time
+    // This ensures the textarea keeps its value between mic sessions
   };
 
   recognition.onerror = (event) => {
