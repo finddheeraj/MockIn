@@ -1,0 +1,144 @@
+{
+  "Sales & Business Development": {
+    "sales_methodology": {
+      "key_concepts": [
+        "SPIN selling",
+        "Challenger Sale",
+        "MEDDIC",
+        "Solution selling",
+        "Consultative selling",
+        "Value selling",
+        "Discovery process"
+      ],
+      "ideal_answer_points": [
+        "Explain chosen methodology and why it fits",
+        "Demonstrate structured discovery process",
+        "Show how to quantify value for prospect",
+        "Address objection handling framework",
+        "Connect to pipeline management"
+      ],
+      "common_mistakes": [
+        "Leading with features not outcomes",
+        "Skipping discovery",
+        "Not qualifying properly",
+        "Ignoring economic buyer"
+      ],
+      "follow_up_areas": [
+        "pipeline_management",
+        "negotiation",
+        "account_management"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands basic sales process, can articulate value prop",
+        "Mid-Level": "Applies methodology consistently, handles complex deals",
+        "Senior": "Coaches team on methodology, adapts approach to enterprise deals",
+        "Staff / Principal": "Defines sales playbook, drives methodology adoption org-wide"
+      }
+    },
+    "pipeline_management": {
+      "key_concepts": [
+        "Pipeline stages",
+        "Conversion rates",
+        "Sales velocity",
+        "Forecasting",
+        "Deal scoring",
+        "Pipeline coverage ratio",
+        "CRM hygiene"
+      ],
+      "ideal_answer_points": [
+        "Define clear stage criteria and exit gates",
+        "Explain forecasting methodology",
+        "Discuss pipeline health metrics",
+        "Address deal prioritization",
+        "Connect pipeline to revenue targets"
+      ],
+      "common_mistakes": [
+        "Inflated pipeline with unqualified deals",
+        "Inconsistent stage definitions",
+        "Poor CRM discipline",
+        "No win/loss analysis"
+      ],
+      "follow_up_areas": [
+        "sales_methodology",
+        "negotiation",
+        "account_management"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Maintains CRM, understands stages",
+        "Mid-Level": "Manages healthy pipeline, forecasts accurately",
+        "Senior": "Designs pipeline process, coaches team on deal management",
+        "Staff / Principal": "Builds forecasting models, defines revenue operations strategy"
+      }
+    },
+    "negotiation": {
+      "key_concepts": [
+        "BATNA",
+        "ZOPA",
+        "Anchoring",
+        "Value framing",
+        "Concession strategy",
+        "Multi-party negotiation",
+        "Contract terms"
+      ],
+      "ideal_answer_points": [
+        "Prepare with clear BATNA and walk-away point",
+        "Frame value before discussing price",
+        "Use structured concession approach",
+        "Address procurement tactics",
+        "Maintain relationship while being firm"
+      ],
+      "common_mistakes": [
+        "Discounting too early",
+        "Not understanding buyer's constraints",
+        "Single-issue negotiation",
+        "No preparation of alternatives"
+      ],
+      "follow_up_areas": [
+        "sales_methodology",
+        "pipeline_management",
+        "account_management"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands basic negotiation principles",
+        "Mid-Level": "Handles standard commercial negotiations confidently",
+        "Senior": "Manages complex enterprise negotiations with multiple stakeholders",
+        "Staff / Principal": "Negotiates strategic partnerships, M&A terms, large-scale contracts"
+      }
+    },
+    "account_management": {
+      "key_concepts": [
+        "Account planning",
+        "Stakeholder mapping",
+        "Net revenue retention",
+        "Expansion playbook",
+        "QBRs",
+        "Champion building",
+        "Cross-sell/upsell"
+      ],
+      "ideal_answer_points": [
+        "Build strategic account plans with clear goals",
+        "Map decision-makers and influencers",
+        "Design expansion motion tied to value delivery",
+        "Measure account health proactively",
+        "Run effective business reviews"
+      ],
+      "common_mistakes": [
+        "Reactive instead of proactive",
+        "Single-threaded relationships",
+        "No expansion strategy",
+        "Ignoring usage/adoption data"
+      ],
+      "follow_up_areas": [
+        "sales_methodology",
+        "pipeline_management",
+        "negotiation"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Maintains relationships, handles renewals",
+        "Mid-Level": "Develops account plans, drives expansion revenue",
+        "Senior": "Manages strategic accounts, builds executive relationships",
+        "Staff / Principal": "Defines account segmentation strategy, builds account management playbook"
+      }
+    }
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "Object-Oriented Programming": {
+    "design_principles": {
+      "key_concepts": [
+        "SOLID",
+        "DRY",
+        "KISS",
+        "Composition over inheritance",
+        "Encapsulation",
+        "Polymorphism",
+        "Abstraction"
+      ],
+      "ideal_answer_points": [
+        "Explain each SOLID principle with examples",
+        "Show when to use composition vs inheritance",
+        "Demonstrate encapsulation benefits",
+        "Discuss trade-offs of abstraction levels",
+        "Apply to real codebase decisions"
+      ],
+      "common_mistakes": [
+        "Reciting SOLID without real examples",
+        "Over-abstracting",
+        "Deep inheritance hierarchies",
+        "Violating LSP unknowingly"
+      ],
+      "follow_up_areas": [
+        "design_patterns",
+        "refactoring",
+        "testing"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows OOP basics, can explain encapsulation and inheritance",
+        "Mid-Level": "Applies SOLID in design decisions, prefers composition",
+        "Senior": "Designs extensible systems, identifies principle violations in code reviews",
+        "Staff / Principal": "Architectural patterns, framework design, team coding standards"
+      }
+    },
+    "design_patterns": {
+      "key_concepts": [
+        "Factory",
+        "Strategy",
+        "Observer",
+        "Singleton",
+        "Adapter",
+        "Decorator",
+        "Command",
+        "State machine"
+      ],
+      "ideal_answer_points": [
+        "Name appropriate pattern for given problem",
+        "Explain trade-offs vs simpler solutions",
+        "Show real-world application",
+        "Know when NOT to use patterns",
+        "Implement cleanly with modern language features"
+      ],
+      "common_mistakes": [
+        "Forcing patterns where they don't fit",
+        "Using Singleton for everything",
+        "Not knowing simpler alternatives"
+      ],
+      "follow_up_areas": [
+        "design_principles",
+        "refactoring",
+        "testing"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows 2-3 common patterns, can identify them",
+        "Mid-Level": "Applies patterns appropriately, understands trade-offs",
+        "Senior": "Combines patterns, designs plugin architectures",
+        "Staff / Principal": "Architectural patterns, domain-driven design at scale"
+      }
+    },
+    "refactoring": {
+      "key_concepts": [
+        "Code smells",
+        "Extract method/class",
+        "Rename",
+        "Move",
+        "Inline",
+        "Test coverage before refactoring",
+        "Incremental improvement"
+      ],
+      "ideal_answer_points": [
+        "Identify code smells systematically",
+        "Refactor incrementally with tests",
+        "Know common refactoring techniques",
+        "Balance perfectionism with pragmatism",
+        "Communicate refactoring value to stakeholders"
+      ],
+      "common_mistakes": [
+        "Refactoring without tests",
+        "Big-bang rewrites",
+        "Not communicating the why",
+        "Gold-plating"
+      ],
+      "follow_up_areas": [
+        "design_principles",
+        "design_patterns",
+        "testing"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Can rename and extract methods, knows basic smells",
+        "Mid-Level": "Identifies and fixes complex smells, uses IDE tools",
+        "Senior": "Plans large refactoring campaigns, manages risk",
+        "Staff / Principal": "Technical debt strategy, refactoring vs rewrite decisions"
+      }
+    }
+  }
+}

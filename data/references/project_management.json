@@ -1,0 +1,144 @@
+{
+  "Project Management": {
+    "planning_execution": {
+      "key_concepts": [
+        "WBS",
+        "Critical path",
+        "Gantt charts",
+        "Resource leveling",
+        "Risk register",
+        "Change control",
+        "Milestone tracking"
+      ],
+      "ideal_answer_points": [
+        "Break project into manageable work packages",
+        "Identify dependencies and critical path",
+        "Plan for risks with mitigation strategies",
+        "Establish clear governance and change control",
+        "Define success criteria upfront"
+      ],
+      "common_mistakes": [
+        "No risk planning",
+        "Unrealistic timelines",
+        "Scope creep without change control",
+        "Poor stakeholder communication"
+      ],
+      "follow_up_areas": [
+        "agile_methodologies",
+        "stakeholder_communication",
+        "risk_management"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Creates basic project plans, tracks tasks",
+        "Mid-Level": "Manages complex projects, handles dependencies",
+        "Senior": "Leads programs, manages portfolio of projects",
+        "Staff / Principal": "Defines PMO strategy, drives project management maturity"
+      }
+    },
+    "agile_methodologies": {
+      "key_concepts": [
+        "Scrum",
+        "Kanban",
+        "Sprint planning",
+        "Retrospectives",
+        "User stories",
+        "Velocity",
+        "SAFe",
+        "Definition of Done"
+      ],
+      "ideal_answer_points": [
+        "Choose methodology based on context not dogma",
+        "Explain ceremonies and their purpose",
+        "Address scaling agile across teams",
+        "Discuss metrics that matter (velocity, cycle time)",
+        "Handle agile in non-software contexts"
+      ],
+      "common_mistakes": [
+        "Agile as process not mindset",
+        "Skipping retrospectives",
+        "No Definition of Done",
+        "Waterfall disguised as agile"
+      ],
+      "follow_up_areas": [
+        "planning_execution",
+        "stakeholder_communication",
+        "risk_management"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Participates in agile ceremonies, writes user stories",
+        "Mid-Level": "Facilitates ceremonies, removes impediments, tracks velocity",
+        "Senior": "Coaches teams on agile, scales across multiple teams",
+        "Staff / Principal": "Defines agile transformation strategy, implements SAFe/LeSS"
+      }
+    },
+    "stakeholder_communication": {
+      "key_concepts": [
+        "RACI matrix",
+        "Status reporting",
+        "Escalation paths",
+        "Steering committees",
+        "Communication plans",
+        "Expectation management"
+      ],
+      "ideal_answer_points": [
+        "Map stakeholders and tailor communication",
+        "Establish regular reporting cadence",
+        "Proactively manage expectations",
+        "Escalate effectively with options not just problems",
+        "Build trust through transparency"
+      ],
+      "common_mistakes": [
+        "Surprising stakeholders with bad news",
+        "One-size-fits-all communication",
+        "No escalation framework",
+        "Reporting without context"
+      ],
+      "follow_up_areas": [
+        "planning_execution",
+        "agile_methodologies",
+        "risk_management"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Provides regular updates, maintains RACI",
+        "Mid-Level": "Manages diverse stakeholders, handles escalations",
+        "Senior": "Influences executives, manages political dynamics",
+        "Staff / Principal": "Drives organizational communication strategy, manages board reporting"
+      }
+    },
+    "risk_management": {
+      "key_concepts": [
+        "Risk identification",
+        "Probability-impact matrix",
+        "Risk response strategies",
+        "Contingency planning",
+        "Risk appetite",
+        "Issue management",
+        "Monte Carlo simulation"
+      ],
+      "ideal_answer_points": [
+        "Systematically identify risks through multiple methods",
+        "Quantify and prioritize risks effectively",
+        "Plan response strategies (avoid, mitigate, transfer, accept)",
+        "Monitor risks actively with triggers",
+        "Communicate risks proportionally"
+      ],
+      "common_mistakes": [
+        "Only identifying obvious risks",
+        "No quantification",
+        "Static risk register",
+        "Not connecting risks to project timeline"
+      ],
+      "follow_up_areas": [
+        "planning_execution",
+        "agile_methodologies",
+        "stakeholder_communication"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Identifies basic risks, maintains register",
+        "Mid-Level": "Quantifies risks, designs mitigation plans",
+        "Senior": "Manages complex risk portfolios across programs",
+        "Staff / Principal": "Defines enterprise risk framework for project delivery"
+      }
+    }
+  }
+}

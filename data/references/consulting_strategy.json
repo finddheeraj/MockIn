@@ -1,0 +1,142 @@
+{
+  "Consulting & Strategy": {
+    "problem_structuring": {
+      "key_concepts": [
+        "MECE",
+        "Issue trees",
+        "Hypothesis-driven approach",
+        "80/20 analysis",
+        "Framework application",
+        "First principles",
+        "Synthesis"
+      ],
+      "ideal_answer_points": [
+        "Break complex problems into MECE components",
+        "Form hypotheses early and test them",
+        "Apply appropriate frameworks without being rigid",
+        "Prioritize based on impact and feasibility",
+        "Synthesize findings into clear recommendations"
+      ],
+      "common_mistakes": [
+        "Framework-first without understanding problem",
+        "Not MECE decomposition",
+        "Boiling the ocean without prioritization",
+        "Analysis without synthesis"
+      ],
+      "follow_up_areas": [
+        "market_analysis",
+        "business_case",
+        "change_management"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Applies basic frameworks, structures problems clearly",
+        "Mid-Level": "Custom-builds frameworks, forms strong hypotheses",
+        "Senior": "Structures ambiguous problems, guides client thinking",
+        "Staff / Principal": "Defines strategic approach, manages complex multi-workstream engagements"
+      }
+    },
+    "market_analysis": {
+      "key_concepts": [
+        "Porter's Five Forces",
+        "Market sizing (TAM/SAM/SOM)",
+        "Competitive landscape",
+        "Industry trends",
+        "Value chain analysis",
+        "Growth drivers"
+      ],
+      "ideal_answer_points": [
+        "Size market using multiple approaches (top-down, bottom-up)",
+        "Analyze competitive dynamics beyond direct competitors",
+        "Identify secular trends and disruption risks",
+        "Connect analysis to strategic implications",
+        "Validate with data points"
+      ],
+      "common_mistakes": [
+        "Only top-down sizing",
+        "Ignoring substitutes and new entrants",
+        "Static analysis without trend consideration",
+        "No 'so what'"
+      ],
+      "follow_up_areas": [
+        "problem_structuring",
+        "business_case",
+        "change_management"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Performs basic market sizing, applies Porter's",
+        "Mid-Level": "Conducts comprehensive market analysis, triangulates data",
+        "Senior": "Identifies strategic insights from market dynamics",
+        "Staff / Principal": "Defines market strategy, advises C-suite on market positioning"
+      }
+    },
+    "business_case": {
+      "key_concepts": [
+        "NPV/ROI",
+        "Build vs buy",
+        "Scenario modeling",
+        "Implementation roadmap",
+        "Stakeholder alignment",
+        "Quick wins vs long-term bets"
+      ],
+      "ideal_answer_points": [
+        "Quantify benefits with clear assumptions",
+        "Model multiple scenarios (base, upside, downside)",
+        "Address implementation feasibility and risks",
+        "Define governance and decision criteria",
+        "Present compelling narrative with numbers"
+      ],
+      "common_mistakes": [
+        "Overly optimistic assumptions",
+        "No implementation plan",
+        "Ignoring organizational readiness",
+        "No risk-adjusted returns"
+      ],
+      "follow_up_areas": [
+        "problem_structuring",
+        "market_analysis",
+        "change_management"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Builds basic business cases with guidance",
+        "Mid-Level": "Creates comprehensive cases with scenario modeling",
+        "Senior": "Develops board-level investment proposals",
+        "Staff / Principal": "Defines strategic investment framework, leads transformation cases"
+      }
+    },
+    "change_management": {
+      "key_concepts": [
+        "Kotter's 8 steps",
+        "ADKAR model",
+        "Stakeholder analysis",
+        "Communication strategy",
+        "Resistance management",
+        "Training and enablement",
+        "Benefits realization"
+      ],
+      "ideal_answer_points": [
+        "Assess change readiness and capacity",
+        "Build coalition of sponsors and champions",
+        "Design communication for different audiences",
+        "Address resistance proactively",
+        "Measure adoption and benefits realization"
+      ],
+      "common_mistakes": [
+        "Underestimating people side of change",
+        "No sponsor engagement",
+        "One-off communication",
+        "Declaring victory too early"
+      ],
+      "follow_up_areas": [
+        "problem_structuring",
+        "market_analysis",
+        "business_case"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Supports change activities, communicates effectively",
+        "Mid-Level": "Designs change plans, manages stakeholder resistance",
+        "Senior": "Leads complex transformations, coaches senior sponsors",
+        "Staff / Principal": "Defines change methodology, builds organizational change capability"
+      }
+    }
+  }
+}

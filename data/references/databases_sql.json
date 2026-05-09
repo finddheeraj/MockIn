@@ -1,0 +1,105 @@
+{
+  "Databases & SQL": {
+    "query_optimization": {
+      "key_concepts": [
+        "Indexes",
+        "Query plans",
+        "EXPLAIN",
+        "N+1 problem",
+        "Denormalization",
+        "Partitioning",
+        "Query caching"
+      ],
+      "ideal_answer_points": [
+        "Use EXPLAIN to analyze queries",
+        "Design appropriate indexes",
+        "Identify and fix N+1 queries",
+        "Know when to denormalize",
+        "Understand partitioning strategies"
+      ],
+      "common_mistakes": [
+        "Over-indexing",
+        "Not checking query plans",
+        "Ignoring write performance impact of indexes"
+      ],
+      "follow_up_areas": [
+        "transactions",
+        "data_modeling",
+        "scaling"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows what indexes are, can write basic queries",
+        "Mid-Level": "Uses EXPLAIN, designs composite indexes",
+        "Senior": "Optimizes complex queries, designs partition strategies",
+        "Staff / Principal": "Database internals, custom storage engines, global optimization"
+      }
+    },
+    "transactions": {
+      "key_concepts": [
+        "ACID",
+        "Isolation levels",
+        "Deadlocks",
+        "MVCC",
+        "Two-phase commit",
+        "Optimistic vs pessimistic locking",
+        "Savepoints"
+      ],
+      "ideal_answer_points": [
+        "Explain all ACID properties",
+        "Compare isolation levels with trade-offs",
+        "Describe deadlock prevention/detection",
+        "Discuss distributed transactions",
+        "Choose appropriate locking strategy"
+      ],
+      "common_mistakes": [
+        "Not understanding isolation level implications",
+        "Ignoring deadlock scenarios",
+        "Using serializable when unnecessary"
+      ],
+      "follow_up_areas": [
+        "query_optimization",
+        "data_modeling",
+        "scaling"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows ACID basics, can use transactions",
+        "Mid-Level": "Understands isolation levels, handles basic concurrency",
+        "Senior": "Designs for high concurrency, handles distributed transactions",
+        "Staff / Principal": "Custom isolation semantics, distributed consensus"
+      }
+    },
+    "data_modeling": {
+      "key_concepts": [
+        "Normalization",
+        "Denormalization",
+        "ER diagrams",
+        "NoSQL patterns",
+        "Schema evolution",
+        "Polyglot persistence"
+      ],
+      "ideal_answer_points": [
+        "Choose normalization level based on access patterns",
+        "Design for read vs write heavy workloads",
+        "Handle schema evolution gracefully",
+        "Know when SQL vs NoSQL",
+        "Design for scalability from the start"
+      ],
+      "common_mistakes": [
+        "Over-normalizing for read-heavy systems",
+        "Not planning for schema changes",
+        "Using one database for everything"
+      ],
+      "follow_up_areas": [
+        "query_optimization",
+        "transactions",
+        "scaling"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands tables, relationships, basic normalization",
+        "Mid-Level": "Designs schemas for specific access patterns",
+        "Senior": "Polyglot persistence, migration strategies, performance modeling",
+        "Staff / Principal": "Data architecture strategy, cross-system consistency"
+      }
+    }
+  }
+}

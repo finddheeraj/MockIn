@@ -1,0 +1,108 @@
+{
+  "DevOps & CI/CD": {
+    "pipeline_design": {
+      "key_concepts": [
+        "Build stages",
+        "Testing pyramid",
+        "Artifact management",
+        "Deployment strategies",
+        "Rollback",
+        "Feature flags",
+        "Trunk-based development"
+      ],
+      "ideal_answer_points": [
+        "Design multi-stage pipeline",
+        "Implement testing pyramid (unit/integration/e2e)",
+        "Handle artifact versioning",
+        "Choose deployment strategy (blue-green, canary, rolling)",
+        "Plan rollback procedures"
+      ],
+      "common_mistakes": [
+        "No automated rollback",
+        "Skipping integration tests",
+        "Not versioning artifacts",
+        "Over-complex branching strategies"
+      ],
+      "follow_up_areas": [
+        "containerization",
+        "monitoring",
+        "infrastructure_as_code"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows what CI/CD is, can use basic pipeline",
+        "Mid-Level": "Designs pipelines with proper stages and testing",
+        "Senior": "Optimizes pipeline performance, handles complex deployments",
+        "Staff / Principal": "Platform engineering, developer experience, organizational CI/CD strategy"
+      }
+    },
+    "containerization": {
+      "key_concepts": [
+        "Docker",
+        "Kubernetes",
+        "Container orchestration",
+        "Service mesh",
+        "Helm",
+        "Resource limits",
+        "Health checks"
+      ],
+      "ideal_answer_points": [
+        "Write efficient Dockerfiles",
+        "Design K8s deployments with proper resources",
+        "Handle service discovery",
+        "Implement health/readiness probes",
+        "Address persistent storage"
+      ],
+      "common_mistakes": [
+        "Large container images",
+        "Running as root",
+        "No resource limits",
+        "Ignoring security scanning"
+      ],
+      "follow_up_areas": [
+        "pipeline_design",
+        "monitoring",
+        "infrastructure_as_code"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Can write Dockerfile, understands containers vs VMs",
+        "Mid-Level": "Deploys to K8s, understands pods/services/deployments",
+        "Senior": "Designs cluster architecture, handles stateful workloads",
+        "Staff / Principal": "Multi-cluster strategy, custom operators, platform design"
+      }
+    },
+    "monitoring": {
+      "key_concepts": [
+        "Metrics",
+        "Logging",
+        "Tracing",
+        "Alerting",
+        "SLOs/SLIs",
+        "Observability",
+        "Dashboards"
+      ],
+      "ideal_answer_points": [
+        "Implement three pillars (metrics, logs, traces)",
+        "Define meaningful SLOs",
+        "Design actionable alerts",
+        "Correlate across signals",
+        "Plan for debugging production issues"
+      ],
+      "common_mistakes": [
+        "Alert fatigue from too many alerts",
+        "Not correlating logs with traces",
+        "Missing business metrics"
+      ],
+      "follow_up_areas": [
+        "pipeline_design",
+        "containerization",
+        "infrastructure_as_code"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows logging basics, can read dashboards",
+        "Mid-Level": "Sets up monitoring stack, defines basic alerts",
+        "Senior": "Designs observability strategy, defines SLOs, reduces MTTR",
+        "Staff / Principal": "Observability platform, cost optimization, organizational reliability culture"
+      }
+    }
+  }
+}

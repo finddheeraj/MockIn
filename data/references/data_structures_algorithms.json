@@ -1,0 +1,106 @@
+{
+  "Data Structures & Algorithms": {
+    "hash_tables": {
+      "key_concepts": [
+        "Hash function",
+        "Collision resolution",
+        "Open addressing",
+        "Chaining",
+        "Load factor",
+        "Resizing",
+        "O(1) average lookup"
+      ],
+      "ideal_answer_points": [
+        "Explain hash function properties",
+        "Compare collision strategies",
+        "Discuss time complexity (average vs worst)",
+        "Mention real-world uses",
+        "Address resizing mechanics"
+      ],
+      "common_mistakes": [
+        "Forgetting worst-case O(n)",
+        "Not discussing collision handling",
+        "Ignoring hash function quality"
+      ],
+      "follow_up_areas": [
+        "trees_and_graphs",
+        "sorting",
+        "complexity"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows O(1) lookup, basic collision concept",
+        "Mid-Level": "Explains chaining vs open addressing, load factor",
+        "Senior": "Implements custom hash map, discusses distributed hashing",
+        "Staff / Principal": "Consistent hashing, probabilistic data structures (Bloom filters)"
+      }
+    },
+    "trees_and_graphs": {
+      "key_concepts": [
+        "BFS",
+        "DFS",
+        "Binary search tree",
+        "AVL/Red-black",
+        "Trie",
+        "Graph traversal",
+        "Shortest path",
+        "Topological sort"
+      ],
+      "ideal_answer_points": [
+        "Choose correct traversal for the problem",
+        "Analyze time/space complexity",
+        "Handle edge cases (cycles, disconnected)",
+        "Discuss balanced vs unbalanced trees",
+        "Mention real applications"
+      ],
+      "common_mistakes": [
+        "Not handling cycles in graphs",
+        "Confusing BFS/DFS use cases",
+        "Forgetting space complexity of recursion"
+      ],
+      "follow_up_areas": [
+        "hash_tables",
+        "dynamic_programming",
+        "complexity"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Can implement BFS/DFS, knows BST operations",
+        "Mid-Level": "Handles complex graph problems, understands balancing",
+        "Senior": "Optimizes for specific constraints, designs custom tree structures",
+        "Staff / Principal": "Graph algorithms at scale, distributed graph processing"
+      }
+    },
+    "dynamic_programming": {
+      "key_concepts": [
+        "Overlapping subproblems",
+        "Optimal substructure",
+        "Memoization",
+        "Tabulation",
+        "State transition",
+        "Space optimization"
+      ],
+      "ideal_answer_points": [
+        "Identify DP applicability",
+        "Define state and transition",
+        "Compare top-down vs bottom-up",
+        "Optimize space when possible",
+        "Explain time complexity"
+      ],
+      "common_mistakes": [
+        "Jumping to DP without proving substructure",
+        "Not identifying the state clearly",
+        "Missing base cases"
+      ],
+      "follow_up_areas": [
+        "trees_and_graphs",
+        "sorting",
+        "complexity"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands memoization concept, solves Fibonacci",
+        "Mid-Level": "Solves 2D DP problems, identifies DP applicability",
+        "Senior": "Handles complex state spaces, optimizes space to O(n)",
+        "Staff / Principal": "DP on trees/graphs, bitmask DP, interview problem design"
+      }
+    }
+  }
+}

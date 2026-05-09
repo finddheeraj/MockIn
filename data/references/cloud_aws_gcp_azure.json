@@ -1,0 +1,105 @@
+{
+  "Cloud (AWS / GCP / Azure)": {
+    "compute": {
+      "key_concepts": [
+        "EC2/GCE/VMs",
+        "Lambda/Cloud Functions",
+        "ECS/EKS/GKE",
+        "Auto-scaling",
+        "Spot instances",
+        "Serverless patterns"
+      ],
+      "ideal_answer_points": [
+        "Choose compute model based on workload",
+        "Design auto-scaling policies",
+        "Optimize cost with spot/preemptible",
+        "Understand cold start implications",
+        "Handle stateless vs stateful workloads"
+      ],
+      "common_mistakes": [
+        "Over-provisioning",
+        "Ignoring cold starts in serverless",
+        "Not using auto-scaling",
+        "Running stateful apps on ephemeral compute"
+      ],
+      "follow_up_areas": [
+        "networking",
+        "storage",
+        "security"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Can deploy to EC2/Lambda, understands basic services",
+        "Mid-Level": "Designs auto-scaling, chooses between compute options",
+        "Senior": "Optimizes cost and performance, multi-region deployments",
+        "Staff / Principal": "Cloud strategy, multi-cloud, FinOps, migration planning"
+      }
+    },
+    "networking": {
+      "key_concepts": [
+        "VPC",
+        "Subnets",
+        "Security groups",
+        "Load balancers",
+        "CDN",
+        "DNS",
+        "VPN/Direct Connect"
+      ],
+      "ideal_answer_points": [
+        "Design secure VPC architecture",
+        "Implement defense in depth",
+        "Choose appropriate connectivity options",
+        "Handle multi-region networking",
+        "Optimize for latency"
+      ],
+      "common_mistakes": [
+        "Overly permissive security groups",
+        "Public subnets for private resources",
+        "Not planning for multi-region"
+      ],
+      "follow_up_areas": [
+        "compute",
+        "security",
+        "storage"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands VPC basics, security groups",
+        "Mid-Level": "Designs multi-tier VPC, handles connectivity",
+        "Senior": "Multi-region networking, transit gateway, peering",
+        "Staff / Principal": "Global network architecture, hybrid connectivity strategy"
+      }
+    },
+    "storage": {
+      "key_concepts": [
+        "S3/GCS/Blob",
+        "EBS/persistent disks",
+        "RDS/Cloud SQL",
+        "DynamoDB/Firestore",
+        "Data lakes",
+        "Lifecycle policies"
+      ],
+      "ideal_answer_points": [
+        "Choose storage type based on access patterns",
+        "Design data lifecycle policies",
+        "Handle backup and disaster recovery",
+        "Optimize costs with tiering",
+        "Address compliance requirements"
+      ],
+      "common_mistakes": [
+        "Not planning for data growth",
+        "Missing backup strategy",
+        "Over-paying for storage tier"
+      ],
+      "follow_up_areas": [
+        "compute",
+        "networking",
+        "security"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows S3/basic storage services",
+        "Mid-Level": "Designs storage architecture, understands tiering",
+        "Senior": "Data lake design, cross-region replication, DR planning",
+        "Staff / Principal": "Data strategy, compliance architecture, cost optimization at scale"
+      }
+    }
+  }
+}

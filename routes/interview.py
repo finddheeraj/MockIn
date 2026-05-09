@@ -1,0 +1,480 @@
+"""
+routes/interview.py — Interview API Routes (Agentic)
+-----------------------------------------------------
+Endpoints:
+  POST /start   — Kick off session, initialize agentic state
+  POST /answer  — Agentic pipeline: score → adapt → parallel(recruiter, coach)
+  POST /end     — Trigger evaluator for end-of-session report
+  POST /reset   — Clear session
+
+Agentic execution order per /answer:
+  1. Scorer scores the candidate's answer (sync)
+  2. Adaptive controller decides next action (sync)
+  3. Knowledge base lookup for reference data (instant, no LLM)
+  4. Recruiter + Coach run in parallel (recruiter gets adaptive instructions,
+     coach gets KB reference)
+"""
+
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from flask import Blueprint, request, jsonify, session, make_response
+import io, textwrap
+from agents.recruiter import ask_opening_question, ask_followup
+from agents.coach import get_feedback, generate_answer
+from agents.scorer import score_answer, compute_weak_areas
+from agents.adaptive_controller import decide_next_action, _fallback_decision
+from agents.evaluator import evaluate_session
+from tools.knowledge_base import lookup_reference, detect_subtopic
+
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import cm
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable
+from reportlab.lib.enums import TA_LEFT, TA_CENTER
+
+from llm_client import get_grok_client, get_local_client
+from config import LLM_PROVIDER, MODEL, LOCAL_MODEL_NAME, MIN_ROUNDS_FOR_EVAL
+
+interview_bp = Blueprint("interview", __name__)
+
+
+@interview_bp.route("/session-status", methods=["GET"])
+def session_status():
+    """
+    Check if an active interview session exists.
+    Returns session metadata so the frontend can offer resumption.
+    """
+    topic = session.get("topic")
+    history = session.get("history", [])
+
+    if topic and len(history) > 0:
+        return jsonify({
+            "active": True,
+            "topic": topic,
+            "difficulty": session.get("difficulty", ""),
+            "round": session.get("round", 0),
+            "history": history,
+            "scores": session.get("scores", []),
+            "adaptive_state": session.get("adaptive_state"),
+        })
+
+    return jsonify({"active": False})
+
+
+def _get_primary_client() -> tuple:
+    """Return (client, model_name) for the primary provider. Used for agentic pipeline calls."""
+    if LLM_PROVIDER in ("local", ):
+        return (get_local_client(), LOCAL_MODEL_NAME)
+    return (get_grok_client(), MODEL)
+
+
+def _get_active_clients() -> dict:
+    """Return dict of provider_name -> (client, model_name) based on LLM_PROVIDER."""
+    clients = {}
+    if LLM_PROVIDER in ("grok", "both"):
+        clients["grok"] = (get_grok_client(), MODEL)
+    if LLM_PROVIDER in ("local", "both"):
+        clients["local"] = (get_local_client(), LOCAL_MODEL_NAME)
+    return clients
+
+
+@interview_bp.route("/start", methods=["POST"])
+def start_interview():
+    """
+    Initialise the session and get the opening question.
+    Initializes all agentic state fields.
+    """
+    data       = request.json
+    topic      = data.get("topic", "System Design")
+    difficulty = data.get("difficulty", "Mid-Level")
+
+    session["topic"]      = topic
+    session["difficulty"] = difficulty
+    session["history"]    = []
+    session["scores"]     = []
+    session["round"]      = 0
+    session["adaptive_state"] = {
+        "current_subtopic": None,
+        "current_difficulty": difficulty,
+        "action_history": [],
+        "weak_areas": [],
+        "strong_areas": [],
+    }
+
+    clients = _get_active_clients()
+
+    if len(clients) == 1:
+        provider_name, (client, model_name) = next(iter(clients.items()))
+        opening_question = ask_opening_question(client, topic, difficulty, model_name)
+
+        session["history"] = [{"role": "assistant", "content": opening_question}]
+
+        return jsonify({
+            "recruiter_message": opening_question,
+            "coach_feedback":    None,
+            "provider":          provider_name,
+        })
+
+    # Both providers in parallel
+    results = {}
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        futures = {
+            executor.submit(ask_opening_question, client, topic, difficulty, model_name): name
+            for name, (client, model_name) in clients.items()
+        }
+        for future in as_completed(futures):
+            provider_name = futures[future]
+            try:
+                results[provider_name] = future.result()
+            except Exception as e:
+                results[provider_name] = f"[Error from {provider_name}: {e}]"
+
+    primary = results.get("grok") or results.get("local", "")
+    session["history"] = [{"role": "assistant", "content": primary}]
+
+    return jsonify({
+        "recruiter_message":       results.get("grok", ""),
+        "recruiter_message_local": results.get("local", ""),
+        "coach_feedback":          None,
+        "coach_feedback_local":    None,
+        "provider":                "both",
+    })
+
+
+@interview_bp.route("/answer", methods=["POST"])
+def submit_answer():
+    """
+    Agentic pipeline:
+      1. Score the answer
+      2. Adaptive controller decides next action
+      3. KB lookup for reference
+      4. Recruiter + Coach in parallel
+    """
+    data             = request.json
+    candidate_answer = data.get("answer", "").strip()
+
+    if not candidate_answer:
+        return jsonify({"error": "Answer cannot be empty"}), 400
+
+    topic      = session.get("topic",      "System Design")
+    difficulty = session.get("difficulty", "Mid-Level")
+    history    = session.get("history",    [])
+    scores     = session.get("scores",     [])
+    adaptive_state = session.get("adaptive_state", {})
+    round_num  = session.get("round", 0) + 1
+    session["round"] = round_num
+
+    # Get the last recruiter question for scoring context
+    last_question = ""
+    for msg in reversed(history):
+        if msg["role"] == "assistant":
+            last_question = msg["content"]
+            break
+
+    # ── Step 1: Score the answer (sync) ──────────────────────────────────────
+    primary_client, primary_model = _get_primary_client()
+    score_result = score_answer(primary_client, topic, difficulty, last_question, candidate_answer, primary_model)
+    score_result["round"] = round_num
+    scores.append(score_result)
+    session["scores"] = scores
+
+    # Update weak/strong areas
+    weak_areas, strong_areas = compute_weak_areas(scores)
+    adaptive_state["weak_areas"] = weak_areas
+    adaptive_state["strong_areas"] = strong_areas
+
+    # ── Step 2: Adaptive controller (LLM on even rounds, rule-based on odd) ──
+    if round_num % 2 == 0:
+        adaptive_decision = decide_next_action(
+            primary_client, topic, adaptive_state, score_result, scores, primary_model
+        )
+    else:
+        adaptive_decision = _fallback_decision(
+            score_result,
+            adaptive_state.get("current_subtopic", "general"),
+            adaptive_state.get("current_difficulty", difficulty),
+            adaptive_state.get("weak_areas", []),
+        )
+
+    # Update adaptive state
+    adaptive_state["current_subtopic"] = adaptive_decision.get("target_subtopic", adaptive_state.get("current_subtopic"))
+    adaptive_state["current_difficulty"] = adaptive_decision.get("target_difficulty", adaptive_state.get("current_difficulty"))
+    adaptive_state["action_history"].append(f"{adaptive_decision['action']}:{adaptive_state['current_subtopic']}")
+    session["adaptive_state"] = adaptive_state
+
+    # ── Step 3: KB lookup (instant, no LLM) ──────────────────────────────────
+    subtopic = adaptive_state.get("current_subtopic") or detect_subtopic(last_question, topic)
+    reference_data = lookup_reference(topic, subtopic, difficulty)
+
+    # ── Step 4: Recruiter + Coach in parallel ────────────────────────────────
+    adaptive_instructions = adaptive_decision.get("recruiter_instructions", "")
+    clients = _get_active_clients()
+
+    if len(clients) == 1:
+        provider_name, (client, model_name) = next(iter(clients.items()))
+
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            recruiter_future = executor.submit(
+                ask_followup, client, topic, adaptive_state.get("current_difficulty", difficulty),
+                history, candidate_answer, model_name, adaptive_instructions
+            )
+            coach_future = executor.submit(
+                get_feedback, client, topic, difficulty, history, candidate_answer,
+                model_name, reference_data
+            )
+            recruiter_reply = recruiter_future.result()
+            coach_reply = coach_future.result()
+
+        history.append({"role": "user",      "content": candidate_answer})
+        history.append({"role": "assistant", "content": recruiter_reply})
+        session["history"] = history
+
+        return jsonify({
+            "recruiter_message": recruiter_reply,
+            "coach_feedback":    coach_reply,
+            "score":             score_result,
+            "adaptive":          {
+                "action": adaptive_decision["action"],
+                "reasoning": adaptive_decision.get("reasoning", ""),
+                "current_subtopic": adaptive_state.get("current_subtopic"),
+                "current_difficulty": adaptive_state.get("current_difficulty"),
+            },
+            "reference_answer":  reference_data,
+            "round":             round_num,
+            "provider":          provider_name,
+        })
+
+    # ── Both providers — parallel execution ──────────────────────────────────
+    results = {}
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = {}
+        for name, (client, model_name) in clients.items():
+            futures[executor.submit(
+                ask_followup, client, topic, adaptive_state.get("current_difficulty", difficulty),
+                history, candidate_answer, model_name, adaptive_instructions
+            )] = (name, "recruiter")
+            futures[executor.submit(
+                get_feedback, client, topic, difficulty, history, candidate_answer,
+                model_name, reference_data
+            )] = (name, "coach")
+
+        for future in as_completed(futures):
+            provider_name, agent_role = futures[future]
+            try:
+                results[(provider_name, agent_role)] = future.result()
+            except Exception as e:
+                results[(provider_name, agent_role)] = f"[Error from {provider_name}: {e}]"
+
+    primary_recruiter = results.get(("grok", "recruiter")) or results.get(("local", "recruiter"), "")
+    history.append({"role": "user",      "content": candidate_answer})
+    history.append({"role": "assistant", "content": primary_recruiter})
+    session["history"] = history
+
+    return jsonify({
+        "recruiter_message":       results.get(("grok", "recruiter"), ""),
+        "recruiter_message_local": results.get(("local", "recruiter"), ""),
+        "coach_feedback":          results.get(("grok", "coach"), ""),
+        "coach_feedback_local":    results.get(("local", "coach"), ""),
+        "score":                   score_result,
+        "adaptive":                {
+            "action": adaptive_decision["action"],
+            "reasoning": adaptive_decision.get("reasoning", ""),
+            "current_subtopic": adaptive_state.get("current_subtopic"),
+            "current_difficulty": adaptive_state.get("current_difficulty"),
+        },
+        "reference_answer":        reference_data,
+        "round":                   round_num,
+        "provider":                "both",
+    })
+
+
+@interview_bp.route("/skip", methods=["POST"])
+def skip_question():
+    """
+    Skip the current question without scoring.
+    Asks the recruiter a new question on a different subtopic.
+    """
+    topic = session.get("topic", "System Design")
+    difficulty = session.get("difficulty", "Mid-Level")
+    history = session.get("history", [])
+    adaptive_state = session.get("adaptive_state", {})
+
+    adaptive_state["action_history"].append("skipped")
+    session["adaptive_state"] = adaptive_state
+
+    clients = _get_active_clients()
+
+    skip_instruction = "The candidate skipped the previous question. Ask a completely different question on a new subtopic."
+
+    if len(clients) == 1:
+        provider_name, (client, model_name) = next(iter(clients.items()))
+        recruiter_reply = ask_followup(
+            client, topic, difficulty, history, "I'd like to skip this question.",
+            model_name, skip_instruction
+        )
+        history.append({"role": "user", "content": "[Skipped]"})
+        history.append({"role": "assistant", "content": recruiter_reply})
+        session["history"] = history
+
+        return jsonify({
+            "recruiter_message": recruiter_reply,
+            "provider": provider_name,
+        })
+
+    results = {}
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        futures = {
+            executor.submit(
+                ask_followup, client, topic, difficulty, history,
+                "I'd like to skip this question.", model_name, skip_instruction
+            ): name
+            for name, (client, model_name) in clients.items()
+        }
+        for future in as_completed(futures):
+            provider_name = futures[future]
+            try:
+                results[provider_name] = future.result()
+            except Exception as e:
+                results[provider_name] = f"[Error from {provider_name}: {e}]"
+
+    primary = results.get("grok") or results.get("local", "")
+    history.append({"role": "user", "content": "[Skipped]"})
+    history.append({"role": "assistant", "content": primary})
+    session["history"] = history
+
+    return jsonify({
+        "recruiter_message": results.get("grok", ""),
+        "recruiter_message_local": results.get("local", ""),
+        "provider": "both",
+    })
+
+
+@interview_bp.route("/coach-answer", methods=["POST"])
+def coach_answer():
+    """
+    Generate an ideal answer for the current interview question.
+    Called when the candidate doesn't know the answer and wants guidance.
+    """
+    history = session.get("history", [])
+    topic = session.get("topic", "System Design")
+    difficulty = session.get("difficulty", "Mid-Level")
+
+    last_question = ""
+    for msg in reversed(history):
+        if msg["role"] == "assistant":
+            last_question = msg["content"]
+            break
+
+    if not last_question:
+        return jsonify({"error": "No question to answer yet."}), 400
+
+    subtopic = detect_subtopic(last_question, topic)
+    reference_data = lookup_reference(topic, subtopic, difficulty)
+
+    primary_client, primary_model = _get_primary_client()
+    answer = generate_answer(primary_client, topic, difficulty, last_question, primary_model, reference_data)
+
+    return jsonify({"coach_answer": answer})
+
+
+@interview_bp.route("/end", methods=["POST"])
+def end_interview():
+    """
+    Trigger the evaluator agent to produce a full session evaluation.
+    Returns structured scorecard + improvement plan.
+    """
+    scores = session.get("scores", [])
+    history = session.get("history", [])
+    topic = session.get("topic", "System Design")
+    difficulty = session.get("difficulty", "Mid-Level")
+    adaptive_state = session.get("adaptive_state", {})
+
+    if len(scores) < MIN_ROUNDS_FOR_EVAL:
+        return jsonify({
+            "error": f"Need at least {MIN_ROUNDS_FOR_EVAL} rounds for evaluation. Currently: {len(scores)}."
+        }), 400
+
+    primary_client, primary_model = _get_primary_client()
+
+    evaluation = evaluate_session(
+        primary_client, topic, difficulty, history, scores, adaptive_state, primary_model
+    )
+
+    return jsonify({"evaluation": evaluation})
+
+
+@interview_bp.route("/reset", methods=["POST"])
+def reset_session():
+    """Clear the session so the user can start a fresh interview."""
+    session.clear()
+    return jsonify({"status": "ok"})
+
+@interview_bp.route("/download-pdf", methods=["GET"])
+def download_pdf():
+    """Generate and return a PDF of the interview transcript."""
+    history   = session.get("history", [])
+    topic     = session.get("topic", "Interview")
+    difficulty= session.get("difficulty", "")
+    scores    = session.get("scores", [])
+
+    if not history:
+        return jsonify({"error": "No interview data to export."}), 400
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4,
+                            leftMargin=2*cm, rightMargin=2*cm,
+                            topMargin=2*cm, bottomMargin=2*cm)
+
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle("Title", parent=styles["Heading1"],
+                                 fontSize=20, textColor=colors.HexColor("#1a1a2e"),
+                                 spaceAfter=6, alignment=TA_CENTER)
+    meta_style  = ParagraphStyle("Meta", parent=styles["Normal"],
+                                 fontSize=10, textColor=colors.HexColor("#666666"),
+                                 spaceAfter=4, alignment=TA_CENTER)
+    q_style     = ParagraphStyle("Q", parent=styles["Normal"],
+                                 fontSize=11, textColor=colors.HexColor("#1a1a2e"),
+                                 fontName="Helvetica-Bold", spaceAfter=4,
+                                 spaceBefore=14, leftIndent=0)
+    a_style     = ParagraphStyle("A", parent=styles["Normal"],
+                                 fontSize=10, textColor=colors.HexColor("#333333"),
+                                 spaceAfter=6, leftIndent=20,
+                                 leading=15)
+
+    story = []
+
+    # Header
+    story.append(Paragraph("MockMind — Interview Transcript", title_style))
+    story.append(Paragraph(f"Topic: {topic} &nbsp;|&nbsp; Level: {difficulty}", meta_style))
+    if scores:
+        avg = sum(s.get("overall", 0) for s in scores) / len(scores)
+        story.append(Paragraph(f"Rounds: {len(scores)} &nbsp;|&nbsp; Avg Score: {avg:.1f}/10", meta_style))
+    story.append(Spacer(1, 0.3*cm))
+    story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#cccccc")))
+    story.append(Spacer(1, 0.4*cm))
+
+    # Conversation
+    q_num = 1
+    for msg in history:
+        role = msg.get("role")
+        text = msg.get("content", "").strip()
+        if not text:
+            continue
+        # Escape special chars for reportlab
+        safe = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        if role == "assistant":
+            story.append(Paragraph(f"Q{q_num}: Interviewer", q_style))
+            story.append(Paragraph(safe, a_style))
+            q_num += 1
+        elif role == "user":
+            story.append(Paragraph("You:", ParagraphStyle("You", parent=q_style,
+                                    textColor=colors.HexColor("#2d6a4f"))))
+            story.append(Paragraph(safe, a_style))
+
+    doc.build(story)
+    buffer.seek(0)
+
+    response = make_response(buffer.read())
+    response.headers["Content-Type"] = "application/pdf"
+    response.headers["Content-Disposition"] = f"attachment; filename=mockmind_{topic.replace(' ', '_')}.pdf"
+    return response

@@ -1,0 +1,107 @@
+{
+  "JavaScript / Frontend": {
+    "event_loop": {
+      "key_concepts": [
+        "Call stack",
+        "Task queue",
+        "Microtask queue",
+        "Promises",
+        "setTimeout behavior",
+        "requestAnimationFrame",
+        "Web Workers"
+      ],
+      "ideal_answer_points": [
+        "Explain single-threaded nature",
+        "Distinguish microtasks vs macrotasks",
+        "Show execution order of mixed async code",
+        "Discuss blocking and solutions",
+        "Mention Web Workers for CPU work"
+      ],
+      "common_mistakes": [
+        "Not knowing microtask priority over macrotask",
+        "Thinking setTimeout(0) runs immediately",
+        "Confusing async/await with multithreading"
+      ],
+      "follow_up_areas": [
+        "performance",
+        "react_patterns",
+        "state_management"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows JavaScript is single-threaded, basic Promise usage",
+        "Mid-Level": "Explains event loop phases, predicts execution order",
+        "Senior": "Optimizes for rendering performance, avoids main thread blocking",
+        "Staff / Principal": "Architecture for complex async flows, scheduler design"
+      }
+    },
+    "react_patterns": {
+      "key_concepts": [
+        "Virtual DOM",
+        "Reconciliation",
+        "Hooks",
+        "Component composition",
+        "Memoization",
+        "Context",
+        "Server components"
+      ],
+      "ideal_answer_points": [
+        "Explain virtual DOM and diffing",
+        "Use hooks correctly (dependency arrays)",
+        "Optimize re-renders (memo, useMemo, useCallback)",
+        "Design component hierarchy",
+        "Handle side effects properly"
+      ],
+      "common_mistakes": [
+        "Overusing useEffect",
+        "Missing dependency array items",
+        "Premature optimization with memo",
+        "Prop drilling instead of composition"
+      ],
+      "follow_up_areas": [
+        "event_loop",
+        "state_management",
+        "performance"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Can build components with hooks, understands props/state",
+        "Mid-Level": "Optimizes renders, uses context appropriately",
+        "Senior": "Designs component libraries, handles complex state flows",
+        "Staff / Principal": "Framework selection trade-offs, micro-frontend architecture"
+      }
+    },
+    "state_management": {
+      "key_concepts": [
+        "Local state",
+        "Lifting state",
+        "Context API",
+        "Redux",
+        "Zustand",
+        "Server state (React Query)",
+        "Optimistic updates"
+      ],
+      "ideal_answer_points": [
+        "Choose appropriate state tool for the use case",
+        "Separate server state from UI state",
+        "Handle loading/error states",
+        "Implement optimistic updates",
+        "Avoid unnecessary global state"
+      ],
+      "common_mistakes": [
+        "Putting everything in Redux",
+        "Not separating server state",
+        "Ignoring race conditions in async state updates"
+      ],
+      "follow_up_areas": [
+        "react_patterns",
+        "performance",
+        "event_loop"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Uses useState/useReducer, understands prop passing",
+        "Mid-Level": "Chooses between local/global state, uses React Query or similar",
+        "Senior": "Designs state architecture for large apps, handles complex sync",
+        "Staff / Principal": "State machine approaches, cross-app state, offline-first patterns"
+      }
+    }
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "Human Resources": {
+    "talent_acquisition": {
+      "key_concepts": [
+        "Employer branding",
+        "Sourcing strategies",
+        "Structured interviews",
+        "Candidate experience",
+        "Diversity hiring",
+        "Offer management",
+        "ATS optimization"
+      ],
+      "ideal_answer_points": [
+        "Design end-to-end recruitment process",
+        "Address sourcing mix (inbound, outbound, referrals)",
+        "Explain structured interview design and scoring",
+        "Discuss diversity and bias mitigation",
+        "Connect hiring to workforce planning"
+      ],
+      "common_mistakes": [
+        "Unstructured interviews",
+        "Poor candidate communication",
+        "No diversity strategy",
+        "Over-reliance on single source"
+      ],
+      "follow_up_areas": [
+        "employee_engagement",
+        "learning_development",
+        "compensation"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Manages recruitment process, screens candidates",
+        "Mid-Level": "Designs hiring strategies, partners with hiring managers",
+        "Senior": "Leads talent acquisition function, builds employer brand",
+        "Staff / Principal": "Defines workforce planning strategy, builds talent acquisition as competitive advantage"
+      }
+    },
+    "employee_engagement": {
+      "key_concepts": [
+        "Engagement surveys",
+        "Employee NPS",
+        "Retention drivers",
+        "Culture building",
+        "Recognition programs",
+        "Psychological safety",
+        "Exit interviews"
+      ],
+      "ideal_answer_points": [
+        "Measure engagement systematically with action plans",
+        "Identify key retention drivers for different segments",
+        "Build culture through consistent behaviors not just values",
+        "Address manager capability as primary engagement lever",
+        "Connect engagement to business outcomes"
+      ],
+      "common_mistakes": [
+        "Surveying without acting on results",
+        "One-size-fits-all approach",
+        "Ignoring manager impact",
+        "Confusing perks with engagement"
+      ],
+      "follow_up_areas": [
+        "talent_acquisition",
+        "learning_development",
+        "compensation"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Administers surveys, tracks basic metrics",
+        "Mid-Level": "Analyzes engagement data, recommends interventions",
+        "Senior": "Designs engagement strategy, influences culture",
+        "Staff / Principal": "Shapes organizational culture, drives engagement as strategic priority"
+      }
+    },
+    "learning_development": {
+      "key_concepts": [
+        "Competency frameworks",
+        "70-20-10 model",
+        "Leadership development",
+        "Succession planning",
+        "Learning paths",
+        "ROI measurement",
+        "Coaching culture"
+      ],
+      "ideal_answer_points": [
+        "Align L&D to business strategy and capability gaps",
+        "Design blended learning approaches",
+        "Build measurement framework for learning impact",
+        "Address succession planning for critical roles",
+        "Create culture of continuous learning"
+      ],
+      "common_mistakes": [
+        "Training for training's sake",
+        "No measurement of impact",
+        "Ignoring on-the-job learning",
+        "No link to career progression"
+      ],
+      "follow_up_areas": [
+        "talent_acquisition",
+        "employee_engagement",
+        "compensation"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Coordinates training programs, tracks completion",
+        "Mid-Level": "Designs learning programs, measures effectiveness",
+        "Senior": "Builds L&D strategy, leads leadership development",
+        "Staff / Principal": "Defines organizational capability strategy, builds learning culture"
+      }
+    },
+    "compensation": {
+      "key_concepts": [
+        "Total rewards",
+        "Pay benchmarking",
+        "Variable compensation",
+        "Equity/LTIP",
+        "Pay equity analysis",
+        "Benefits design",
+        "Job leveling"
+      ],
+      "ideal_answer_points": [
+        "Design total rewards philosophy aligned to strategy",
+        "Use market data for competitive positioning",
+        "Address pay equity and transparency",
+        "Balance fixed vs variable compensation",
+        "Connect to retention and performance"
+      ],
+      "common_mistakes": [
+        "Only focusing on base salary",
+        "Ignoring internal equity",
+        "No clear philosophy",
+        "Over-complex incentive schemes"
+      ],
+      "follow_up_areas": [
+        "talent_acquisition",
+        "employee_engagement",
+        "learning_development"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands compensation structures, processes payroll",
+        "Mid-Level": "Conducts benchmarking, designs variable plans",
+        "Senior": "Builds compensation strategy, manages equity programs",
+        "Staff / Principal": "Defines total rewards philosophy, manages executive compensation"
+      }
+    }
+  }
+}

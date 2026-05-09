@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MockMind — AI Interview Simulator</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+
+<!-- ── Header ────────────────────────────────────────────────────────────── -->
+<header>
+  <div class="logo">
+    <span class="logo-name">MockMind</span>
+    <span class="logo-tag">Beta</span>
+  </div>
+  <div class="status-bar">
+    <div class="status-dot" id="status-dot"></div>
+    <span id="status-text">Ready</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ── Setup panel (shown before interview starts) ───────────────────── -->
+  <div id="setup-panel">
+    <div class="setup-hero">
+      <h1>Ace your next<br><span>technical interview</span></h1>
+      <p>Practice with an AI recruiter that drills into your answers — and a silent coach that whispers feedback only you can see.</p>
+    </div>
+
+    <div class="setup-card">
+      <div class="field-group">
+        <label for="topic-select">Interview Topic</label>
+        <select id="topic-select">
+          {% for topic in topics %}
+            <option value="{{ topic }}">{{ topic }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label for="difficulty-select">Difficulty Level</label>
+        <select id="difficulty-select">
+          {% for diff in difficulties %}
+            <option value="{{ diff }}" {% if diff == 'Mid-Level' %}selected{% endif %}>
+              {{ diff }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button class="btn-start" id="btn-start" onclick="startInterview()">
+        Start Interview →
+      </button>
+    </div>
+  </div><!-- /setup-panel -->
+
+  <!-- ── Interview panel (shown during the interview) ──────────────────── -->
+  <div id="interview-panel">
+
+    <!-- Session info bar -->
+    <div class="interview-header">
+      <div class="interview-meta">
+        <span class="meta-chip topic" id="chip-topic">—</span>
+        <span class="meta-chip level" id="chip-level">—</span>
+        <span class="meta-chip adaptive" id="chip-adaptive" style="display:none;">—</span>
+      </div>
+      <div class="interview-actions">
+        <button class="btn-evaluate" id="btn-evaluate" onclick="endAndEvaluate()">Get Evaluation</button>
+        <button class="btn-download" id="btn-download" onclick="downloadTranscript()" style="display:none;">Download PDF</button>
+        <button class="btn-reset" onclick="resetInterview()">End Session</button>
+      </div>
+    </div>
+
+    <!-- Agent A output: chat transcript -->
+    <div id="chat-area">
+      <div class="chat-empty" id="chat-empty">
+        <div class="chat-empty-icon">Q</div>
+        <span>Interview starting…</span>
+      </div>
+    </div>
+
+    <!-- Right column: Coach + Score panels -->
+    <div class="right-panels">
+
+      <!-- Score panel -->
+      <div id="score-panel" class="score-panel" style="display:none;">
+        <div class="score-header">
+          <span class="score-title">Performance</span>
+          <span class="score-round" id="score-round-label">—</span>
+        </div>
+        <div class="score-overall" id="score-overall">—</div>
+        <div class="score-dimensions" id="score-dimensions"></div>
+        <div class="score-rationale" id="score-rationale"></div>
+      </div>
+
+      <!-- Reference Answer panel -->
+      <div id="reference-panel" class="reference-panel" style="display:none;">
+        <div class="reference-header">
+          <div class="reference-icon">R</div>
+          <div>
+            <div class="reference-title">Reference Answer</div>
+            <div class="reference-subtitle">Ideal response points</div>
+          </div>
+        </div>
+        <div class="reference-content" id="reference-content"></div>
+      </div>
+
+      <!-- Coach panel -->
+      <div id="coach-panel">
+        <div class="coach-header">
+          <div class="coach-icon">C</div>
+          <div>
+            <div class="coach-title">Coach</div>
+            <div class="coach-subtitle">Only you can see this</div>
+          </div>
+        </div>
+        <div class="coach-empty" id="coach-empty">
+          <div class="coach-empty-icon">--</div>
+          <span>Watching silently…<br>Feedback after your first answer.</span>
+        </div>
+        <div class="coach-entries" id="coach-entries" style="display:none;"></div>
+
+        <!-- Coach-generated answer (persistent once shown) -->
+        <div class="coach-answer-section">
+          <button class="btn-coach-answer" id="btn-coach-answer" onclick="getCoachAnswer()">Get Coach Answer</button>
+          <div class="coach-answer-container" id="coach-answer-container" style="display:none;">
+            <div class="coach-answer-label">Coach's Ideal Answer</div>
+            <div class="coach-answer-text" id="coach-answer-text"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Candidate answer input -->
+    <div class="answer-area">
+      <div class="answer-label">Your Answer</div>
+      <div class="answer-input-wrap">
+        <textarea
+          id="answer-input"
+          placeholder="Type or speak your answer… be specific, mention tools, give examples."
+          rows="4"
+          oninput="updateCharCount(this)"
+        ></textarea>
+        <button class="btn-mic" id="btn-mic" onclick="toggleSpeech()" title="Hold to speak">
+          <svg id="mic-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-3.07A7 7 0 0 0 19 11h-2z"/>
+          </svg>
+          <div class="mic-pulse" id="mic-pulse"></div>
+        </button>
+      </div>
+      <div class="answer-actions">
+        <button class="btn-submit" id="btn-submit" onclick="submitAnswer()">
+          <span>Submit Answer</span>
+          <div class="spinner" id="submit-spinner"></div>
+        </button>
+        <button class="btn-skip" id="btn-skip" onclick="skipQuestion()">Skip</button>
+        <span class="char-count" id="char-count">0 chars</span>
+        <span class="speech-status" id="speech-status"></span>
+      </div>
+    </div>
+
+  </div><!-- /interview-panel -->
+
+</main>
+
+<!-- Evaluation overlay modal -->
+<div id="eval-overlay" class="eval-overlay" style="display:none;">
+  <div class="eval-card">
+    <div class="eval-header">
+      <h2>Session Evaluation</h2>
+      <button class="btn-close-eval" onclick="closeEvaluation()">✕</button>
+    </div>
+    <div id="eval-content" class="eval-content">
+      <div class="eval-loading">Generating evaluation…</div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast"></div>
+
+<!-- App logic -->
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+</html>

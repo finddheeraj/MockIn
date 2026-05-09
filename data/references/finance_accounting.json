@@ -1,0 +1,145 @@
+{
+  "Finance & Accounting": {
+    "financial_analysis": {
+      "key_concepts": [
+        "DCF",
+        "NPV/IRR",
+        "Financial modeling",
+        "Ratio analysis",
+        "Variance analysis",
+        "Sensitivity analysis",
+        "Comparable company analysis"
+      ],
+      "ideal_answer_points": [
+        "Build clear assumptions with supporting logic",
+        "Connect model to strategic decisions",
+        "Explain key ratios and what they indicate",
+        "Address sensitivity and scenario planning",
+        "Present findings actionably"
+      ],
+      "common_mistakes": [
+        "Overly complex models with poor assumptions",
+        "Ignoring working capital",
+        "No sensitivity analysis",
+        "Circular references"
+      ],
+      "follow_up_areas": [
+        "budgeting",
+        "risk_management",
+        "reporting"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Builds basic models, understands ratios",
+        "Mid-Level": "Creates DCF models, performs variance analysis",
+        "Senior": "Designs complex financial models, advises on strategic decisions",
+        "Staff / Principal": "Leads M&A valuations, builds financial strategy for the organization"
+      }
+    },
+    "budgeting": {
+      "key_concepts": [
+        "Zero-based budgeting",
+        "Rolling forecasts",
+        "Top-down vs bottom-up",
+        "Capex vs Opex",
+        "Cost center management",
+        "Budget variance",
+        "FP&A"
+      ],
+      "ideal_answer_points": [
+        "Choose appropriate budgeting methodology for context",
+        "Align budget to strategic priorities",
+        "Build in flexibility with rolling forecasts",
+        "Establish clear accountability and review cadence",
+        "Address variance analysis and reforecasting"
+      ],
+      "common_mistakes": [
+        "Static annual budgets with no updates",
+        "No link to strategy",
+        "Over-reliance on historical data",
+        "No accountability structure"
+      ],
+      "follow_up_areas": [
+        "financial_analysis",
+        "reporting",
+        "risk_management"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands budget structure, can track variances",
+        "Mid-Level": "Manages departmental budgets, produces forecasts",
+        "Senior": "Designs budgeting framework, leads FP&A function",
+        "Staff / Principal": "Sets financial strategy, manages board-level financial planning"
+      }
+    },
+    "risk_management": {
+      "key_concepts": [
+        "Risk register",
+        "Probability-impact matrix",
+        "Hedging",
+        "Basel framework",
+        "Operational risk",
+        "Credit risk",
+        "Market risk",
+        "Stress testing"
+      ],
+      "ideal_answer_points": [
+        "Identify and categorize risks systematically",
+        "Quantify exposure where possible",
+        "Design mitigation strategies with cost-benefit",
+        "Establish monitoring and escalation",
+        "Connect to regulatory requirements"
+      ],
+      "common_mistakes": [
+        "Only identifying obvious risks",
+        "No quantification",
+        "Treating risk register as static document",
+        "Ignoring interconnected risks"
+      ],
+      "follow_up_areas": [
+        "financial_analysis",
+        "budgeting",
+        "reporting"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands basic risk concepts, can maintain risk register",
+        "Mid-Level": "Assesses and quantifies risks, proposes mitigations",
+        "Senior": "Designs risk framework, manages complex risk portfolios",
+        "Staff / Principal": "Defines enterprise risk appetite, leads regulatory engagement"
+      }
+    },
+    "reporting": {
+      "key_concepts": [
+        "IFRS/GAAP",
+        "Management reporting",
+        "Board packs",
+        "KPI dashboards",
+        "Consolidation",
+        "Intercompany elimination",
+        "Audit readiness"
+      ],
+      "ideal_answer_points": [
+        "Design reports for the audience (board vs management vs operational)",
+        "Ensure accuracy through controls and reconciliation",
+        "Provide insight not just data",
+        "Address timeliness and automation",
+        "Connect to regulatory/compliance needs"
+      ],
+      "common_mistakes": [
+        "Data without insight",
+        "Inconsistent definitions across reports",
+        "Manual processes prone to error",
+        "No narrative or context"
+      ],
+      "follow_up_areas": [
+        "financial_analysis",
+        "budgeting",
+        "risk_management"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Produces accurate reports, understands basic standards",
+        "Mid-Level": "Designs reporting packs, automates where possible",
+        "Senior": "Leads reporting strategy, manages audit relationships",
+        "Staff / Principal": "Defines group reporting framework, leads finance transformation"
+      }
+    }
+  }
+}

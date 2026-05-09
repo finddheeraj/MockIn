@@ -1,0 +1,109 @@
+{
+  "APIs & REST": {
+    "api_design": {
+      "key_concepts": [
+        "REST principles",
+        "Resource naming",
+        "HTTP methods",
+        "Status codes",
+        "Versioning",
+        "Pagination",
+        "HATEOAS"
+      ],
+      "ideal_answer_points": [
+        "Design intuitive resource URLs",
+        "Use HTTP methods correctly",
+        "Return appropriate status codes",
+        "Handle pagination and filtering",
+        "Plan for versioning from day one"
+      ],
+      "common_mistakes": [
+        "Using verbs in URLs",
+        "Wrong HTTP methods",
+        "Not versioning",
+        "Inconsistent error responses"
+      ],
+      "follow_up_areas": [
+        "authentication",
+        "rate_limiting",
+        "graphql"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows CRUD mapping to HTTP methods, basic URL design",
+        "Mid-Level": "Designs clean APIs with proper conventions",
+        "Senior": "API governance, backward compatibility, developer experience",
+        "Staff / Principal": "API platform strategy, internal vs external API design"
+      }
+    },
+    "authentication": {
+      "key_concepts": [
+        "OAuth 2.0",
+        "JWT",
+        "API keys",
+        "Session tokens",
+        "RBAC",
+        "Refresh tokens",
+        "PKCE"
+      ],
+      "ideal_answer_points": [
+        "Choose appropriate auth mechanism",
+        "Implement token lifecycle",
+        "Handle token refresh securely",
+        "Design RBAC system",
+        "Address security concerns"
+      ],
+      "common_mistakes": [
+        "Storing tokens insecurely",
+        "No token expiration",
+        "Mixing authentication and authorization",
+        "Not using HTTPS"
+      ],
+      "follow_up_areas": [
+        "api_design",
+        "rate_limiting",
+        "security"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands auth vs authz, can use JWT",
+        "Mid-Level": "Implements OAuth flows, designs RBAC",
+        "Senior": "Designs auth architecture, handles edge cases",
+        "Staff / Principal": "Identity platform, zero-trust architecture, federated identity"
+      }
+    },
+    "rate_limiting": {
+      "key_concepts": [
+        "Token bucket",
+        "Sliding window",
+        "Fixed window",
+        "Distributed rate limiting",
+        "Backpressure",
+        "Circuit breaker",
+        "Retry strategies"
+      ],
+      "ideal_answer_points": [
+        "Choose appropriate algorithm",
+        "Handle distributed scenarios",
+        "Design fair rate limiting",
+        "Communicate limits to clients (headers)",
+        "Implement graceful degradation"
+      ],
+      "common_mistakes": [
+        "Not handling distributed state",
+        "Unfair limiting algorithms",
+        "No client-facing headers",
+        "Not planning for bursts"
+      ],
+      "follow_up_areas": [
+        "api_design",
+        "authentication",
+        "caching"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands why rate limiting exists",
+        "Mid-Level": "Implements basic rate limiter, knows algorithms",
+        "Senior": "Distributed rate limiting, fairness, adaptive limits",
+        "Staff / Principal": "Platform-level rate limiting, capacity planning, SLA design"
+      }
+    }
+  }
+}

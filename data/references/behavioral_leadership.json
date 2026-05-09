@@ -1,0 +1,107 @@
+{
+  "Behavioral / Leadership": {
+    "conflict_resolution": {
+      "key_concepts": [
+        "STAR method",
+        "Active listening",
+        "Empathy",
+        "Compromise",
+        "Escalation",
+        "Documentation",
+        "Follow-up"
+      ],
+      "ideal_answer_points": [
+        "Use STAR format",
+        "Show empathy and listening",
+        "Describe concrete resolution",
+        "Mention lessons learned",
+        "Demonstrate growth"
+      ],
+      "common_mistakes": [
+        "Being vague about the conflict",
+        "Blaming others",
+        "Not showing personal accountability",
+        "Missing the resolution/outcome"
+      ],
+      "follow_up_areas": [
+        "leadership",
+        "communication",
+        "teamwork"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Can describe a disagreement and how they compromised",
+        "Mid-Level": "Shows leadership in resolution, involves stakeholders",
+        "Senior": "Manages cross-team conflicts, balances competing priorities",
+        "Staff / Principal": "Organizational conflict, strategic trade-offs, influencing without authority"
+      }
+    },
+    "leadership": {
+      "key_concepts": [
+        "Delegation",
+        "Mentoring",
+        "Vision setting",
+        "Accountability",
+        "Influence",
+        "Decision-making under uncertainty"
+      ],
+      "ideal_answer_points": [
+        "Concrete example of leading a team/project",
+        "Show impact with metrics",
+        "Demonstrate growth of others",
+        "Address challenges faced",
+        "Show strategic thinking"
+      ],
+      "common_mistakes": [
+        "Talking about management, not leadership",
+        "No measurable impact",
+        "Taking all credit",
+        "Not showing vulnerability"
+      ],
+      "follow_up_areas": [
+        "conflict_resolution",
+        "communication",
+        "project_management"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Shows initiative and ownership of tasks",
+        "Mid-Level": "Led a project or mentored juniors with measurable results",
+        "Senior": "Shaped team direction, made hard trade-offs, grew people",
+        "Staff / Principal": "Organizational influence, technical strategy, culture shaping"
+      }
+    },
+    "failure_and_growth": {
+      "key_concepts": [
+        "Accountability",
+        "Root cause analysis",
+        "Iteration",
+        "Resilience",
+        "Growth mindset",
+        "Post-mortem"
+      ],
+      "ideal_answer_points": [
+        "Own the failure clearly",
+        "Explain what went wrong technically/process-wise",
+        "Describe corrective actions taken",
+        "Show measurable improvement after",
+        "Demonstrate learning applied elsewhere"
+      ],
+      "common_mistakes": [
+        "Picking a trivial failure",
+        "Blaming external factors",
+        "Not showing what changed",
+        "Being defensive"
+      ],
+      "follow_up_areas": [
+        "leadership",
+        "conflict_resolution",
+        "communication"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Can describe a mistake and what they learned",
+        "Mid-Level": "Shows systemic fix, not just personal correction",
+        "Senior": "Failure with team/org impact, led the recovery",
+        "Staff / Principal": "Strategic failure, organizational learning, process changes at scale"
+      }
+    }
+  }
+}

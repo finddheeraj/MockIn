@@ -1,0 +1,145 @@
+{
+  "Marketing & Digital Marketing": {
+    "digital_strategy": {
+      "key_concepts": [
+        "SEO/SEM",
+        "Content marketing",
+        "Customer journey",
+        "Funnel optimization",
+        "Attribution models",
+        "Omnichannel",
+        "Marketing automation"
+      ],
+      "ideal_answer_points": [
+        "Define clear KPIs tied to business goals",
+        "Map content to each funnel stage",
+        "Explain multi-touch attribution",
+        "Discuss channel mix and budget allocation",
+        "Address measurement and iteration"
+      ],
+      "common_mistakes": [
+        "Focusing on vanity metrics",
+        "Ignoring attribution complexity",
+        "No clear funnel mapping",
+        "Treating all channels the same"
+      ],
+      "follow_up_areas": [
+        "paid_media",
+        "analytics",
+        "brand_strategy"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows basic channels (social, email, SEO), understands funnel concept",
+        "Mid-Level": "Can design multi-channel strategy, understands attribution",
+        "Senior": "Builds full digital ecosystem, manages budget allocation, drives ROI",
+        "Staff / Principal": "Defines marketing technology stack, leads transformation, ties to P&L"
+      }
+    },
+    "paid_media": {
+      "key_concepts": [
+        "PPC",
+        "CPM vs CPC vs CPA",
+        "Audience targeting",
+        "Retargeting",
+        "Bid strategies",
+        "Quality Score",
+        "ROAS",
+        "A/B testing"
+      ],
+      "ideal_answer_points": [
+        "Explain bidding strategies and when to use each",
+        "Describe audience segmentation approaches",
+        "Discuss budget optimization across platforms",
+        "Address creative testing methodology",
+        "Connect to conversion tracking"
+      ],
+      "common_mistakes": [
+        "Not setting up proper conversion tracking",
+        "Ignoring negative keywords",
+        "Too broad targeting",
+        "No creative variation testing"
+      ],
+      "follow_up_areas": [
+        "digital_strategy",
+        "analytics",
+        "brand_strategy"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands PPC basics, can set up a simple campaign",
+        "Mid-Level": "Manages multi-platform campaigns, optimizes ROAS",
+        "Senior": "Designs full paid strategy, manages large budgets, advanced attribution",
+        "Staff / Principal": "Cross-channel media planning, econometric modeling, team leadership"
+      }
+    },
+    "brand_strategy": {
+      "key_concepts": [
+        "Brand positioning",
+        "Value proposition",
+        "Brand architecture",
+        "Tone of voice",
+        "Brand equity",
+        "Competitive differentiation",
+        "Brand guidelines"
+      ],
+      "ideal_answer_points": [
+        "Define positioning framework (target, category, benefit, proof)",
+        "Explain brand architecture decisions",
+        "Discuss measurement of brand equity",
+        "Address consistency across touchpoints",
+        "Connect brand to business outcomes"
+      ],
+      "common_mistakes": [
+        "Confusing brand with logo/visual identity only",
+        "No competitive differentiation",
+        "Inconsistent messaging across channels",
+        "Ignoring internal brand alignment"
+      ],
+      "follow_up_areas": [
+        "digital_strategy",
+        "paid_media",
+        "analytics"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands brand basics, can articulate positioning",
+        "Mid-Level": "Develops brand strategy for a product/segment",
+        "Senior": "Leads brand architecture across portfolio, measures equity",
+        "Staff / Principal": "Defines corporate brand vision, manages brand during transformation/M&A"
+      }
+    },
+    "analytics": {
+      "key_concepts": [
+        "Google Analytics",
+        "Conversion tracking",
+        "Customer lifetime value",
+        "Cohort analysis",
+        "Marketing mix modeling",
+        "Incrementality testing",
+        "Dashboard design"
+      ],
+      "ideal_answer_points": [
+        "Set up measurement framework tied to objectives",
+        "Explain attribution models and limitations",
+        "Discuss CLV calculation and application",
+        "Address data privacy and consent",
+        "Demonstrate insight-to-action workflow"
+      ],
+      "common_mistakes": [
+        "Reporting without actionable insights",
+        "Ignoring data quality issues",
+        "Over-reliance on last-click attribution",
+        "Not accounting for privacy regulations"
+      ],
+      "follow_up_areas": [
+        "digital_strategy",
+        "paid_media",
+        "brand_strategy"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Can read dashboards, understands basic metrics",
+        "Mid-Level": "Builds measurement frameworks, runs A/B tests",
+        "Senior": "Designs analytics strategy, implements marketing mix modeling",
+        "Staff / Principal": "Builds data-driven culture, leads martech architecture decisions"
+      }
+    }
+  }
+}

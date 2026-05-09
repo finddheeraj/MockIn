@@ -1,0 +1,144 @@
+{
+  "Data Analytics & Business Intelligence": {
+    "data_visualization": {
+      "key_concepts": [
+        "Dashboard design",
+        "Chart selection",
+        "Storytelling with data",
+        "Tableau/Power BI",
+        "Information hierarchy",
+        "Interactivity",
+        "Data-ink ratio"
+      ],
+      "ideal_answer_points": [
+        "Choose visualization type based on data and audience",
+        "Design for the decision to be made",
+        "Apply information hierarchy principles",
+        "Balance detail with clarity",
+        "Enable self-service exploration"
+      ],
+      "common_mistakes": [
+        "Chart junk and clutter",
+        "Wrong chart type for the data",
+        "No clear narrative",
+        "Overloading dashboards"
+      ],
+      "follow_up_areas": [
+        "sql_analysis",
+        "statistical_analysis",
+        "data_modeling"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Creates basic charts, understands when to use each type",
+        "Mid-Level": "Designs executive dashboards, tells stories with data",
+        "Senior": "Defines visualization standards, builds self-service BI",
+        "Staff / Principal": "Leads BI strategy, defines data democratization approach"
+      }
+    },
+    "sql_analysis": {
+      "key_concepts": [
+        "Window functions",
+        "CTEs",
+        "Subqueries",
+        "Joins",
+        "Aggregation",
+        "Query optimization",
+        "Data warehousing concepts"
+      ],
+      "ideal_answer_points": [
+        "Write efficient queries for complex business questions",
+        "Use window functions for running totals, rankings",
+        "Optimize query performance",
+        "Handle NULLs and edge cases",
+        "Design queries for maintainability"
+      ],
+      "common_mistakes": [
+        "Not handling NULLs",
+        "Cartesian joins",
+        "Over-nested subqueries",
+        "No performance consideration"
+      ],
+      "follow_up_areas": [
+        "data_visualization",
+        "statistical_analysis",
+        "data_modeling"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Writes basic SELECT queries with JOINs",
+        "Mid-Level": "Uses CTEs, window functions, handles complex logic",
+        "Senior": "Optimizes performance, designs data models for analytics",
+        "Staff / Principal": "Architects data warehouse, defines SQL standards and governance"
+      }
+    },
+    "statistical_analysis": {
+      "key_concepts": [
+        "Hypothesis testing",
+        "Regression",
+        "A/B testing",
+        "Confidence intervals",
+        "Correlation vs causation",
+        "Sampling",
+        "Bayesian inference"
+      ],
+      "ideal_answer_points": [
+        "Choose appropriate statistical method for the question",
+        "Define hypotheses clearly before testing",
+        "Interpret results practically not just statistically",
+        "Address sample size and power",
+        "Communicate findings to non-technical stakeholders"
+      ],
+      "common_mistakes": [
+        "p-hacking",
+        "Confusing correlation with causation",
+        "Ignoring assumptions",
+        "No practical significance assessment"
+      ],
+      "follow_up_areas": [
+        "data_visualization",
+        "sql_analysis",
+        "data_modeling"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands basic statistics, can interpret results",
+        "Mid-Level": "Designs and runs experiments, performs regression analysis",
+        "Senior": "Builds experimentation frameworks, mentors on statistical thinking",
+        "Staff / Principal": "Defines analytics methodology standards, drives evidence-based culture"
+      }
+    },
+    "data_modeling": {
+      "key_concepts": [
+        "Star schema",
+        "Snowflake schema",
+        "Dimensional modeling",
+        "Fact tables",
+        "Slowly changing dimensions",
+        "Data lineage",
+        "ETL/ELT"
+      ],
+      "ideal_answer_points": [
+        "Design models for analytical query patterns",
+        "Choose appropriate schema design for use case",
+        "Handle slowly changing dimensions",
+        "Ensure data quality and lineage",
+        "Balance performance with flexibility"
+      ],
+      "common_mistakes": [
+        "Over-normalized analytical models",
+        "No handling of historical changes",
+        "Poor naming conventions",
+        "No documentation of transformations"
+      ],
+      "follow_up_areas": [
+        "data_visualization",
+        "sql_analysis",
+        "statistical_analysis"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands relational concepts, basic star schema",
+        "Mid-Level": "Designs dimensional models, builds ETL pipelines",
+        "Senior": "Architects enterprise data models, defines standards",
+        "Staff / Principal": "Leads data platform strategy, governs enterprise data architecture"
+      }
+    }
+  }
+}

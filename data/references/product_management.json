@@ -1,0 +1,143 @@
+{
+  "Product Management": {
+    "product_strategy": {
+      "key_concepts": [
+        "Product vision",
+        "Roadmap prioritization",
+        "Product-market fit",
+        "OKRs",
+        "Jobs to be done",
+        "Competitive moat",
+        "TAM/SAM/SOM"
+      ],
+      "ideal_answer_points": [
+        "Articulate clear product vision connected to company strategy",
+        "Use structured prioritization framework",
+        "Demonstrate market sizing approach",
+        "Address competitive positioning",
+        "Show how to measure success with OKRs"
+      ],
+      "common_mistakes": [
+        "Feature-driven instead of outcome-driven",
+        "No clear prioritization framework",
+        "Ignoring competitive landscape",
+        "Roadmap as promise instead of plan"
+      ],
+      "follow_up_areas": [
+        "discovery",
+        "metrics",
+        "stakeholder_management"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands product lifecycle, can write user stories",
+        "Mid-Level": "Owns product roadmap, makes prioritization decisions",
+        "Senior": "Defines product strategy, influences company direction",
+        "Staff / Principal": "Sets product portfolio strategy, drives organizational alignment"
+      }
+    },
+    "discovery": {
+      "key_concepts": [
+        "User research",
+        "Hypothesis-driven development",
+        "Rapid prototyping",
+        "A/B testing",
+        "Customer interviews",
+        "Usability testing",
+        "Data-informed decisions"
+      ],
+      "ideal_answer_points": [
+        "Define clear hypothesis before building",
+        "Use appropriate research method for the question",
+        "Validate assumptions cheaply before investing",
+        "Synthesize qualitative and quantitative data",
+        "Make decisions with imperfect information"
+      ],
+      "common_mistakes": [
+        "Building without validation",
+        "Asking leading questions in interviews",
+        "Confusing correlation with causation",
+        "Analysis paralysis"
+      ],
+      "follow_up_areas": [
+        "product_strategy",
+        "metrics",
+        "stakeholder_management"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Can conduct user interviews, synthesizes feedback",
+        "Mid-Level": "Designs research plans, runs experiments",
+        "Senior": "Builds discovery culture, mentors team on research methods",
+        "Staff / Principal": "Defines organizational approach to product discovery at scale"
+      }
+    },
+    "metrics": {
+      "key_concepts": [
+        "North Star Metric",
+        "AARRR framework",
+        "Leading vs lagging indicators",
+        "Cohort analysis",
+        "Retention curves",
+        "Feature adoption",
+        "Unit economics"
+      ],
+      "ideal_answer_points": [
+        "Choose metrics that drive behavior and outcomes",
+        "Build metric hierarchy (north star → input metrics)",
+        "Distinguish vanity from actionable metrics",
+        "Address data infrastructure needs",
+        "Show how metrics inform decisions"
+      ],
+      "common_mistakes": [
+        "Too many metrics",
+        "Vanity metrics",
+        "No leading indicators",
+        "Not segmenting by cohort"
+      ],
+      "follow_up_areas": [
+        "product_strategy",
+        "discovery",
+        "stakeholder_management"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Tracks basic metrics, understands funnel",
+        "Mid-Level": "Defines metric framework for a product area",
+        "Senior": "Builds measurement strategy, drives data-informed culture",
+        "Staff / Principal": "Defines company-wide metric architecture, connects to board reporting"
+      }
+    },
+    "stakeholder_management": {
+      "key_concepts": [
+        "Influence without authority",
+        "Stakeholder mapping",
+        "Communication cadence",
+        "Trade-off decisions",
+        "Alignment techniques",
+        "Saying no constructively"
+      ],
+      "ideal_answer_points": [
+        "Map stakeholders by influence and interest",
+        "Establish regular communication rhythm",
+        "Use data to support trade-off decisions",
+        "Build trust through transparency and delivery",
+        "Manage expectations proactively"
+      ],
+      "common_mistakes": [
+        "Avoiding difficult conversations",
+        "Over-committing to all stakeholders",
+        "No regular communication",
+        "Not understanding each stakeholder's goals"
+      ],
+      "follow_up_areas": [
+        "product_strategy",
+        "discovery",
+        "metrics"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Communicates clearly with immediate team",
+        "Mid-Level": "Manages cross-functional stakeholders effectively",
+        "Senior": "Influences executives, manages competing priorities",
+        "Staff / Principal": "Drives alignment across business units, manages board-level expectations"
+      }
+    }
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "Security & Authentication": {
+    "web_security": {
+      "key_concepts": [
+        "XSS",
+        "CSRF",
+        "SQL injection",
+        "CSP",
+        "CORS",
+        "Input validation",
+        "Output encoding"
+      ],
+      "ideal_answer_points": [
+        "Explain OWASP top 10 vulnerabilities",
+        "Implement defense-in-depth",
+        "Use CSP headers correctly",
+        "Validate input at boundaries",
+        "Handle CORS securely"
+      ],
+      "common_mistakes": [
+        "Client-side only validation",
+        "Overly permissive CORS",
+        "Not encoding output",
+        "Using eval/innerHTML"
+      ],
+      "follow_up_areas": [
+        "cryptography",
+        "infrastructure_security",
+        "auth_patterns"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows major vulnerabilities, can prevent basic XSS/SQLi",
+        "Mid-Level": "Implements CSP, CORS, input validation comprehensively",
+        "Senior": "Designs secure architectures, conducts threat modeling",
+        "Staff / Principal": "Security program design, incident response, compliance"
+      }
+    },
+    "cryptography": {
+      "key_concepts": [
+        "Symmetric vs asymmetric",
+        "Hashing",
+        "Salt",
+        "TLS",
+        "Key management",
+        "Digital signatures",
+        "At-rest vs in-transit encryption"
+      ],
+      "ideal_answer_points": [
+        "Choose appropriate encryption for use case",
+        "Explain hashing vs encryption",
+        "Handle key rotation",
+        "Implement TLS correctly",
+        "Design for compliance requirements"
+      ],
+      "common_mistakes": [
+        "Rolling own crypto",
+        "Weak hashing (MD5/SHA1 for passwords)",
+        "Hardcoded keys",
+        "Not encrypting at rest"
+      ],
+      "follow_up_areas": [
+        "web_security",
+        "infrastructure_security",
+        "auth_patterns"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows hashing vs encryption, uses bcrypt for passwords",
+        "Mid-Level": "Implements end-to-end encryption, understands TLS",
+        "Senior": "Designs key management systems, handles compliance",
+        "Staff / Principal": "Cryptographic architecture, HSM strategies, zero-knowledge proofs"
+      }
+    },
+    "infrastructure_security": {
+      "key_concepts": [
+        "Network segmentation",
+        "Least privilege",
+        "Security groups",
+        "WAF",
+        "IDS/IPS",
+        "Secret management",
+        "Vulnerability scanning"
+      ],
+      "ideal_answer_points": [
+        "Design defense in depth",
+        "Implement least privilege access",
+        "Handle secrets securely (Vault)",
+        "Plan for breach detection",
+        "Automate security scanning"
+      ],
+      "common_mistakes": [
+        "Flat networks",
+        "Over-permissive IAM",
+        "Secrets in code/env",
+        "No monitoring for breaches"
+      ],
+      "follow_up_areas": [
+        "web_security",
+        "cryptography",
+        "auth_patterns"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands firewalls, basic access control",
+        "Mid-Level": "Designs secure infrastructure, uses Vault/KMS",
+        "Senior": "Threat modeling, security architecture, compliance",
+        "Staff / Principal": "Security strategy, zero-trust implementation, org-wide security program"
+      }
+    }
+  }
+}

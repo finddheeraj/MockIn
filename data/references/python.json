@@ -1,0 +1,106 @@
+{
+  "Python": {
+    "concurrency": {
+      "key_concepts": [
+        "GIL",
+        "Threading vs multiprocessing",
+        "asyncio",
+        "Coroutines",
+        "Thread safety",
+        "concurrent.futures",
+        "Race conditions"
+      ],
+      "ideal_answer_points": [
+        "Explain GIL and its implications",
+        "When to use threading vs multiprocessing vs asyncio",
+        "Demonstrate async/await patterns",
+        "Address thread safety",
+        "Mention real-world use cases"
+      ],
+      "common_mistakes": [
+        "Thinking threading bypasses GIL for CPU work",
+        "Confusing concurrency with parallelism",
+        "Not handling exceptions in async code"
+      ],
+      "follow_up_areas": [
+        "memory_management",
+        "performance",
+        "design_patterns"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows threading exists, basic async/await syntax",
+        "Mid-Level": "Understands GIL, chooses correct concurrency model",
+        "Senior": "Designs concurrent systems, handles edge cases",
+        "Staff / Principal": "Custom event loops, performance profiling, architectural decisions"
+      }
+    },
+    "memory_management": {
+      "key_concepts": [
+        "Reference counting",
+        "Garbage collection",
+        "Generational GC",
+        "Memory leaks",
+        "Weak references",
+        "__slots__",
+        "Memory profiling"
+      ],
+      "ideal_answer_points": [
+        "Explain reference counting + cyclic GC",
+        "Identify common memory leak patterns",
+        "Use profiling tools (tracemalloc, objgraph)",
+        "Optimize with __slots__ or generators",
+        "Discuss large dataset strategies"
+      ],
+      "common_mistakes": [
+        "Thinking Python has no memory issues",
+        "Not knowing about circular references",
+        "Ignoring generator patterns for large data"
+      ],
+      "follow_up_areas": [
+        "concurrency",
+        "performance",
+        "data_structures"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows garbage collection exists",
+        "Mid-Level": "Understands reference counting, can profile memory",
+        "Senior": "Optimizes memory in production systems, handles leaks",
+        "Staff / Principal": "Custom allocators, C extension memory, system-level optimization"
+      }
+    },
+    "decorators_and_metaclasses": {
+      "key_concepts": [
+        "First-class functions",
+        "Closures",
+        "functools.wraps",
+        "Class decorators",
+        "Metaclasses",
+        "Descriptor protocol",
+        "__new__ vs __init__"
+      ],
+      "ideal_answer_points": [
+        "Explain decorator mechanics (closure wrapping)",
+        "Show practical decorator use cases",
+        "Distinguish class vs function decorators",
+        "Explain when metaclasses are appropriate",
+        "Mention descriptor protocol"
+      ],
+      "common_mistakes": [
+        "Not preserving function metadata (missing @wraps)",
+        "Overusing metaclasses",
+        "Confusing decoration order with multiple decorators"
+      ],
+      "follow_up_areas": [
+        "concurrency",
+        "design_patterns",
+        "testing"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Can use @decorator syntax, understands basic concept",
+        "Mid-Level": "Writes custom decorators with arguments",
+        "Senior": "Uses metaclasses appropriately, understands descriptor protocol",
+        "Staff / Principal": "Framework-level abstractions, API design with decorators"
+      }
+    }
+  }
+}

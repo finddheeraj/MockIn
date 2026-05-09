@@ -1,0 +1,144 @@
+{
+  "Operations & Supply Chain": {
+    "process_optimization": {
+      "key_concepts": [
+        "Lean",
+        "Six Sigma",
+        "Value stream mapping",
+        "Bottleneck theory",
+        "Kaizen",
+        "Process mining",
+        "Automation"
+      ],
+      "ideal_answer_points": [
+        "Map current state process with data",
+        "Identify waste and bottlenecks systematically",
+        "Apply appropriate improvement methodology",
+        "Quantify improvement impact",
+        "Sustain improvements with control mechanisms"
+      ],
+      "common_mistakes": [
+        "Optimizing without measuring baseline",
+        "Solving symptoms not root causes",
+        "No sustainability plan",
+        "Automating broken processes"
+      ],
+      "follow_up_areas": [
+        "supply_chain_management",
+        "quality_management",
+        "demand_planning"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Maps processes, identifies basic waste",
+        "Mid-Level": "Leads improvement projects, applies lean/six sigma",
+        "Senior": "Designs operational excellence programs",
+        "Staff / Principal": "Defines operations strategy, drives enterprise-wide transformation"
+      }
+    },
+    "supply_chain_management": {
+      "key_concepts": [
+        "Procurement strategy",
+        "Supplier management",
+        "Inventory optimization",
+        "Logistics",
+        "Risk mitigation",
+        "S&OP",
+        "Total cost of ownership"
+      ],
+      "ideal_answer_points": [
+        "Design end-to-end supply chain strategy",
+        "Balance cost, service level, and risk",
+        "Implement appropriate inventory policies",
+        "Build supplier relationships and contingencies",
+        "Connect supply chain to business strategy"
+      ],
+      "common_mistakes": [
+        "Optimizing cost at expense of resilience",
+        "Single-source dependencies",
+        "No demand-supply alignment",
+        "Ignoring total cost of ownership"
+      ],
+      "follow_up_areas": [
+        "process_optimization",
+        "quality_management",
+        "demand_planning"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands supply chain basics, manages purchase orders",
+        "Mid-Level": "Manages supplier relationships, optimizes inventory",
+        "Senior": "Designs supply chain strategy, manages complex networks",
+        "Staff / Principal": "Defines global supply chain strategy, builds resilient operations"
+      }
+    },
+    "quality_management": {
+      "key_concepts": [
+        "TQM",
+        "ISO standards",
+        "Statistical process control",
+        "Root cause analysis",
+        "FMEA",
+        "Cost of quality",
+        "Continuous improvement"
+      ],
+      "ideal_answer_points": [
+        "Build quality into process not just inspect at end",
+        "Use statistical methods to monitor and control",
+        "Perform systematic root cause analysis",
+        "Balance cost of quality with customer requirements",
+        "Create quality culture not just quality department"
+      ],
+      "common_mistakes": [
+        "Inspection-only approach",
+        "No root cause analysis",
+        "Quality as department not culture",
+        "Over-engineering for the context"
+      ],
+      "follow_up_areas": [
+        "process_optimization",
+        "supply_chain_management",
+        "demand_planning"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands quality standards, performs inspections",
+        "Mid-Level": "Implements quality systems, leads root cause analysis",
+        "Senior": "Designs quality strategy, manages certification programs",
+        "Staff / Principal": "Defines enterprise quality culture, drives zero-defect philosophy"
+      }
+    },
+    "demand_planning": {
+      "key_concepts": [
+        "Forecasting methods",
+        "S&OP process",
+        "Safety stock",
+        "Demand sensing",
+        "Bullwhip effect",
+        "Collaborative planning",
+        "Forecast accuracy metrics"
+      ],
+      "ideal_answer_points": [
+        "Choose forecasting method based on data and context",
+        "Implement S&OP process with cross-functional alignment",
+        "Balance forecast accuracy with inventory costs",
+        "Address demand variability and uncertainty",
+        "Measure and improve forecast performance"
+      ],
+      "common_mistakes": [
+        "Over-reliance on historical data",
+        "No collaboration with sales/marketing",
+        "Ignoring demand signals",
+        "Not measuring forecast accuracy"
+      ],
+      "follow_up_areas": [
+        "process_optimization",
+        "supply_chain_management",
+        "quality_management"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands basic forecasting, tracks accuracy",
+        "Mid-Level": "Manages demand planning process, runs S&OP meetings",
+        "Senior": "Designs demand planning strategy, implements advanced methods",
+        "Staff / Principal": "Builds integrated planning capability, drives supply chain digitization"
+      }
+    }
+  }
+}

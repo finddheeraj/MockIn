@@ -1,0 +1,105 @@
+{
+  "Machine Learning / AI": {
+    "model_selection": {
+      "key_concepts": [
+        "Bias-variance trade-off",
+        "Overfitting/underfitting",
+        "Cross-validation",
+        "Ensemble methods",
+        "Feature importance",
+        "Hyperparameter tuning"
+      ],
+      "ideal_answer_points": [
+        "Explain bias-variance trade-off clearly",
+        "Describe model selection process",
+        "Discuss validation strategies",
+        "Mention ensemble approaches",
+        "Address computational constraints"
+      ],
+      "common_mistakes": [
+        "Not considering data size/quality first",
+        "Jumping to complex models",
+        "Ignoring interpretability requirements"
+      ],
+      "follow_up_areas": [
+        "neural_networks",
+        "feature_engineering",
+        "deployment"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows common algorithms and when to use them",
+        "Mid-Level": "Explains trade-offs, uses cross-validation properly",
+        "Senior": "Designs ML pipelines end-to-end, handles edge cases",
+        "Staff / Principal": "ML system design at scale, research to production bridge"
+      }
+    },
+    "neural_networks": {
+      "key_concepts": [
+        "Backpropagation",
+        "Gradient descent",
+        "Activation functions",
+        "Regularization",
+        "Batch normalization",
+        "Transfer learning",
+        "Attention mechanism"
+      ],
+      "ideal_answer_points": [
+        "Explain forward/backward pass",
+        "Discuss optimization techniques",
+        "Address vanishing/exploding gradients",
+        "Mention regularization strategies",
+        "Discuss architecture choices for different problems"
+      ],
+      "common_mistakes": [
+        "Not understanding backpropagation mechanics",
+        "Ignoring data preprocessing",
+        "Over-parameterizing for small datasets"
+      ],
+      "follow_up_areas": [
+        "model_selection",
+        "deployment",
+        "feature_engineering"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands layers, activation, basic training loop",
+        "Mid-Level": "Can design and train networks, understands regularization",
+        "Senior": "Custom architectures, training at scale, debugging training",
+        "Staff / Principal": "Novel architectures, distributed training, research direction"
+      }
+    },
+    "deployment": {
+      "key_concepts": [
+        "Model serving",
+        "A/B testing",
+        "Feature stores",
+        "Model monitoring",
+        "Data drift",
+        "MLOps",
+        "Latency optimization"
+      ],
+      "ideal_answer_points": [
+        "Describe end-to-end deployment pipeline",
+        "Address model versioning and rollback",
+        "Discuss monitoring for drift",
+        "Handle feature consistency train/serve",
+        "Optimize for latency requirements"
+      ],
+      "common_mistakes": [
+        "Ignoring training-serving skew",
+        "Not monitoring model performance",
+        "No rollback strategy"
+      ],
+      "follow_up_areas": [
+        "model_selection",
+        "neural_networks",
+        "feature_engineering"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows models need to be served, basic API wrapping",
+        "Mid-Level": "Understands MLOps basics, can set up simple pipeline",
+        "Senior": "Designs production ML systems with monitoring and A/B testing",
+        "Staff / Principal": "ML platform design, organizational ML strategy"
+      }
+    }
+  }
+}

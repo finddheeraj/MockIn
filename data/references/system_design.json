@@ -1,0 +1,141 @@
+{
+  "System Design": {
+    "load_balancing": {
+      "key_concepts": [
+        "Round-robin",
+        "Least connections",
+        "Consistent hashing",
+        "Health checks",
+        "L4 vs L7",
+        "Sticky sessions",
+        "Geographic routing"
+      ],
+      "ideal_answer_points": [
+        "Explain availability and throughput needs",
+        "Distinguish L4 (TCP) vs L7 (HTTP) balancers",
+        "Name algorithms with trade-offs",
+        "Discuss health checks and failover",
+        "Address session persistence"
+      ],
+      "common_mistakes": [
+        "Only mentioning round-robin",
+        "Ignoring session stickiness",
+        "Not considering geographic distribution"
+      ],
+      "follow_up_areas": [
+        "caching",
+        "cdn",
+        "auto_scaling"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Explain basic concept and name one algorithm",
+        "Mid-Level": "Distinguish L4/L7, name multiple algorithms with trade-offs",
+        "Senior": "Design full solution with failover, discuss real tools (NGINX, ALB, HAProxy)",
+        "Staff / Principal": "Global load balancing, anycast, capacity planning, cost modeling"
+      }
+    },
+    "caching": {
+      "key_concepts": [
+        "Cache invalidation",
+        "TTL",
+        "Write-through vs write-back",
+        "Cache-aside",
+        "CDN",
+        "Redis/Memcached",
+        "Cache stampede",
+        "Eviction policies (LRU, LFU)"
+      ],
+      "ideal_answer_points": [
+        "Identify what to cache and where (client, CDN, app, DB)",
+        "Explain invalidation strategies",
+        "Discuss consistency trade-offs",
+        "Mention eviction policies",
+        "Address cache warming and thundering herd"
+      ],
+      "common_mistakes": [
+        "Ignoring cache invalidation complexity",
+        "Not mentioning consistency issues",
+        "Forgetting cache stampede scenarios"
+      ],
+      "follow_up_areas": [
+        "database_sharding",
+        "consistency",
+        "load_balancing"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows what caching is, can name Redis",
+        "Mid-Level": "Explains cache-aside pattern, knows TTL and eviction",
+        "Senior": "Designs multi-layer caching, handles invalidation and consistency",
+        "Staff / Principal": "Capacity modeling, cost-performance trade-offs, cache coherence at scale"
+      }
+    },
+    "database_design": {
+      "key_concepts": [
+        "Sharding",
+        "Replication",
+        "CAP theorem",
+        "ACID",
+        "Partitioning strategies",
+        "Read replicas",
+        "Eventual consistency"
+      ],
+      "ideal_answer_points": [
+        "Choose appropriate sharding key",
+        "Explain replication for availability",
+        "Discuss CAP trade-offs",
+        "Address cross-shard queries",
+        "Plan for data growth"
+      ],
+      "common_mistakes": [
+        "Choosing poor shard key",
+        "Ignoring cross-shard joins",
+        "Not addressing rebalancing"
+      ],
+      "follow_up_areas": [
+        "caching",
+        "consistency",
+        "load_balancing"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows SQL basics, understands indexing",
+        "Mid-Level": "Explains replication, understands sharding concept",
+        "Senior": "Designs sharding strategy, handles consistency trade-offs",
+        "Staff / Principal": "Multi-region data, migration strategies, cost optimization"
+      }
+    },
+    "microservices": {
+      "key_concepts": [
+        "Service discovery",
+        "API gateway",
+        "Circuit breaker",
+        "Saga pattern",
+        "Event-driven",
+        "gRPC vs REST",
+        "Service mesh"
+      ],
+      "ideal_answer_points": [
+        "Explain when microservices are appropriate",
+        "Discuss inter-service communication",
+        "Address distributed transactions",
+        "Mention observability needs",
+        "Handle failure gracefully"
+      ],
+      "common_mistakes": [
+        "Defaulting to microservices for small systems",
+        "Ignoring network latency",
+        "Not addressing data consistency across services"
+      ],
+      "follow_up_areas": [
+        "database_design",
+        "messaging",
+        "deployment"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands the concept vs monolith",
+        "Mid-Level": "Can design service boundaries, knows API gateway pattern",
+        "Senior": "Handles distributed transactions, circuit breakers, observability",
+        "Staff / Principal": "Organizational alignment, platform strategy, migration from monolith"
+      }
+    }
+  }
+}
