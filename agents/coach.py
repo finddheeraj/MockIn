@@ -142,7 +142,7 @@ def generate_answer(client, topic: str, difficulty: str, question: str, model_na
             {"role": "system", "content": system},
             {"role": "user", "content": user_content},
         ],
-        max_tokens=600,
+        max_tokens=1000,
         temperature=0.5,
     )
 

@@ -30,7 +30,7 @@ LOCAL_MODEL_NAME         = "Llama-3.1-8B"
 # ── Shared generation settings ───────────────────────────────────────────────
 
 RECRUITER_MAX_TOKENS  = 300
-COACH_MAX_TOKENS      = 350
+COACH_MAX_TOKENS      = 600
 RECRUITER_TEMPERATURE = 0.7
 COACH_TEMPERATURE     = 0.6
 
