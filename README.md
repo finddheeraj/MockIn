@@ -1,6 +1,29 @@
 # MockMind — AI Interview Simulator (Modular)
 
-A two-agent mock interview app using Grok (xAI) via Flask.
+Most interview prep tools give you a question bank and a timer. MockIn does something different — it puts 5 specialized AI agents to work simultaneously, each with a distinct role, every time you submit an answer.
+
+🤖 The Agentic Pipeline
+
+Every answer you give triggers this sequence in real-time:
+
+1️⃣ Scorer Agent — Evaluates your response across 5 dimensions: clarity, depth, accuracy, examples, and structure. Low-temperature LLM call for consistent, calibrated scoring.
+
+2️⃣ Adaptive Controller — The brain of the system. Analyzes your scores and decides what happens next: drill deeper into your weak spots, switch to a new subtopic, or increase the difficulty. On alternating rounds it uses LLM reasoning; on others it uses rule-based thresholds — a deliberate hybrid to balance cost and responsiveness.
+
+3️⃣ Knowledge Base Lookup — A zero-LLM-call step that retrieves curated reference data (key concepts, ideal answer points, common mistakes) from structured JSON files indexed by topic and difficulty. Grounds both agents in factual expectations without burning tokens.
+
+4️⃣ Recruiter + Coach Agents (parallel) — Run simultaneously via ThreadPoolExecutor:
+   → Recruiter asks the next adaptive follow-up question
+   → Coach delivers private, emoji-formatted feedback only you can see
+
+5️⃣ Evaluator Agent — At session end, synthesizes your full transcript and score progression into a structured scorecard with strengths, weaknesses, and a personalized improvement plan. Downloadable as a PDF.
+
+🎯 Why this matters for interview prep
+
+Traditional prep is static. You read a solution, feel like you understand it, and then blank in the actual interview. MockIn replicates the pressure of a real technical interview — follow-up questions that dig into gaps, real-time feedback you can act on, and a difficulty curve that adapts to you, not a fixed script.
+
+The adaptive controller means if you nail a System Design question, it won't waste your time on basics — it'll push you to Staff-level tradeoffs. If you struggle with a concept, it drills it from multiple angles before moving on.
+
 
 ## Project Structure
 
@@ -70,5 +93,10 @@ LOCAL_MODEL_GPU_LAYERS=0
 
 python app.py
 # Visit http://localhost:5000
+
+
+🔗 Try it live → https://mockin-u03v.onrender.com/
+
+
 ```
 
