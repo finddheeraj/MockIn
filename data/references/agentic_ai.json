@@ -1,0 +1,140 @@
+{
+  "Agentic AI": {
+    "agent_architecture": {
+      "key_concepts": [
+        "Autonomous agents",
+        "Planning and reasoning",
+        "Memory systems",
+        "Tool usage",
+        "Task decomposition",
+        "Reflection loops",
+        "Multi-step workflows"
+      ],
+      "ideal_answer_points": [
+        "Explain agent workflow clearly",
+        "Discuss planning and execution cycles",
+        "Describe short-term vs long-term memory",
+        "Mention tool calling and orchestration",
+        "Address reliability and error handling"
+      ],
+      "common_mistakes": [
+        "Treating agents like simple chatbots",
+        "Ignoring state management",
+        "No fallback or retry mechanisms"
+      ],
+      "follow_up_areas": [
+        "multi_agent_systems",
+        "rag_systems",
+        "llm_orchestration"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands basic autonomous agent concepts",
+        "Mid-Level": "Builds task-oriented AI agents with tools and memory",
+        "Senior": "Designs reliable multi-step autonomous systems",
+        "Staff / Principal": "Architects enterprise-scale agentic AI ecosystems"
+      }
+    },
+    "multi_agent_systems": {
+      "key_concepts": [
+        "Agent collaboration",
+        "Coordinator agents",
+        "Task routing",
+        "Communication protocols",
+        "Distributed reasoning",
+        "Consensus mechanisms",
+        "Role-based agents"
+      ],
+      "ideal_answer_points": [
+        "Explain why multiple agents are used",
+        "Discuss coordination strategies",
+        "Describe communication flow between agents",
+        "Mention scalability and fault tolerance",
+        "Address orchestration challenges"
+      ],
+      "common_mistakes": [
+        "Overengineering simple workflows",
+        "Poor communication between agents",
+        "No centralized monitoring"
+      ],
+      "follow_up_areas": [
+        "agent_architecture",
+        "workflow_automation",
+        "ai_system_design"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows basics of multi-agent collaboration",
+        "Mid-Level": "Can implement orchestrated agent workflows",
+        "Senior": "Designs scalable distributed agent systems",
+        "Staff / Principal": "Defines large-scale autonomous AI infrastructure"
+      }
+    },
+    "rag_systems": {
+      "key_concepts": [
+        "Retrieval-Augmented Generation",
+        "Vector databases",
+        "Embeddings",
+        "Semantic search",
+        "Chunking strategies",
+        "Context injection",
+        "Knowledge grounding"
+      ],
+      "ideal_answer_points": [
+        "Explain RAG pipeline architecture",
+        "Discuss embedding generation",
+        "Describe retrieval optimization",
+        "Mention hallucination reduction techniques",
+        "Address scalability and latency"
+      ],
+      "common_mistakes": [
+        "Poor chunking strategy",
+        "Using irrelevant retrieval context",
+        "Ignoring embedding quality"
+      ],
+      "follow_up_areas": [
+        "vector_databases",
+        "llm_orchestration",
+        "deployment"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands basic RAG concepts",
+        "Mid-Level": "Builds production-ready RAG pipelines",
+        "Senior": "Optimizes retrieval accuracy and performance",
+        "Staff / Principal": "Designs enterprise knowledge systems with RAG"
+      }
+    },
+    "llm_orchestration": {
+      "key_concepts": [
+        "Prompt chaining",
+        "Tool calling",
+        "Workflow orchestration",
+        "State management",
+        "Function calling",
+        "Agent frameworks",
+        "Execution tracing"
+      ],
+      "ideal_answer_points": [
+        "Explain orchestration workflow design",
+        "Discuss prompt chaining strategies",
+        "Describe tool integration patterns",
+        "Mention observability and debugging",
+        "Address scalability and monitoring"
+      ],
+      "common_mistakes": [
+        "Hardcoding workflows",
+        "Lack of execution tracking",
+        "Poor prompt modularization"
+      ],
+      "follow_up_areas": [
+        "agent_architecture",
+        "deployment",
+        "workflow_automation"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows basic prompt chaining and APIs",
+        "Mid-Level": "Builds orchestrated LLM workflows",
+        "Senior": "Designs resilient and observable AI pipelines",
+        "Staff / Principal": "Creates organization-wide orchestration platforms"
+      }
+    }
+  }
+}

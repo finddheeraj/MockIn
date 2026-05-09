@@ -1,0 +1,140 @@
+{
+  "Artificial Intelligence": {
+    "generative_ai": {
+      "key_concepts": [
+        "Large Language Models",
+        "Prompt engineering",
+        "Fine-tuning",
+        "Embeddings",
+        "RAG",
+        "Tokenization",
+        "Inference optimization"
+      ],
+      "ideal_answer_points": [
+        "Explain how LLMs work at a high level",
+        "Discuss prompt engineering strategies",
+        "Describe RAG architecture",
+        "Mention fine-tuning approaches",
+        "Address hallucination mitigation"
+      ],
+      "common_mistakes": [
+        "Confusing fine-tuning with prompting",
+        "Ignoring context window limitations",
+        "Not validating generated outputs"
+      ],
+      "follow_up_areas": [
+        "nlp",
+        "deployment",
+        "ai_ethics"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands LLM usage and prompting basics",
+        "Mid-Level": "Builds RAG and fine-tuned AI applications",
+        "Senior": "Optimizes inference and scalable GenAI systems",
+        "Staff / Principal": "Defines enterprise AI architecture and strategy"
+      }
+    },
+    "nlp": {
+      "key_concepts": [
+        "Text preprocessing",
+        "Word embeddings",
+        "Transformers",
+        "Named Entity Recognition",
+        "Sentiment analysis",
+        "Sequence models",
+        "Attention mechanisms"
+      ],
+      "ideal_answer_points": [
+        "Explain NLP processing pipeline",
+        "Discuss embeddings and transformers",
+        "Mention attention mechanism importance",
+        "Describe common NLP tasks",
+        "Address challenges in language understanding"
+      ],
+      "common_mistakes": [
+        "Ignoring preprocessing requirements",
+        "Not handling context properly",
+        "Overlooking tokenization impact"
+      ],
+      "follow_up_areas": [
+        "generative_ai",
+        "deep_learning",
+        "deployment"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows basic NLP tasks and embeddings",
+        "Mid-Level": "Builds transformer-based NLP applications",
+        "Senior": "Optimizes NLP systems for scale and accuracy",
+        "Staff / Principal": "Drives NLP research and architecture decisions"
+      }
+    },
+    "computer_vision": {
+      "key_concepts": [
+        "CNNs",
+        "Object detection",
+        "Image classification",
+        "Segmentation",
+        "Transfer learning",
+        "Image augmentation",
+        "Vision transformers"
+      ],
+      "ideal_answer_points": [
+        "Explain CNN architecture basics",
+        "Discuss object detection approaches",
+        "Mention transfer learning benefits",
+        "Address image preprocessing",
+        "Compare CNNs and vision transformers"
+      ],
+      "common_mistakes": [
+        "Ignoring dataset imbalance",
+        "Using insufficient augmentation",
+        "Overfitting on small datasets"
+      ],
+      "follow_up_areas": [
+        "deep_learning",
+        "deployment",
+        "edge_ai"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands image classification basics",
+        "Mid-Level": "Builds and fine-tunes vision models",
+        "Senior": "Designs scalable computer vision systems",
+        "Staff / Principal": "Leads advanced vision AI initiatives"
+      }
+    },
+    "ai_ethics": {
+      "key_concepts": [
+        "Bias in AI",
+        "Fairness",
+        "Explainability",
+        "Privacy",
+        "Responsible AI",
+        "Model governance",
+        "Safety alignment"
+      ],
+      "ideal_answer_points": [
+        "Discuss ethical AI principles",
+        "Explain bias mitigation approaches",
+        "Address transparency and explainability",
+        "Mention privacy considerations",
+        "Discuss governance and compliance"
+      ],
+      "common_mistakes": [
+        "Ignoring dataset bias",
+        "Lack of transparency",
+        "Not considering societal impact"
+      ],
+      "follow_up_areas": [
+        "deployment",
+        "generative_ai",
+        "governance"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Aware of bias and fairness concerns",
+        "Mid-Level": "Implements responsible AI practices",
+        "Senior": "Builds governance and monitoring systems",
+        "Staff / Principal": "Defines enterprise responsible AI policies"
+      }
+    }
+  }
+}

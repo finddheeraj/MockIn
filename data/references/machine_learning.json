@@ -1,0 +1,140 @@
+{
+  "Machine Learning": {
+    "supervised_learning": {
+      "key_concepts": [
+        "Regression vs classification",
+        "Linear regression",
+        "Logistic regression",
+        "Decision trees",
+        "Random forests",
+        "Support Vector Machines",
+        "Evaluation metrics"
+      ],
+      "ideal_answer_points": [
+        "Explain supervised learning workflow",
+        "Differentiate regression and classification problems",
+        "Discuss algorithm selection criteria",
+        "Mention evaluation metrics like accuracy, precision, recall, F1",
+        "Address overfitting and regularization"
+      ],
+      "common_mistakes": [
+        "Using accuracy for imbalanced datasets",
+        "Not scaling features when required",
+        "Ignoring feature leakage"
+      ],
+      "follow_up_areas": [
+        "feature_engineering",
+        "model_selection",
+        "deployment"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows common supervised algorithms and basic metrics",
+        "Mid-Level": "Can compare algorithms and tune models effectively",
+        "Senior": "Designs scalable training pipelines and handles edge cases",
+        "Staff / Principal": "Architects enterprise-grade ML systems and optimization strategies"
+      }
+    },
+    "unsupervised_learning": {
+      "key_concepts": [
+        "Clustering",
+        "K-Means",
+        "Hierarchical clustering",
+        "DBSCAN",
+        "Dimensionality reduction",
+        "PCA",
+        "Anomaly detection"
+      ],
+      "ideal_answer_points": [
+        "Explain unsupervised learning objectives",
+        "Discuss clustering algorithm trade-offs",
+        "Mention dimensionality reduction techniques",
+        "Explain anomaly detection use cases",
+        "Discuss feature visualization"
+      ],
+      "common_mistakes": [
+        "Choosing incorrect number of clusters",
+        "Ignoring feature scaling",
+        "Misinterpreting PCA outputs"
+      ],
+      "follow_up_areas": [
+        "feature_engineering",
+        "data_preprocessing",
+        "statistics"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands clustering basics and PCA concepts",
+        "Mid-Level": "Selects appropriate algorithms based on dataset properties",
+        "Senior": "Builds anomaly detection and representation learning systems",
+        "Staff / Principal": "Designs large-scale unsupervised ML architectures"
+      }
+    },
+    "feature_engineering": {
+      "key_concepts": [
+        "Feature scaling",
+        "Encoding categorical variables",
+        "Feature selection",
+        "Dimensionality reduction",
+        "Handling missing values",
+        "Data leakage",
+        "Feature extraction"
+      ],
+      "ideal_answer_points": [
+        "Explain importance of quality features",
+        "Discuss preprocessing techniques",
+        "Handle missing and noisy data",
+        "Describe feature selection strategies",
+        "Address train-test consistency"
+      ],
+      "common_mistakes": [
+        "Applying preprocessing before train-test split",
+        "Ignoring outliers",
+        "Using highly correlated features blindly"
+      ],
+      "follow_up_areas": [
+        "supervised_learning",
+        "unsupervised_learning",
+        "deployment"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows common preprocessing techniques",
+        "Mid-Level": "Builds robust feature pipelines",
+        "Senior": "Designs automated feature engineering systems",
+        "Staff / Principal": "Leads feature platform strategy across teams"
+      }
+    },
+    "model_evaluation": {
+      "key_concepts": [
+        "Cross-validation",
+        "Bias-variance trade-off",
+        "Confusion matrix",
+        "ROC-AUC",
+        "Precision-recall",
+        "Hyperparameter tuning",
+        "Model interpretability"
+      ],
+      "ideal_answer_points": [
+        "Explain validation strategies",
+        "Discuss evaluation metrics selection",
+        "Address overfitting detection",
+        "Mention interpretability techniques",
+        "Describe hyperparameter optimization"
+      ],
+      "common_mistakes": [
+        "Using wrong metric for business problem",
+        "Data leakage during validation",
+        "Ignoring class imbalance"
+      ],
+      "follow_up_areas": [
+        "supervised_learning",
+        "deployment",
+        "statistics"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows basic metrics and validation methods",
+        "Mid-Level": "Can optimize and compare models effectively",
+        "Senior": "Designs evaluation frameworks for production systems",
+        "Staff / Principal": "Defines organization-wide ML evaluation standards"
+      }
+    }
+  }
+}

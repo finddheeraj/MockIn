@@ -1,0 +1,140 @@
+{
+  "Generative AI": {
+    "large_language_models": {
+      "key_concepts": [
+        "Transformers",
+        "Tokenization",
+        "Attention mechanisms",
+        "Pretraining",
+        "Fine-tuning",
+        "Inference",
+        "Context windows"
+      ],
+      "ideal_answer_points": [
+        "Explain transformer architecture",
+        "Describe attention mechanisms",
+        "Discuss pretraining and fine-tuning",
+        "Mention inference optimization",
+        "Address context limitations"
+      ],
+      "common_mistakes": [
+        "Confusing training and inference",
+        "Ignoring token limitations",
+        "Overlooking hallucination issues"
+      ],
+      "follow_up_areas": [
+        "prompt_engineering",
+        "rag",
+        "model_optimization"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows LLM basics and common terminology",
+        "Mid-Level": "Uses and fine-tunes LLMs effectively",
+        "Senior": "Optimizes and deploys LLM systems at scale",
+        "Staff / Principal": "Defines enterprise LLM architecture and strategy"
+      }
+    },
+    "prompt_engineering": {
+      "key_concepts": [
+        "Zero-shot prompting",
+        "Few-shot prompting",
+        "Chain-of-thought prompting",
+        "System prompts",
+        "Prompt templates",
+        "Context engineering",
+        "Prompt evaluation"
+      ],
+      "ideal_answer_points": [
+        "Explain prompting strategies",
+        "Discuss prompt structure and clarity",
+        "Mention prompt evaluation methods",
+        "Describe context handling",
+        "Address prompt reliability"
+      ],
+      "common_mistakes": [
+        "Using vague prompts",
+        "Ignoring prompt injection risks",
+        "Overloading prompts with unnecessary context"
+      ],
+      "follow_up_areas": [
+        "large_language_models",
+        "agentic_ai",
+        "ai_safety"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Writes effective prompts for common tasks",
+        "Mid-Level": "Designs reusable prompt templates and workflows",
+        "Senior": "Optimizes prompts for reliability and scale",
+        "Staff / Principal": "Defines prompt engineering standards and governance"
+      }
+    },
+    "model_optimization": {
+      "key_concepts": [
+        "Quantization",
+        "Distillation",
+        "LoRA",
+        "PEFT",
+        "Latency optimization",
+        "GPU utilization",
+        "Inference scaling"
+      ],
+      "ideal_answer_points": [
+        "Explain optimization techniques",
+        "Discuss trade-offs between speed and quality",
+        "Mention memory optimization methods",
+        "Describe deployment constraints",
+        "Address scalability concerns"
+      ],
+      "common_mistakes": [
+        "Optimizing without benchmarking",
+        "Ignoring hardware limitations",
+        "Reducing quality excessively for speed"
+      ],
+      "follow_up_areas": [
+        "deployment",
+        "large_language_models",
+        "mlops"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows basic optimization terminology",
+        "Mid-Level": "Applies optimization methods for deployment",
+        "Senior": "Builds highly efficient inference systems",
+        "Staff / Principal": "Leads optimization strategy for large-scale AI platforms"
+      }
+    },
+    "ai_safety": {
+      "key_concepts": [
+        "Hallucination mitigation",
+        "Guardrails",
+        "Content moderation",
+        "Bias reduction",
+        "Red teaming",
+        "Alignment",
+        "Responsible AI"
+      ],
+      "ideal_answer_points": [
+        "Discuss AI safety challenges",
+        "Explain hallucination mitigation approaches",
+        "Describe moderation and filtering systems",
+        "Mention alignment strategies",
+        "Address ethical deployment concerns"
+      ],
+      "common_mistakes": [
+        "Assuming model outputs are always correct",
+        "Ignoring prompt injection attacks",
+        "Lack of monitoring for harmful outputs"
+      ],
+      "follow_up_areas": [
+        "deployment",
+        "prompt_engineering",
+        "governance"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Aware of hallucination and bias risks",
+        "Mid-Level": "Implements safety checks and moderation",
+        "Senior": "Designs robust AI safety pipelines",
+        "Staff / Principal": "Defines organizational AI governance and safety strategy"
+      }
+    }
+  }
+}

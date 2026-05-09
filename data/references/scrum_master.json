@@ -1,0 +1,301 @@
+{
+    "Scrum Master": {
+        "scrum framework": {
+            "key_concepts": [
+                "Sprint",
+                "Daily Standup",
+                "Sprint Planning",
+                "Sprint Review",
+                "Sprint Retrospective",
+                "Product Backlog",
+                "Sprint Backlog",
+                "Increment",
+                "Definition of Done",
+                "Timeboxing"
+            ],
+            "ideal_answer_points": [
+                "Explain the purpose and outcome of each Scrum event",
+                "Distinguish between Scrum Master, Product Owner, and Dev Team roles",
+                "Describe how Scrum Master serves the team as a servent-leader",
+                "Describe how to protect the team from external disruptions",
+                "Handle sprint goal commitment vs capacity",
+                "Articulate the difference between Scrum and generic Agile"
+            ],
+            "common_mistakes": [
+                "Treating Scrum Master as a project manager or taskmaster",
+                "Skipping or rushing retrospectives",
+                "Not empowering the team to self-organize",
+                "Confusing velocity with productivity",
+                "Allowing the product owner to dictate how work is done"
+            ],
+            "follow_up_areas": [
+                "facilitation techniques",
+                "impediment removal",
+                "servant leadership",
+                "metrics and velocity"
+            ],
+            "difficulty_expectations": [
+                "Junior: Understands Scrum events and artifacts, facilitates basic ceremonies",
+                "Mid-Level: Coaches team on agile principles, removes impediments proactively",
+                "Senior: Drives organizational agile transformation, mentors other Scrum Masters",
+                "Staff / Principal: Defines agile strategy across the org, influences enterprise frameworks like SAFe/Less"
+            ]
+        },
+        "facilitation techniques": {
+            "key_concepts": [
+                "Timeboxing",
+                "Dot voting",
+                "Roman voting",
+                "Fishbowl discussions",
+                "Silent brainstorming",
+                "Parking lot",
+                "Fist of five",
+                "Liberating Structures"
+            ],
+            "ideal_answer_points": [
+                "Choose facilitation technique based on meeting goal and group dynamics",
+                "Ensure all voices are heard, not just the loudest",
+                "Use visual aids and collaborative tools for remote teams",
+                "Keep discussions focused with clear agendas and timeboxes",
+                "Handle conflict constructively during ceremonies"
+            ],
+            "common_mistakes": [
+                "Dominating the conversation instead of facilitating",
+                "No agenda or clear goal for the meeting",
+                "Letting one person monopolize discussion",
+                "Not adapting technique for remote vs in-person",
+                "Failing to capture and follow up on action items"
+            ],
+            "follow_up_areas": [
+                "Scrum framework",
+                "servant leadership",
+                "team dynamics"
+            ],
+            "difficulty_expectations": [
+                "Junior: Facilitates standard ceremonies with a template or guide",
+                "Mid-Level: Adapts facilitation style to team needs, handles mild conflict",
+                "Senior: Designs custom workshops, facilitates cross-team alignment sessions",
+                "Staff / Principal: Coaches facilitators org-wide, creates facilitation playbooks"
+            ]
+        },
+        "impediment_removal": {
+            "key_concepts": [
+                "Impediment backlog",
+                "Escalation paths",
+                "Root cause analysis",
+                "Dependency mapping",
+                "Organizational blockers",
+                "Technical debt as impediment",
+                "Cross-team dependencies"
+            ],
+            "ideal_answer_points": [
+                "Maintain a visible impediment backlog with ownership and status",
+                "Distinguish between team-level and organizational impediments",
+                "Use root cause analysis to address systemic issues, not just symptoms",
+                "Escalate appropriately when impediments are beyond team control",
+                "Track resolution time and patterns to prevent recurring blockers"
+            ],
+            "common_mistakes": [
+                "Solving problems for the team instead of coaching them to solve it",
+                "Ignoring organizational impediments because they are hard",
+                "No follow-up or tracking on raised impediments",
+                "Treating symptoms rather than root causes",
+                "Not leveraging management support for escalations"
+            ],
+            "follow_up_areas": [
+                "Scrum framework",
+                "servant leadership",
+                "stakeholder management"
+            ],
+            "difficulty_expectations": {
+                "Junior": "Identifies and logs impediments raised in standups",
+                "Mid-Level": "Proactively identifies blockers, resolves most within the team",
+                "Senior": "Tackles organizational impediments, builds escalation frameworks",
+                "Staff / Principal": "Drives systemic change to eliminate classes of impediments org-wide"
+            }
+        },
+        "servant leadership": {
+            "key_concepts": [
+                "Servant leadership",
+                "Coaching stance",
+                "Empowerment",
+                "Psychological safety",
+                "Trust building",
+                "Leading without authority",
+                "Active listening",
+                "Situational leadership"
+            ],
+            "ideal_answer_points": [
+                "Explain servant leadership as prioritizing team needs over personal authority",
+                "Demonstrate coaching vs directing based on team maturity",
+                "Build psychological safety so team members speak up without fear",
+                "Empower the team to self-organize and make decisions",
+                "Adapt leadership style based on context and individual needs"
+            ],
+            "common_mistakes": [
+                "Being passive and calling it 'servant leadership'",
+                "Not holding the team accountable to their own commitments",
+                "Avoiding difficult conversations to maintain harmony",
+                "Taking over tasks instead of coaching the team through them",
+                "Confusing consensus with collaboration"
+            ],
+            "follow_up_areas": [
+                "facilitation techniques",
+                "team dynamics",
+                "impediment removal"
+            ],
+            "difficulty_expectations": {
+                "Junior": "Understands the concept, supports team members when asked",
+                "Mid-Level": "Actively coaches team members, builds trust through consistency",
+                "Senior": "Models servant leadership for the org, mentors new Scrum Masters",
+                "Staff / Principal": "Shapes leadership culture, influences exec leadership toward servant-leader principles"
+            }
+        },
+        "metrics_and_velocity": {
+            "key_concepts": [
+                "velocity",
+                "Cycle time",
+                "Lead time",
+                "Throughput",
+                "Sprint burndown",
+                "Cumulative flow diagram",
+                "Escaped defects",
+                "Team happiness index"
+            ],
+            "ideal_answer_points": [
+                "Use velocity for forecasting, never as a performance measure",
+                "Track cycle time and lead time to identify process bottlenecks",
+                "Balance quantitative metrics with qualitative health indicators",
+                "Use metrics to drive conversations, not to punish the team",
+                "Avoid vanity metrics; focus on outcomes over output"
+            ],
+            "common_mistakes": [
+                "Using velocity to compare teams",
+                "Inflating story points to appear more productive",
+                "Ignoring qualitative metrics like team morale",
+                "Over-indexing on a single metric",
+                "Not explaining metrics in context to stakeholders"
+            ],
+            "follow_up_areas": [
+                "scrum framework",
+                "stakeholder management",
+                "continuous_improvement"
+            ],
+            "difficulty_expectations": {
+                "Junior": "Tracks velocity and burndown, reports to the team",
+                "Mid-Level": "Analyzes trends, uses metrics to guide retrospective topics",
+                "Senior": "Designs metric dashboards, coaches teams and stakeholders on interpretation",
+                "Staff / Principal": "Defines org-wide agile metrics strategy, aligns metrics with business outcomes"
+            }
+        },
+        "Stakeholder management": {
+            "key_concepts": [
+                "Stakeholder mapping",
+                "Transparency",
+                "Sprint Review as feedback loop",
+                "Managing expectations",
+                "Communication cadence",
+                "Shielding the team",
+                "Building trust with leadership"
+            ],
+            "ideal answer points": [
+                "Use Sprint Review to create transparency and gather genuine feedback",
+                "Shield the team from disruptive stakeholder requests mid-sprint",
+                "Maintain regular communication cadence with key stakeholders",
+                "Help Product Owner manage stakeholder priorities effectively",
+                "Build trust by delivering consistently and communicating honestly"
+            ],
+            "common mistakes": [
+                "Allowing stakeholders to bypass Product Owner and assign work directly",
+                "No transparency into team progress until end of sprint",
+                "Over-promising to stakeholders to avoid conflict",
+                "Not involving stakeholders early enough for feedback",
+                "Treating stakeholder management as solely the PO's job"
+            ],
+            "follow_up_areas": [
+                "servant leadership",
+                "scrum framework",
+                "metrics_and_velocity"
+            ],
+            "difficulty_expectations": {
+                "Junior": "Invites stakeholders to Sprint Review, shares updates as requested",
+                "Mid-Level": "Proactively manages expectations, coaches PO on stakeholder prioritization",
+                "Senior": "Builds strategic relationships with senior stakeholders, aligns multiple teams",
+                "Staff / Principal": "Shares org-wide stakeholder engagement model, advises executives on agile governance"
+            }
+        },
+        "team dynamics": {
+            "key_concepts": [
+                "Tuckman's stages",
+                "Psychological safety",
+                "Self-organization",
+                "Cross-functional teams",
+                "Conflict resolution",
+                "Team working agreements",
+                "Motivation and autonomy"
+            ],
+            "ideal_answer_points": [
+                "Recognize and support the team through forming-storming-norming-performing stages",
+                "Create working agreements collaboratively and revisit them regularly",
+                "Foster self-organization by giving the team ownership of how they work",
+                "Address interpersonal conflict early before it escalates",
+                "Build cross-functional capability so the team can deliver end-to-end"
+            ],
+            "common_mistakes": [
+                "Ignoring team conflict hoping it resolves itself",
+                "Imposing working agreements top-down",
+                "Not celebrating successes or recognizing individual contributions",
+                "Allowing silos within the team",
+                "Expecting a new team to perform like a mature team immediately"
+            ],
+            "follow_up_areas": [
+                "servant leadership",
+                "facilitation techniques",
+                "continuous improvement"
+            ],
+            "difficulty_expectations": {
+                "Junior": "Observes team dynamics, flags issues to senior colleagues",
+                "Mid-Level": "Actively nurtures team health, facilitates conflict resolution",
+                "Senior": "Builds high-performing teams from scratch, coaches through major transitions",
+                "Staff / Principal": "Designs team topologies and org structures that optimize for flow and autonomy"
+            }
+        },
+        "continuous improvement": {
+            "key_concepts": [
+                "Kaizen",
+                "Retrospectives",
+                "Inspect and adapt",
+                "Experiments",
+                "Action items",
+                "Improvement backlog",
+                "Feedback loops",
+                "Lean thinking"
+            ],
+            "ideal_answer_points": [
+                "Use retrospectives as the primary driver of continuous improvement",
+                "Frame improvements as experiments with clear success criteria",
+                "Track action items from retros and hold the team accountable",
+                "Create short feedback loops to validate improvements quickly",
+                "Apply lean thinking to eliminate waste in processes"
+            ],
+            "common_mistakes": [
+                "Running retrospectives but never acting on outcomes",
+                "Trying to change too many things at once",
+                "No measurement of whether improvements actually helped",
+                "Only focusing on process, ignoring technical practices",
+                "Treating improvement as a one-time activity rather than ongoing"
+            ],
+            "follow_up_areas": [
+                "metrics_and_velocity",
+                "facilitation_techniques",
+                "scrum_framework"
+            ],
+            "difficulty_expectations": {
+                "Junior": "Participates in retros, follows through on assigned action items",
+                "Mid-Level": "Facilitates effective retros, tracks improvement experiments",
+                "Senior": "Creates a culture of continuous improvement across teams",
+                "Staff / Principal": "Builds org-wide learning systems, drives improvement at the enterprise level"
+            }
+        }
+    }
+}

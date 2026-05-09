@@ -1,0 +1,140 @@
+{
+  "Data Science": {
+    "statistics": {
+      "key_concepts": [
+        "Probability distributions",
+        "Hypothesis testing",
+        "P-values",
+        "Confidence intervals",
+        "Correlation vs causation",
+        "Central Limit Theorem",
+        "Bayesian statistics"
+      ],
+      "ideal_answer_points": [
+        "Explain statistical reasoning clearly",
+        "Discuss significance testing",
+        "Interpret p-values correctly",
+        "Differentiate correlation and causation",
+        "Mention assumptions behind statistical tests"
+      ],
+      "common_mistakes": [
+        "Misinterpreting p-values",
+        "Ignoring assumptions of tests",
+        "Confusing correlation with causation"
+      ],
+      "follow_up_areas": [
+        "data_analysis",
+        "experimentation",
+        "machine_learning"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Knows basic statistical concepts and distributions",
+        "Mid-Level": "Applies statistical tests correctly",
+        "Senior": "Designs statistically sound experiments",
+        "Staff / Principal": "Defines advanced analytics and experimentation strategies"
+      }
+    },
+    "data_analysis": {
+      "key_concepts": [
+        "Exploratory Data Analysis",
+        "Data visualization",
+        "Outlier detection",
+        "Trend analysis",
+        "Data cleaning",
+        "Business insights",
+        "SQL querying"
+      ],
+      "ideal_answer_points": [
+        "Explain EDA workflow",
+        "Discuss identifying trends and anomalies",
+        "Mention visualization techniques",
+        "Address data quality issues",
+        "Connect findings to business impact"
+      ],
+      "common_mistakes": [
+        "Skipping data cleaning",
+        "Overlooking missing values",
+        "Creating misleading visualizations"
+      ],
+      "follow_up_areas": [
+        "statistics",
+        "business_intelligence",
+        "machine_learning"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Can clean and visualize datasets",
+        "Mid-Level": "Generates actionable business insights",
+        "Senior": "Leads analytical investigations and strategy decisions",
+        "Staff / Principal": "Builds enterprise analytics frameworks"
+      }
+    },
+    "experimentation": {
+      "key_concepts": [
+        "A/B testing",
+        "Randomization",
+        "Control groups",
+        "Statistical significance",
+        "Experiment design",
+        "Sampling bias",
+        "Power analysis"
+      ],
+      "ideal_answer_points": [
+        "Explain experimental design principles",
+        "Discuss randomization importance",
+        "Address statistical significance",
+        "Mention bias reduction techniques",
+        "Interpret experiment outcomes correctly"
+      ],
+      "common_mistakes": [
+        "Running experiments with insufficient sample size",
+        "Ignoring confounding variables",
+        "Stopping tests too early"
+      ],
+      "follow_up_areas": [
+        "statistics",
+        "product_analytics",
+        "causal_inference"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Understands basic A/B testing concepts",
+        "Mid-Level": "Designs and evaluates experiments independently",
+        "Senior": "Builds experimentation culture and frameworks",
+        "Staff / Principal": "Leads enterprise experimentation strategy"
+      }
+    },
+    "business_intelligence": {
+      "key_concepts": [
+        "KPIs",
+        "Dashboards",
+        "Reporting",
+        "Data warehousing",
+        "ETL pipelines",
+        "Data storytelling",
+        "Stakeholder communication"
+      ],
+      "ideal_answer_points": [
+        "Explain KPI selection",
+        "Discuss dashboard design principles",
+        "Address reporting automation",
+        "Mention ETL/data pipeline basics",
+        "Communicate insights effectively"
+      ],
+      "common_mistakes": [
+        "Tracking vanity metrics",
+        "Overloading dashboards",
+        "Ignoring stakeholder requirements"
+      ],
+      "follow_up_areas": [
+        "data_analysis",
+        "sql",
+        "data_engineering"
+      ],
+      "difficulty_expectations": {
+        "Junior": "Creates basic reports and dashboards",
+        "Mid-Level": "Designs insightful BI solutions",
+        "Senior": "Leads analytics reporting ecosystems",
+        "Staff / Principal": "Defines organizational data strategy"
+      }
+    }
+  }
+}
