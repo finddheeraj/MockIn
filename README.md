@@ -62,12 +62,13 @@ python app.py
 OR
 if you have more then 8GB of RAM in your laptop
 download Llama-3.1-8B.gguf from hugging face
-update the path in .env file
 update .env file with following variables
 LLM_PROVIDER=local
-LOCAL_MODEL_PATH=your Path
+LOCAL_MODEL_PATH=your Path of Llama model
 LOCAL_MODEL_CONTEXT_SIZE=4096
 LOCAL_MODEL_GPU_LAYERS=0
 
+python app.py
+# Visit http://localhost:5000
 ```
 
