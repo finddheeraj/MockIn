@@ -63,7 +63,17 @@ def lookup_reference(topic: str, subtopic: str = None, difficulty: str = None) -
     }
 
     if difficulty and "difficulty_expectations" in entry:
-        result["difficulty_expectation"] = entry["difficulty_expectations"].get(difficulty, "")
+        de = entry["difficulty_expectations"]
+        if isinstance(de, dict):
+            result["difficulty_expectation"] = de.get(difficulty, "")
+        elif isinstance(de, list):
+            # Malformed JSON: list of "Level: description" strings — parse on the fly
+            for item in de:
+                if isinstance(item, str) and item.startswith(difficulty + ":"):
+                    result["difficulty_expectation"] = item.partition(":")[2].strip()
+                    break
+            else:
+                result["difficulty_expectation"] = ""
 
     return result
 

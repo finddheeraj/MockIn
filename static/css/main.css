@@ -52,7 +52,7 @@ header {
 .status-dot.live { background: var(--coach); box-shadow: 0 0 8px var(--coach); animation: pulse 2s ease-in-out infinite; }
 
 /* ── Main ────────────────────────────────────────────────────────────────── */
-main { max-width: 1240px; margin: 0 auto; padding: 0 32px 48px; }
+main { max-width: 1440px; margin: 0 auto; padding: 0 32px 48px; }
 
 /* ── Setup Panel ─────────────────────────────────────────────────────────── */
 #setup-panel {
@@ -360,7 +360,7 @@ select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-l
 }
 
 /* ── Interview Panel ──────────────────────────────────────────────────────── */
-#interview-panel         { display: none; gap: 24px; grid-template-columns: 1fr 360px; grid-template-rows: auto 1fr auto; align-items: start; }
+#interview-panel         { display: none; gap: 24px; grid-template-columns: 1fr 480px; grid-template-rows: auto 1fr auto; align-items: start; }
 #interview-panel.active  { display: grid; }
 
 .interview-header {
@@ -408,7 +408,7 @@ select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-l
   display: flex; flex-direction: column; gap: 16px; 
   position: sticky;
   top: 24px;
-  max-height: calc(100vh - 120px);
+  max-height: calc(100vh - 80px);
   overflow-y: auto;
 }
 
@@ -438,7 +438,7 @@ select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-l
 
 .reference-panel {
   background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-  padding: 20px; overflow-y: auto; max-height: 260px;
+  padding: 20px; overflow-y: auto; min-height: 280px;
   display: flex; flex-direction: column; gap: 0;
   box-shadow: var(--shadow-sm);
 }
@@ -455,7 +455,7 @@ select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-l
 
 #coach-panel {
   background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-  padding: 20px; overflow-y: auto; max-height: 300px;
+  padding: 20px; overflow-y: auto; min-height: 320px;
   display: flex; flex-direction: column; gap: 0;
   box-shadow: var(--shadow-sm);
 }
@@ -492,7 +492,7 @@ textarea {
   background: var(--surface); border: 1px solid var(--border); color: var(--text);
   padding: 14px 16px; border-radius: 10px;
   font-family: var(--sans); font-size: 14px; line-height: 1.6;
-  resize: vertical; min-height: 100px; outline: none; width: 100%;
+  resize: vertical; min-height: 160px; outline: none; width: 100%;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
