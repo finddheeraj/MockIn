@@ -58,12 +58,16 @@ pip install -r requirements.txt
 export XAI_API_KEY=your_key_here
 python app.py
 # Visit http://localhost:5000
+
+OR
+if you have more then 8GB of RAM in your laptop
+download Llama-3.1-8B.gguf from hugging face
+update the path in .env file
+update .env file with following variables
+LLM_PROVIDER=local
+LOCAL_MODEL_PATH=your Path
+LOCAL_MODEL_CONTEXT_SIZE=4096
+LOCAL_MODEL_GPU_LAYERS=0
+
 ```
 
-## Deploy on Render
-
-1. Push this folder to GitHub
-2. Render → New Web Service → connect repo
-3. Set env var: `XAI_API_KEY` (from https://console.x.ai)
-4. Build: `pip install -r requirements.txt`
-5. Start: `gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120`
