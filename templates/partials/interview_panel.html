@@ -55,13 +55,6 @@
         <span>Watching silently…<br>Feedback after your first answer.</span>
       </div>
       <div class="coach-entries" id="coach-entries" style="display:none;"></div>
-      <div class="coach-answer-section">
-        <button class="btn-coach-answer" id="btn-coach-answer" onclick="getCoachAnswer()">Get Coach Answer</button>
-        <div class="coach-answer-container" id="coach-answer-container" style="display:none;">
-          <div class="coach-answer-label">Coach's Ideal Answer</div>
-          <div class="coach-answer-text" id="coach-answer-text"></div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -85,3 +78,22 @@
     </div>
   </div>
 </div><!-- /interview-panel -->
+
+<!-- Coach Answer Modal -->
+<div id="coach-modal-overlay" onclick="if(event.target===this) closeCoachModal()" style="position:fixed;inset:0;background:rgba(15,42,94,0.45);z-index:1000;align-items:center;justify-content:center;">
+  <div class="coach-modal">
+    <div class="coach-modal-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="coach-icon">C</div>
+        <div>
+          <div class="coach-title">Coach's Ideal Answer</div>
+          <div class="coach-subtitle">Only you can see this</div>
+        </div>
+      </div>
+      <button onclick="closeCoachModal()" class="coach-modal-close">&times;</button>
+    </div>
+    <div class="coach-answer-container" id="coach-answer-container">
+      <div class="coach-answer-text" id="coach-answer-text"></div>
+    </div>
+  </div>
+</div>

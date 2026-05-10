@@ -101,9 +101,24 @@ export function updateAdaptiveIndicator(adaptiveData) {
 /* ── Coach answer ────────────────────────────────────────────────────────── */
 
 export function renderCoachAnswer(text) {
-  const container = document.getElementById("coach-answer-container");
-  container.style.display = "block";
-  document.getElementById("coach-answer-text").textContent = text;
+  const html = text
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/^\s*\+\s(.+)/gm, "<li>$1</li>")
+    .replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>")
+    .replace(/\n\n/g, "</p><p>")
+    .replace(/^(?!<)(.+)/gm, "<p>$1</p>");
+
+  document.getElementById("coach-answer-text").innerHTML = html;
+  document.getElementById("coach-answer-container").style.display = "block";
+  const overlay = document.getElementById("coach-modal-overlay");
+  overlay.style.display = "flex";
+  overlay.style.alignItems = "center";
+  overlay.style.justifyContent = "center";
+}
+
+export function closeCoachModal() {
+  document.getElementById("coach-modal-overlay").style.display = "none";
 }
 
 export async function fetchCoachAnswer() {
@@ -121,7 +136,6 @@ export async function fetchCoachAnswer() {
     if (data.error) { showToast(data.error); return; }
 
     renderCoachAnswer(data.coach_answer);
-    btn.style.display = "none";
   } catch {
     showToast("Failed to generate answer.");
   } finally {

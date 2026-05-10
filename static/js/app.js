@@ -15,7 +15,7 @@
  */
 
 import { updateCharCount } from "./modules/ui.js";
-import { fetchCoachAnswer, closeEvaluation } from "./modules/panels.js";
+import { fetchCoachAnswer, closeCoachModal, closeEvaluation } from "./modules/panels.js";
 import { toggleSpeech, initSpeechRecognition } from "./modules/speech.js";
 import {
   startInterview,
@@ -36,6 +36,7 @@ window.skipQuestion       = skipQuestion;
 window.resetInterview     = resetInterview;
 window.endAndEvaluate     = endAndEvaluate;
 window.getCoachAnswer     = fetchCoachAnswer;
+window.closeCoachModal    = closeCoachModal;
 window.closeEvaluation    = closeEvaluation;
 window.toggleSpeech       = toggleSpeech;
 window.downloadTranscript = downloadTranscript;

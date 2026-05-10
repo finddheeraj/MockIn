@@ -44,6 +44,7 @@ export async function startInterview() {
     document.getElementById("interview-panel").classList.add("active");
     document.getElementById("btn-download").style.display   = "inline-flex";
     setInterviewActive(true);
+    document.getElementById("btn-coach-answer").style.display = "inline-flex";
     setStatus("Live Interview", true);
 
     if (state.activeProvider === "both") {
@@ -82,7 +83,10 @@ export async function submitAnswer() {
 
     // Reset coach answer slot for new round
     document.getElementById("coach-answer-container").style.display = "none";
-    document.getElementById("btn-coach-answer").style.display = "inline-flex";
+    const coachBtn = document.getElementById("btn-coach-answer");
+    coachBtn.style.display   = "inline-flex";
+    coachBtn.disabled        = false;
+    coachBtn.textContent     = "Get Coach Answer";
 
     if (data.score) {
       pushScore(data.score);
@@ -135,7 +139,10 @@ export async function skipQuestion() {
     if (data.error) { showToast(data.error); return; }
 
     document.getElementById("coach-answer-container").style.display = "none";
-    document.getElementById("btn-coach-answer").style.display = "inline-flex";
+    const coachBtn = document.getElementById("btn-coach-answer");
+    coachBtn.style.display   = "inline-flex";
+    coachBtn.disabled        = false;
+    coachBtn.textContent     = "Get Coach Answer";
 
     if (data.provider === "both") {
       if (data.recruiter_message)       addMessage("recruiter", data.recruiter_message, "Grok");
