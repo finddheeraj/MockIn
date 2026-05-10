@@ -10,7 +10,11 @@ Key design choices:
   - It outputs short, bullet-pointed coaching notes only for the candidate
 """
 
+import logging
 from config import MODEL, LOCAL_MODEL_NAME, COACH_MAX_TOKENS, COACH_TEMPERATURE
+from cache import make_key, get_lru, set_lru, get_fs, set_fs
+
+logger = logging.getLogger(__name__)
 
 # System prompt — sets the coach's persona and output format
 SYSTEM_PROMPT = """You are a silent, invisible interview coach observing a live mock interview.
@@ -57,9 +61,25 @@ def get_feedback(client, topic: str, difficulty: str, history: list, candidate_a
     Called after every candidate answer — in parallel with the recruiter's follow-up.
     Returns coaching feedback as a plain string (bullet points with emojis).
 
+    Cache: in-process LRU keyed by (topic, difficulty, last_question, answer).
+    Same question + same answer always produces the same coaching feedback.
+
     When reference_data is provided (from knowledge base tool), the coach
     compares the candidate's answer against ideal points and flags gaps.
     """
+    # Extract the last question for the cache key (same logic as build_transcript)
+    last_question = ""
+    for msg in reversed(history):
+        if msg["role"] == "assistant":
+            last_question = msg["content"]
+            break
+
+    cache_key = make_key("coach_feedback", topic, difficulty, last_question, candidate_answer)
+    cached = get_lru(cache_key)
+    if cached is not None:
+        logger.debug("get_feedback cache hit: %s", cache_key[:8])
+        return cached
+
     system     = build_system_prompt(topic, difficulty)
     transcript = build_transcript(history, candidate_answer)
 
@@ -97,7 +117,9 @@ def get_feedback(client, topic: str, difficulty: str, history: list, candidate_a
         temperature=COACH_TEMPERATURE,
     )
 
-    return response.choices[0].message.content
+    feedback = response.choices[0].message.content
+    set_lru(cache_key, feedback)
+    return feedback
 
 
 ANSWER_SYSTEM_PROMPT = """You are an expert interview coach. Given an interview question, generate the ideal answer a candidate should give.
@@ -118,7 +140,16 @@ def generate_answer(client, topic: str, difficulty: str, question: str, model_na
     """
     Generate an ideal answer for the given interview question.
     Used when the candidate clicks "Get Coach Answer" because they don't know the answer.
+
+    Cache: filesystem-backed (survives restarts), keyed by (topic, difficulty, question).
+    Ideal answers for a given question are deterministic enough to persist across deploys.
     """
+    cache_key = make_key("coach_answer", topic, difficulty, question)
+    cached = get_fs(cache_key)
+    if cached is not None:
+        logger.debug("generate_answer fs cache hit: %s", cache_key[:8])
+        return cached
+
     system = ANSWER_SYSTEM_PROMPT.format(topic=topic, difficulty=difficulty)
 
     reference_section = ""
@@ -146,4 +177,6 @@ def generate_answer(client, topic: str, difficulty: str, question: str, model_na
         temperature=0.5,
     )
 
-    return response.choices[0].message.content
+    answer = response.choices[0].message.content
+    set_fs(cache_key, answer)
+    return answer

@@ -34,8 +34,15 @@ from reportlab.lib.enums import TA_LEFT, TA_CENTER
 
 from llm_client import get_grok_client, get_local_client
 from config import LLM_PROVIDER, MODEL, LOCAL_MODEL_NAME, MIN_ROUNDS_FOR_EVAL
+from cache import stats as cache_stats
 
 interview_bp = Blueprint("interview", __name__)
+
+
+@interview_bp.route("/cache-stats", methods=["GET"])
+def get_cache_stats():
+    """Debug endpoint: shows current LRU and filesystem cache sizes."""
+    return jsonify(cache_stats())
 
 
 @interview_bp.route("/session-status", methods=["GET"])
@@ -184,7 +191,12 @@ def submit_answer():
     adaptive_state["strong_areas"] = strong_areas
 
     # ── Step 2: Adaptive controller (LLM on even rounds, rule-based on odd) ──
-    if round_num % 2 == 0:
+    # Extra guard: skip the LLM adaptive call if the score delta vs last round
+    # is small (< 1.5 pts) — the rule-based fallback is good enough in that case.
+    last_score_val = scores[-2]["overall"] if len(scores) >= 2 else None
+    score_delta = abs(score_result["overall"] - last_score_val) if last_score_val is not None else 999
+
+    if round_num % 2 == 0 and score_delta >= 1.5:
         adaptive_decision = decide_next_action(
             primary_client, topic, adaptive_state, score_result, scores, primary_model
         )

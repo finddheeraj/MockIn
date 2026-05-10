@@ -7,7 +7,11 @@ Uses low temperature for consistency.
 """
 
 import json
+import logging
 from config import MODEL, SCORER_MAX_TOKENS, SCORER_TEMPERATURE, SCORING_DIMENSIONS
+from cache import make_key, get_lru, set_lru
+
+logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = """You are a technical interview scoring engine. Your job is to evaluate a candidate's answer objectively.
 
@@ -46,7 +50,17 @@ def score_answer(client, topic: str, difficulty: str, question: str, candidate_a
     """
     Score a single candidate answer. Returns structured score dict.
     Falls back to default scores if JSON parsing fails.
+
+    Cache: in-process LRU keyed by (topic, difficulty, question, answer).
+    Identical answers to identical questions always get the same score,
+    so this is safe to cache and avoids a synchronous LLM call on every round.
     """
+    cache_key = make_key("score", topic, difficulty, question, candidate_answer)
+    cached = get_lru(cache_key)
+    if cached is not None:
+        logger.debug("score_answer cache hit: %s", cache_key[:8])
+        return cached
+
     system = SYSTEM_PROMPT.format(topic=topic, difficulty=difficulty)
 
     user_content = (
@@ -74,7 +88,7 @@ def score_answer(client, topic: str, difficulty: str, question: str, candidate_a
                 raw = raw[4:]
         result = json.loads(raw)
 
-        return {
+        parsed = {
             "overall": float(result.get("overall", 5.0)),
             "dimensions": {
                 "clarity": int(result.get("dimensions", {}).get("clarity", 5)),
@@ -86,6 +100,8 @@ def score_answer(client, topic: str, difficulty: str, question: str, candidate_a
             "subtopic": result.get("subtopic", "general"),
             "brief_rationale": result.get("brief_rationale", ""),
         }
+        set_lru(cache_key, parsed)
+        return parsed
     except (json.JSONDecodeError, ValueError, TypeError):
         return _default_score()
 

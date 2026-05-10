@@ -8,7 +8,11 @@ Responsibilities:
   - Maintain conversation history across turns
 """
 
+import logging
 from config import MODEL, LOCAL_MODEL_NAME, RECRUITER_MAX_TOKENS, RECRUITER_TEMPERATURE
+from cache import make_key, get_fs, set_fs
+
+logger = logging.getLogger(__name__)
 
 # System prompt template — injected with topic and difficulty at runtime
 SYSTEM_PROMPT = """You are an experienced technical interviewer at a well-respected company.
@@ -52,7 +56,23 @@ def ask_opening_question(client, topic: str, difficulty: str, model_name: str = 
     """
     Called once at the start of an interview session.
     Returns the recruiter's first question as a plain string.
+
+    Cache: filesystem-backed (survives Render restarts / cold starts).
+    Opening questions for a given (topic, difficulty) pair are reusable —
+    they don't depend on any prior conversation state.
+    A small pool of 3 cached variants is maintained per (topic, difficulty)
+    so the experience doesn't feel identical every time.
     """
+    import random
+
+    # Pick one of 3 cache slots at random — gives variety while still caching
+    slot = random.randint(0, 2)
+    cache_key = make_key("opening_question", topic, difficulty, slot)
+    cached = get_fs(cache_key)
+    if cached is not None:
+        logger.debug("ask_opening_question fs cache hit: slot=%d %s", slot, cache_key[:8])
+        return cached
+
     system = build_system_prompt(topic, difficulty)
 
     response = client.chat.completions.create(
@@ -73,7 +93,9 @@ def ask_opening_question(client, topic: str, difficulty: str, model_name: str = 
         temperature=RECRUITER_TEMPERATURE,
     )
 
-    return response.choices[0].message.content
+    opening = response.choices[0].message.content
+    set_fs(cache_key, opening)
+    return opening
 
 
 CONTEXT_WINDOW = 6  # last 3 exchanges (3 assistant + 3 user messages)
