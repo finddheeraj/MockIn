@@ -18,7 +18,7 @@ Agentic execution order per /answer:
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from flask import Blueprint, request, jsonify, session, make_response
 import io, textwrap
-from agents.recruiter import ask_opening_question, ask_followup
+from agents.recruiter import ask_opening_question, ask_followup, close_session
 from agents.coach import get_feedback, generate_answer
 from agents.scorer import score_answer, compute_weak_areas
 from agents.adaptive_controller import decide_next_action, _fallback_decision
@@ -411,11 +411,12 @@ def end_interview():
 
     primary_client, primary_model = _get_primary_client()
 
+    closing_message = close_session(primary_client, topic, difficulty, history, primary_model)
     evaluation = evaluate_session(
         primary_client, topic, difficulty, history, scores, adaptive_state, primary_model
     )
 
-    return jsonify({"evaluation": evaluation})
+    return jsonify({"evaluation": evaluation, "closing_message": closing_message})
 
 
 @interview_bp.route("/reset", methods=["POST"])

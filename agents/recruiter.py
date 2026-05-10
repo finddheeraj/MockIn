@@ -11,16 +11,32 @@ Responsibilities:
 from config import MODEL, LOCAL_MODEL_NAME, RECRUITER_MAX_TOKENS, RECRUITER_TEMPERATURE
 
 # System prompt template — injected with topic and difficulty at runtime
-SYSTEM_PROMPT = """You are a strict, sharp technical interviewer from a top-tier tech company (think Google, Meta, Amazon).
-Your persona: direct, professional, slightly intense — you probe deeply.
+SYSTEM_PROMPT = """You are an experienced technical interviewer at a well-respected company.
+You are warm, curious, and professional -- you genuinely enjoy learning how candidates think.
 
-Rules:
-1. Ask ONE question at a time. Never ask multiple questions in one turn.
-2. After the candidate answers, drill into specifics: ask follow-ups about trade-offs, edge cases, real numbers, or implementation details.
-3. Never give hints or confirm correctness. Stay neutral and probe harder.
-4. Keep your messages concise — max 3 sentences.
-5. Start by greeting briefly and asking your first question on the given topic and difficulty.
-6. Do NOT reveal you are an AI. Stay fully in character.
+Core persona:
+- Conversational and human, not robotic or interrogative
+- You acknowledge what the candidate said before moving forward
+- You probe with genuine curiosity, not pressure
+- You vary your pacing: sometimes you dig deeper, sometimes you pivot to a fresh angle
+
+Conversation rules:
+1. Ask ONE question per turn -- never stack questions.
+2. Always open your reply with a brief natural acknowledgment (1 sentence) referencing their answer.
+   Vary your openers -- never repeat the same phrase. Examples:
+     "That's a solid foundation -- especially the point about X."
+     "Good instinct. I want to push on one thing though..."
+     "I see where you're going. Let me dig into that a bit..."
+     "Interesting approach. Most people don't mention X -- why did you?"
+     "That makes sense at a high level. Let's get more concrete."
+3. Follow-ups should feel like natural curiosity, not a checklist. Reference what they just said.
+4. Occasionally signal topic transitions like a human would (every 2-3 rounds):
+     "You've handled that well -- let me shift gears and ask you about..."
+     "Let's move on. I want to see how you think about..."
+5. Keep each reply to 3-5 sentences max.
+6. When wrapping up the session (if instructed), close warmly:
+     "That was a good conversation -- I appreciated how you walked through your reasoning."
+7. Do NOT reveal you are an AI. Stay fully in character as a human interviewer.
 
 Topic: {topic}
 Difficulty Level: {difficulty}
@@ -43,7 +59,15 @@ def ask_opening_question(client, topic: str, difficulty: str, model_name: str = 
         model=model_name or MODEL,
         messages=[
             {"role": "system", "content": system},
-            {"role": "user",   "content": "Start the interview now."},
+            #{"role": "user",   "content": "Start the interview now."},
+            {
+                "role": "user",
+                "content": (
+                    "Start the interview now. Greet the candidate briefly and warmly -- "
+                    "one or two sentences max -- then ask your first question on the topic. "
+                    "Sound like a real person, not a script."
+                    ),
+    },
         ],
         max_tokens=RECRUITER_MAX_TOKENS,
         temperature=RECRUITER_TEMPERATURE,
@@ -82,6 +106,41 @@ def ask_followup(client, topic: str, difficulty: str, history: list, candidate_a
         messages=messages,
         max_tokens=RECRUITER_MAX_TOKENS,
         temperature=RECRUITER_TEMPERATURE,
+    )
+
+    return response.choices[0].message.content
+
+def close_session(client, topic: str, difficulty: str, history: list, model_name: str = None) -> str:
+    """
+    Generate a warm, human closing remark after the last round.
+    Call this just before showing the end-of-session evaluator.
+    """
+    system = build_system_prompt(topic, difficulty)
+
+    recent_history = [
+        {"role": m["role"], "content": m["content"]}
+        for m in history[-4:]
+    ]
+
+    messages = (
+        [{"role": "system", "content": system}]
+        + recent_history
+        + [{
+            "role": "user",
+            "content": (
+                "[INTERNAL: The interview session is now complete. "
+                "Give a brief, warm, human closing statement -- 2-3 sentences. "
+                "Acknowledge something specific about how the candidate approached the session. "
+                "Do NOT ask another question.]"
+            ),
+        }]
+    )
+
+    response = client.chat.completions.create(
+        model=model_name or MODEL,
+        messages=messages,
+        max_tokens=150,
+        temperature=0.8,
     )
 
     return response.choices[0].message.content

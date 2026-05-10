@@ -25,14 +25,23 @@ ACTIONS = [
     "new_subtopic",
 ]
 
-SYSTEM_PROMPT = """You are an interview strategy controller. You decide what the interviewer should do next based on the candidate's performance.
+SYSTEM_PROMPT = """You are an interview strategy controller. Based on the candidate's performance, you decide what the human interviewer should do next.
+
+Your output is a JSON object with a "recruiter_instructions" field.
+This field must sound like a natural thought a human interviewer would have -- NOT a robotic command.
+
+Bad example:  "Switch to weak area: databases. Probe further."
+Good example: "The candidate is shaky on databases -- transition naturally with something like 'Let me take you in a slightly different direction and see how you think about data storage...'"
+
+Bad example:  "Increase difficulty. Ask edge cases."
+Good example: "They're handling this well -- it's time to raise the stakes. Push toward a system-design scenario that forces trade-off reasoning. Transition with something like 'Nice -- let's make things a bit messier. Imagine you're now dealing with...'"
 
 Available actions:
-- drill_deeper: Ask a more specific follow-up on the same subtopic (candidate showed partial knowledge)
-- switch_to_weak_area: Move to a topic the candidate struggles with (to probe further)
-- increase_difficulty: The candidate is doing well — make it harder
-- decrease_difficulty: The candidate is struggling — give them a fair chance on something easier
-- new_subtopic: Move to a fresh subtopic within the same domain (enough data on current one)
+- drill_deeper: The candidate showed partial knowledge -- dig into a specific detail they mentioned
+- switch_to_weak_area: Move to a topic the candidate struggles with, but transition smoothly
+- increase_difficulty: Candidate is doing well -- raise the stakes
+- decrease_difficulty: Candidate is struggling -- give them a fairer angle on something related
+- new_subtopic: Enough signal on the current subtopic -- open a fresh area naturally
 
 Current interview context:
 - Main topic: {topic}
@@ -50,7 +59,7 @@ RESPOND ONLY WITH VALID JSON:
   "action": "one_of_the_actions_above",
   "target_subtopic": "the subtopic to focus on next",
   "target_difficulty": "Junior|Mid-Level|Senior|Staff / Principal",
-  "recruiter_instructions": "Natural language instruction for the recruiter about what to ask next",
+  "recruiter_instructions": "Natural, human-sounding thought for the interviewer about what to do next and how to transition",
   "reasoning": "Brief explanation of why this decision was made"
 }}
 """
@@ -127,35 +136,49 @@ def _fallback_decision(latest_score: dict, current_subtopic: str, current_diffic
 
     if score >= ADAPTIVE_INCREASE_THRESHOLD:
         return {
-            "action": "increase_difficulty",
-            "target_subtopic": current_subtopic,
-            "target_difficulty": _next_difficulty(current_difficulty),
-            "recruiter_instructions": "The candidate is doing well. Increase complexity and ask about edge cases or scale.",
-            "reasoning": f"Score {score:.1f} exceeds threshold for difficulty increase.",
-        }
+                "action": "increase_difficulty",
+                "target_subtopic": current_subtopic,
+                "target_difficulty": _next_difficulty(current_difficulty),
+                "recruiter_instructions": (
+                    "The candidate is handling this well -- it's time to raise the stakes. "
+                    "Transition naturally: 'Good, let's make this a bit more complex...' then present "
+                    "a harder scenario involving trade-offs or scale."
+                ),
+                "reasoning": f"Score {score:.1f} exceeds threshold for difficulty increase.",
+            }
     elif score <= ADAPTIVE_DECREASE_THRESHOLD:
         return {
-            "action": "decrease_difficulty",
-            "target_subtopic": current_subtopic,
-            "target_difficulty": _prev_difficulty(current_difficulty),
-            "recruiter_instructions": "The candidate is struggling. Simplify and ask a more foundational question.",
-            "reasoning": f"Score {score:.1f} below threshold — reducing difficulty.",
-        }
+                "action": "decrease_difficulty",
+                "target_subtopic": current_subtopic,
+                "target_difficulty": _prev_difficulty(current_difficulty),
+                "recruiter_instructions": (
+                    "The candidate is struggling a bit -- give them a more accessible angle. "
+                    "Transition warmly: 'Let me reframe that a bit...' or 'Let's back up and approach this from a different angle.'"
+                ),
+                "reasoning": f"Score {score:.1f} below threshold -- reducing difficulty.",
+            }
     elif score < ADAPTIVE_DRILL_THRESHOLD and weak_areas:
+        area = weak_areas[0].replace("_", " ")
         return {
-            "action": "switch_to_weak_area",
-            "target_subtopic": weak_areas[0],
-            "target_difficulty": current_difficulty,
-            "recruiter_instructions": f"Switch to asking about {weak_areas[0].replace('_', ' ')} — the candidate needs more probing here.",
-            "reasoning": "Low score and identified weak area to explore.",
+                "action": "switch_to_weak_area",
+                "target_subtopic": weak_areas[0],
+                "target_difficulty": current_difficulty,
+                "recruiter_instructions": (
+                    f"The candidate has a gap in {area} -- pivot there. "
+                    f"Use a natural bridge: 'Let me shift gears and see how you think about {area}...'"
+                ),
+                "reasoning": "Low score and identified weak area to explore.",
         }
     else:
         return {
-            "action": "drill_deeper",
-            "target_subtopic": current_subtopic,
-            "target_difficulty": current_difficulty,
-            "recruiter_instructions": "Ask a deeper follow-up on the same topic. Probe for specifics, trade-offs, or real-world experience.",
-            "reasoning": "Moderate score — probing deeper for more signal.",
+                "action": "drill_deeper",
+                "target_subtopic": current_subtopic,
+                "target_difficulty": current_difficulty,
+                "recruiter_instructions": (
+                    "Probe deeper on what they just said -- pick a specific detail or claim and ask "
+                    "them to justify it, give a concrete example, or walk through an edge case."
+                ),
+                "reasoning": "Moderate score -- probing deeper for more signal.",
         }
 
 
