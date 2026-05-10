@@ -1,0 +1,18 @@
+/* ── Header ──────────────────────────────────────────────────────────────── */
+header {
+  padding: 16px 40px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.logo-name {
+  font-family: var(--sans);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: -0.5px;
+}
+.status-bar { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; color: var(--text-muted); }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-dim); }
+.status-dot.live { background: var(--coach); box-shadow: 0 0 8px var(--coach); animation: pulse 2s ease-in-out infinite; }
