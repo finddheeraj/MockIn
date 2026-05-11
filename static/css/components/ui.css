@@ -90,19 +90,3 @@
 .plan-action    { font-size: 13px; color: var(--text); margin-bottom: 2px; }
 .plan-resources { font-size: 11px; color: var(--text-muted); font-style: italic; }
 .eval-summary   { font-size: 13px; line-height: 1.7; color: var(--text); }
-
-/* ── Responsive ──────────────────────────────────────────────────────────── */
-@media (max-width: 1024px) {
-  #setup-panel { grid-template-columns: 1fr; gap: 40px; }
-  .setup-right { justify-content: center; }
-  .deco-ring { display: none; }
-}
-@media (max-width: 768px) {
-  #interview-panel.active { grid-template-columns: 1fr; }
-  .right-panels { max-height: 400px; }
-  #coach-panel  { max-height: 280px; }
-  .eval-columns { grid-template-columns: 1fr; }
-  .eval-card    { padding: 20px; }
-  main { padding: 0 16px 48px; }
-  .preview-coach-card { display: none; }
-}

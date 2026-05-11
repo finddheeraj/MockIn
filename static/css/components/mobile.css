@@ -1,0 +1,468 @@
+/*
+  mobile.css — Responsive overrides for MockIn
+  ─────────────────────────────────────────────
+  Breakpoints:
+    ≤ 1024px  tablet landscape  (setup collapses to 1 col)
+    ≤ 768px   tablet portrait   (interview stacks vertically)
+    ≤ 600px   large phone       (header compacts, panels flatten)
+    ≤ 480px   small phone       (tight spacing, full-width everything)
+
+  Strategy: desktop styles are authored in the other component files.
+  This file only *overrides* — never duplicates — those rules.
+*/
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TABLET LANDSCAPE  ≤ 1024px
+   Setup: drop 2-column side-by-side → single column, preview below form
+   ══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  main {
+    padding: 0 24px 48px;
+  }
+
+  /* Setup: single column, narrower gap */
+  #setup-panel {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    min-height: unset;
+    padding: 32px 0;
+  }
+
+  .setup-right {
+    justify-content: center;
+  }
+
+  .deco-ring {
+    display: none;
+  }
+
+  /* Keep preview cards side by side at tablet */
+  .preview-interviewer-card {
+    width: 300px;
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TABLET PORTRAIT  ≤ 768px
+   Interview: right panel moves below chat (stacked layout)
+   ══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* ── Main layout ── */
+  main {
+    padding: 0 16px 40px;
+  }
+
+  /* ── Header ── */
+  header {
+    padding: 12px 16px;
+    gap: 10px;
+  }
+
+  .logo-name {
+    font-size: 17px;
+  }
+
+  .status-bar {
+    font-size: 10px;
+  }
+
+  .btn-coach-answer-header {
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+
+  /* ── Setup panel ── */
+  #setup-panel {
+    gap: 28px;
+    padding: 24px 0;
+  }
+
+  .setup-hero h1 {
+    font-size: clamp(30px, 8vw, 40px);
+    letter-spacing: -1.5px;
+  }
+
+  .setup-hero p {
+    font-size: 15px;
+  }
+
+  .feature-badges {
+    gap: 20px;
+  }
+
+  .setup-right {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .preview-interviewer-card {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .preview-coach-card {
+    display: none; /* too cramped alongside the interviewer card */
+  }
+
+  /* ── Interview panel: stack vertically ── */
+  #interview-panel.active {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ── Interview header: wrap buttons on small screens ── */
+  .interview-header {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .interview-meta {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .interview-actions {
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  /* ── Right panels: horizontal scroll strip on tablet ── */
+  .right-panels {
+    position: static; /* un-stick */
+    max-height: none;
+    overflow-y: visible;
+
+    /* Horizontal scrollable row of panels */
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 6px; /* room for scrollbar */
+  }
+
+  .right-panels > * {
+    scroll-snap-align: start;
+    flex: 0 0 80vw;       /* each panel takes ~80% viewport width */
+    max-width: 360px;
+    min-width: 240px;
+    overflow-y: auto;
+    max-height: 320px;
+  }
+
+  /* Score panel: tighten up */
+  .score-panel {
+    padding: 14px;
+  }
+
+  .score-number {
+    font-size: 28px;
+  }
+
+  /* ── Chat area ── */
+  #chat-area {
+    padding: 16px;
+    gap: 12px;
+    min-height: 300px;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+
+  .msg-text {
+    font-size: 13.5px;
+  }
+
+  /* ── Answer area ── */
+  .answer-area {
+    gap: 8px;
+  }
+
+  textarea {
+    min-height: 120px;
+    font-size: 14px;
+  }
+
+  .answer-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .btn-submit {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .btn-skip {
+    flex: 0 0 auto;
+  }
+
+  .char-count,
+  .speech-status {
+    margin-left: 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  /* ── Eval overlay ── */
+  .eval-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .eval-card {
+    padding: 20px 16px;
+    max-height: 90vh;
+  }
+
+  .eval-grade-letter {
+    font-size: 40px;
+  }
+
+  /* ── Coach modal ── */
+  .coach-modal {
+    padding: 18px 16px;
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LARGE PHONE  ≤ 600px
+   Tighter everything, interview header collapses more aggressively
+   ══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  /* ── Header: hide status text, keep dot and coach button ── */
+  #status-text {
+    display: none;
+  }
+
+  /* ── Interview header: stack meta chips and action buttons ── */
+  .interview-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .interview-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  /* ── Action buttons: compact labels ── */
+  .btn-evaluate,
+  .btn-download,
+  .btn-reset {
+    font-size: 10px;
+    padding: 5px 10px;
+  }
+
+  /* ── Right panels: full-width single panel (no horizontal scroll) ── */
+  .right-panels {
+    flex-direction: column;
+    overflow-x: visible;
+    scroll-snap-type: none;
+  }
+
+  .right-panels > * {
+    flex: 1 1 auto;
+    max-width: 100%;
+    min-width: 0;
+    max-height: 260px;
+  }
+
+  /* Collapse reference panel by default on phone — toggleable via JS */
+  #reference-panel {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  /* ── Chat ── */
+  #chat-area {
+    max-height: 45vh;
+    min-height: 220px;
+    padding: 12px;
+  }
+
+  .msg-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+  }
+
+  /* ── Textarea ── */
+  textarea {
+    min-height: 100px;
+    padding: 12px 50px 12px 12px; /* extra right padding for mic button */
+  }
+
+  /* ── Answer actions: submit full width ── */
+  .answer-actions {
+    gap: 6px;
+  }
+
+  .btn-submit {
+    padding: 10px 18px;
+    font-size: 13px;
+  }
+
+  .btn-skip {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  /* ── Setup ── */
+  .setup-card {
+    padding: 20px 16px;
+  }
+
+  .setup-hero h1 {
+    font-size: clamp(26px, 9vw, 36px);
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+  }
+
+  .feature-badges {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .preview-interviewer-card {
+    max-width: 100%;
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SMALL PHONE  ≤ 480px
+   Micro-adjustments for 375px–480px phones (iPhone SE, Galaxy A series)
+   ══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  main {
+    padding: 0 12px 32px;
+  }
+
+  header {
+    padding: 10px 12px;
+  }
+
+  .logo-name {
+    font-size: 15px;
+  }
+
+  .btn-coach-answer-header {
+    font-size: 9.5px;
+    padding: 5px 8px;
+  }
+
+  /* Tighten chat bubbles */
+  .message {
+    gap: 8px;
+  }
+
+  .msg-text {
+    font-size: 13px;
+  }
+
+  /* Score panel: inline layout for dimensions */
+  .score-number {
+    font-size: 26px;
+  }
+
+  .dim-label {
+    width: 52px;
+    font-size: 9px;
+  }
+
+  /* Coach entries */
+  .coach-entry-text {
+    font-size: 12px;
+  }
+
+  /* Eval card */
+  .eval-card {
+    padding: 16px 12px;
+    border-radius: 12px;
+  }
+
+  .eval-header h2 {
+    font-size: 18px;
+  }
+
+  /* Toast: full width on tiny screens */
+  #toast {
+    left: 12px;
+    right: 12px;
+    bottom: 16px;
+    text-align: center;
+  }
+
+  /* Modal: full screen on tiny phones */
+  .coach-modal {
+    width: 100vw;
+    max-height: 95vh;
+    border-radius: 16px 16px 0 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+  }
+
+  #coach-modal-overlay {
+    align-items: flex-end !important;
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TOUCH IMPROVEMENTS (all mobile)
+   ══════════════════════════════════════════════════════════════════════════ */
+@media (hover: none) and (pointer: coarse) {
+  /* Bigger tap targets */
+  .btn-submit,
+  .btn-skip,
+  .btn-start,
+  .btn-evaluate,
+  .btn-reset,
+  .btn-download,
+  .btn-coach-answer-header,
+  .btn-coach-answer {
+    min-height: 44px;
+  }
+
+  select {
+    min-height: 44px;
+  }
+
+  .btn-mic {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Remove hover effects that don't make sense on touch */
+  .btn-submit:hover,
+  .btn-skip:hover,
+  .btn-start:hover {
+    background: initial;
+  }
+
+  .btn-start:hover {
+    background: var(--navy);
+  }
+
+  /* Prevent double-tap zoom on buttons */
+  button,
+  select {
+    touch-action: manipulation;
+  }
+
+  /* Smooth momentum scrolling in panels */
+  #chat-area,
+  .right-panels,
+  #coach-panel,
+  #reference-panel,
+  .eval-card {
+    -webkit-overflow-scrolling: touch;
+  }
+}
