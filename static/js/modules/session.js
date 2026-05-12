@@ -12,6 +12,37 @@ import { setStatus, showToast, setAnswerFormLocked, escapeHtml } from "./ui.js";
 import { state, setInterviewActive, setActiveProvider, setAdaptiveState, pushScore, resetState } from "./state.js";
 import { speakText, stopSpeaking } from "./speech.js";
 
+// Natural conversational fillers
+const fillers = [
+  "So,",
+  "Alright,",
+  "Okay,",
+  "Good.",
+  "Let's see.",
+  "Hmm,",
+  "Interesting.",
+  "Well,"
+];
+
+// Speaks question with filler but displays clean text
+function speakQuestionNaturally(msg) {
+  const filler = fillers[Math.floor(Math.random() * fillers.length)];
+
+  // Final spoken sentence
+  const spokenText = `${filler} ${msg}`;
+
+  speakText(spokenText, (revealedText) => {
+    // Remove filler from visible UI text
+    let display = revealedText;
+
+    if (revealedText.startsWith(filler)) {
+      display = revealedText.slice(filler.length).trim();
+    }
+
+    document.getElementById("aq-text").textContent = display;
+  });
+}
+
 // Holds the current pending round data while waiting for backend response
 let _pendingRound = { question: "", answer: "" };
 
@@ -44,7 +75,7 @@ export async function startInterview() {
     const msg = data.recruiter_message || data.recruiter_message_local || "";
     _pendingRound.question = msg;
     showQuestion(msg);
-    speakText(msg);
+    speakQuestionNaturally(msg);
   } catch {
     showToast("Connection failed. Check your API key.");
     btnStart.disabled    = false;
@@ -92,7 +123,7 @@ export async function submitAnswer() {
     const nextQ = data.recruiter_message || data.recruiter_message_local || "";
     _pendingRound.question = nextQ;
     showQuestion(nextQ);
-    speakText(nextQ);
+    speakQuestionNaturally(nextQ);
     // Reset coach answer modal for new round
     document.getElementById("coach-answer-container").style.display = "none";
     const coachBtn = document.getElementById("btn-coach-answer");
@@ -130,7 +161,7 @@ export async function skipQuestion() {
     const nextQ = data.recruiter_message || data.recruiter_message_local || "";
     _pendingRound.question = nextQ;
     showQuestion(nextQ);
-    speakText(nextQ);
+    speakQuestionNaturally(nextQ);
 
     document.getElementById("coach-answer-container").style.display = "none";
     const coachBtn = document.getElementById("btn-coach-answer");

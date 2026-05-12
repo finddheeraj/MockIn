@@ -24,7 +24,7 @@ export function showQuestion(text) {
 
   if (empty) empty.remove();
 
-  el.textContent     = text;
+  el.textContent     = "";
   card.style.display = "block";
   card.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }

@@ -22,17 +22,17 @@ export function initSpeechRecognition() {
   }
 
   recognition = new SpeechRecognition();
-  recognition.continuous     = true;
+  recognition.continuous = true;
   recognition.interimResults = true;
-  recognition.lang           = "en-US";
+  recognition.lang = "en-US";
 
   let finalTranscript = "";
-  let existingText    = "";
+  let existingText = "";
 
   recognition.onstart = () => {
     isListening = true;
-    const input  = document.getElementById("answer-input");
-    existingText    = input.value.trimEnd();
+    const input = document.getElementById("answer-input");
+    existingText = input.value.trimEnd();
     finalTranscript = "";
     document.getElementById("btn-mic").classList.add("listening");
     document.getElementById("mic-pulse").style.display = "block";
@@ -49,9 +49,9 @@ export function initSpeechRecognition() {
         interim += transcript;
       }
     }
-    const input  = document.getElementById("answer-input");
+    const input = document.getElementById("answer-input");
     const prefix = existingText ? existingText + " " : "";
-    input.value  = prefix + finalTranscript + interim;
+    input.value = prefix + finalTranscript + interim;
     updateCharCount(input);
   };
 
@@ -94,7 +94,7 @@ let ttsEnabled = localStorage.getItem("tts-enabled") === "true";
 
 function _updateSpeakerBtn() {
   const btn = document.getElementById("btn-speaker");
-  if(!btn) return;
+  if (!btn) return;
   btn.classList.toggle("active", ttsEnabled);
   btn.title = ttsEnabled ? "Narration ON - click to mute" : "Narration OFF - click to unmute";
 }
@@ -103,40 +103,84 @@ export function toggleNarration() {
   ttsEnabled = !ttsEnabled;
   localStorage.setItem("tts-enabled", ttsEnabled);
   _updateSpeakerBtn();
-  if(!ttsEnabled) window.speechSynthesis.cancel();
+  if (!ttsEnabled) window.speechSynthesis.cancel();
 }
 
-export function speakText(text) {
-  if(!ttsEnabled || !window.speechSynthesis) return;
+export function speakText(text, onWord) {
+  if (!ttsEnabled || !window.speechSynthesis) {
+    if (onWord) _revealWordsWithoutAudio(text, onWord);
+    return;
+  }
   window.speechSynthesis.cancel();
 
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.rate = 0.95;
-  utter.pitch = 1.0;
+  setTimeout(() => {
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate  = 0.88;
+    utter.pitch = 1.05;
 
-  const voices = window.speechSynthesis.getVoices();
-  const preffered = voices.find(v => /Google US|Microsoft Mark| Microsoft David|Samantha/i.test(v.name))
-                  || voices.find(v => v.lang.startsWith("en") && v.localService);
+    const voices    = window.speechSynthesis.getVoices();
+    const preferred =
+      voices.find(v => /Google US English/i.test(v.name))
+      || voices.find(v => /Microsoft (Guy|Ryan|Jenny)/i.test(v.name))
+      || voices.find(v => /Samantha/i.test(v.name))
+      || voices.find(v => v.lang === "en-US" && !v.localService)
+      || voices.find(v => v.lang.startsWith("en"));
+    if (preferred) utter.voice = preferred;
 
-  if (preffered) {
-    utter.voice = preffered;
-  }
+    if (onWord) {
+      const words = text.split(" ");
+      // Estimate ms per word based on rate — ~130wpm at rate 1.0, scaled by utter.rate
+      const msPerWord = (60000 / 130) / utter.rate;  // ~524ms per word at rate 0.88
+      let wordIndex   = 0;
+      let interval    = null;
 
-  window.speechSynthesis.speak(utter);
+      utter.onstart = () => {
+        wordIndex = 0;
+        interval  = setInterval(() => {
+          wordIndex++;
+          onWord(words.slice(0, wordIndex).join(" "));
+          if (wordIndex >= words.length) clearInterval(interval);
+        }, msPerWord);
+      };
+
+      utter.onend = () => {
+        clearInterval(interval);
+        onWord(text); // guarantee full text shown
+      };
+
+      utter.onerror = () => {
+        clearInterval(interval);
+        onWord(text);
+      };
+    }
+
+    window.speechSynthesis.speak(utter);
+  }, 600);
+}
+
+// Fallback: reveal words visually even when TTS is off
+function _revealWordsWithoutAudio(text, onWord) {
+  const words = text.split(" ");
+  let i = 0;
+  const interval = setInterval(() => {
+    i++;
+    onWord(words.slice(0, i).join(" "));
+    if (i >= words.length) clearInterval(interval);
+  }, 120);
 }
 
 export function stopSpeaking() {
-  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
 }
 
 export function initNarration() {
-  if(!window.speechSynthesis) {
+  if (!window.speechSynthesis) {
     const btn = document.getElementById("btn-speaker");
-    if(btn) btn.style.display = "none";
+    if (btn) btn.style.display = "none";
     return;
   }
   // Voices load async in some browsers
-  window.speechSynthesis.onvoiceschanged = () => {};
+  window.speechSynthesis.onvoiceschanged = () => { };
   window.speechSynthesis.getVoices();
   _updateSpeakerBtn();
 }
