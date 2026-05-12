@@ -1,24 +1,18 @@
 /**
  * session.js
  * ───────────
- * Orchestrates interview session lifecycle:
- *   startInterview, submitAnswer, skipQuestion, resetInterview,
- *   endAndEvaluate, checkForExistingSession, resumeSession
- *
- * This is the "controller" layer — it calls api.js then delegates
- * rendering to chat.js and panels.js and status changes to ui.js.
+ * Orchestrates interview session lifecycle.
+ * Uses the new round-card system from chat.js.
  */
 
 import { apiStart, apiAnswer, apiSkip, apiReset, apiEnd, apiSessionStatus } from "./api.js";
-import { addMessage, addTypingIndicator, removeTypingIndicator, clearChat } from "./chat.js";
-import { renderScore, renderReferenceAnswer, updateAdaptiveIndicator, renderEvaluation } from "./panels.js";
-import {
-  setStatus, showToast, setAnswerFormLocked, escapeHtml,
-} from "./ui.js";
-import {
-  state, setInterviewActive, setActiveProvider, setAdaptiveState,
-  pushScore, resetState,
-} from "./state.js";
+import { showQuestion, showTyping, hideTyping, sealRound, clearChat, toggleRoundCard, switchRoundTab } from "./chat.js";
+import { updateAdaptiveIndicator, renderEvaluation, renderCoachAnswer, closeCoachModal, fetchCoachAnswer } from "./panels.js";
+import { setStatus, showToast, setAnswerFormLocked, escapeHtml } from "./ui.js";
+import { state, setInterviewActive, setActiveProvider, setAdaptiveState, pushScore, resetState } from "./state.js";
+
+// Holds the current pending round data while waiting for backend response
+let _pendingRound = { question: "", answer: "" };
 
 /* ── Start ───────────────────────────────────────────────────────────────── */
 
@@ -33,26 +27,22 @@ export async function startInterview() {
 
   try {
     const data = await apiStart(topic, difficulty);
-
     if (data.error) { showToast(data.error); return; }
 
     setActiveProvider(data.provider || "grok");
 
-    document.getElementById("setup-panel").style.display    = "none";
-    document.getElementById("chip-topic").textContent       = topic;
-    document.getElementById("chip-level").textContent       = difficulty;
+    document.getElementById("setup-panel").style.display  = "none";
+    document.getElementById("chip-topic").textContent     = topic;
+    document.getElementById("chip-level").textContent     = difficulty;
     document.getElementById("interview-panel").classList.add("active");
-    document.getElementById("btn-download").style.display   = "inline-flex";
-    setInterviewActive(true);
+    document.getElementById("btn-download").style.display = "inline-flex";
     document.getElementById("btn-coach-answer").style.display = "inline-flex";
+    setInterviewActive(true);
     setStatus("Live Interview", true);
 
-    if (state.activeProvider === "both") {
-      if (data.recruiter_message)       addMessage("recruiter", data.recruiter_message, "Grok");
-      if (data.recruiter_message_local) addMessage("recruiter", data.recruiter_message_local, "Llama-3.1-8B");
-    } else {
-      addMessage("recruiter", data.recruiter_message);
-    }
+    const msg = data.recruiter_message || data.recruiter_message_local || "";
+    _pendingRound.question = msg;
+    showQuestion(msg);
   } catch {
     showToast("Connection failed. Check your API key.");
     btnStart.disabled    = false;
@@ -66,51 +56,49 @@ export async function startInterview() {
 export async function submitAnswer() {
   const input  = document.getElementById("answer-input");
   const answer = input.value.trim();
-
   if (!answer) { showToast("Please write an answer first."); return; }
 
+  const question = _pendingRound.question;
+
   setAnswerFormLocked(true);
-  addMessage("candidate", answer);
   input.value = "";
   document.getElementById("char-count").textContent = "0 chars";
-  addTypingIndicator();
+  showTyping();
 
   try {
     const data = await apiAnswer(answer);
-    removeTypingIndicator();
-
+    hideTyping();
     if (data.error) { showToast(data.error); return; }
 
-    // Reset coach answer slot for new round
-    document.getElementById("coach-answer-container").style.display = "none";
-    const coachBtn = document.getElementById("btn-coach-answer");
-    coachBtn.style.display   = "inline-flex";
-    coachBtn.disabled        = false;
-    coachBtn.textContent     = "Get Coach Answer";
-
-    if (data.score) {
-      pushScore(data.score);
-      renderScore(data.score);
-    }
     if (data.adaptive) {
       setAdaptiveState(data.adaptive);
       updateAdaptiveIndicator(data.adaptive);
     }
-    if (data.reference_answer) {
-      renderReferenceAnswer(data.reference_answer);
-    }
+    if (data.score) pushScore(data.score);
 
-    if (data.provider === "both") {
-      if (data.recruiter_message)       addMessage("recruiter", data.recruiter_message, "Grok");
-      if (data.recruiter_message_local) addMessage("recruiter", data.recruiter_message_local, "Llama-3.1-8B");
-      if (data.coach_feedback)          addCoachFeedback(data.coach_feedback, "Grok");
-      if (data.coach_feedback_local)    addCoachFeedback(data.coach_feedback_local, "Llama-3.1-8B", true);
-    } else {
-      addMessage("recruiter", data.recruiter_message);
-      if (data.coach_feedback) addCoachFeedback(data.coach_feedback);
+    // Seal the completed round as a collapsible card
+    sealRound({
+      question,
+      answer,
+      score:     data.score     || null,
+      refData:   data.reference_answer || null,
+      coachText: data.coach_feedback   || null,
+    });
+
+    // Set up next question
+    const nextQ = data.recruiter_message || data.recruiter_message_local || "";
+    _pendingRound.question = nextQ;
+    showQuestion(nextQ);
+
+    // Reset coach answer modal for new round
+    document.getElementById("coach-answer-container").style.display = "none";
+    const coachBtn = document.getElementById("btn-coach-answer");
+    if (coachBtn) {
+      coachBtn.disabled    = false;
+      coachBtn.textContent = "Get Coach Answer";
     }
   } catch {
-    removeTypingIndicator();
+    hideTyping();
     showToast("Something went wrong. Try again.");
   } finally {
     setAnswerFormLocked(false);
@@ -118,40 +106,35 @@ export async function submitAnswer() {
   }
 }
 
-// Lazy import to avoid circular dependency with chat.js
-async function addCoachFeedback(...args) {
-  const { addCoachFeedback: _add } = await import("./chat.js");
-  _add(...args);
-}
-
 /* ── Skip ────────────────────────────────────────────────────────────────── */
 
 export async function skipQuestion() {
+  const question = _pendingRound.question;
+
   setAnswerFormLocked(true);
   document.getElementById("btn-skip").disabled = true;
-  addMessage("candidate", "[Skipped]");
-  addTypingIndicator();
+  showTyping();
 
   try {
     const data = await apiSkip();
-    removeTypingIndicator();
-
+    hideTyping();
     if (data.error) { showToast(data.error); return; }
+
+    // Seal as skipped (no score/ref/coach)
+    sealRound({ question, answer: "", skipped: true });
+
+    const nextQ = data.recruiter_message || data.recruiter_message_local || "";
+    _pendingRound.question = nextQ;
+    showQuestion(nextQ);
 
     document.getElementById("coach-answer-container").style.display = "none";
     const coachBtn = document.getElementById("btn-coach-answer");
-    coachBtn.style.display   = "inline-flex";
-    coachBtn.disabled        = false;
-    coachBtn.textContent     = "Get Coach Answer";
-
-    if (data.provider === "both") {
-      if (data.recruiter_message)       addMessage("recruiter", data.recruiter_message, "Grok");
-      if (data.recruiter_message_local) addMessage("recruiter", data.recruiter_message_local, "Llama-3.1-8B");
-    } else {
-      addMessage("recruiter", data.recruiter_message);
+    if (coachBtn) {
+      coachBtn.disabled    = false;
+      coachBtn.textContent = "Get Coach Answer";
     }
   } catch {
-    removeTypingIndicator();
+    hideTyping();
     showToast("Failed to skip. Try again.");
   } finally {
     setAnswerFormLocked(false);
@@ -167,19 +150,16 @@ export function resetInterview() {
 
   apiReset().finally(() => {
     resetState();
+    _pendingRound = { question: "", answer: "" };
 
     document.getElementById("interview-panel").classList.remove("active");
-    document.getElementById("score-panel").style.display     = "none";
-    document.getElementById("reference-panel").style.display = "none";
-    document.getElementById("chip-adaptive").style.display   = "none";
+    document.getElementById("chip-adaptive").style.display = "none";
     clearChat();
 
     document.getElementById("setup-panel").style.display = "flex";
-
     const btnStart       = document.getElementById("btn-start");
     btnStart.disabled    = false;
     btnStart.textContent = "Start Interview →";
-
     setStatus("Ready");
   });
 }
@@ -187,8 +167,8 @@ export function resetInterview() {
 /* ── End & Evaluate ──────────────────────────────────────────────────────── */
 
 export async function endAndEvaluate() {
-  if (state.roundCount < 2) {
-    showToast("Need at least 2 rounds for evaluation.");
+  if (state.roundCount < 1 && state.scores.length < 1) {
+    showToast("Need at least 1 answered round for evaluation.");
     return;
   }
 
@@ -218,26 +198,21 @@ export async function checkForExistingSession() {
 
     const resume = confirm(
       `You have an active interview in progress:\n\n` +
-      `Topic: ${data.topic}\n` +
-      `Difficulty: ${data.difficulty}\n` +
-      `Round: ${data.round}\n\n` +
+      `Topic: ${data.topic}\nDifficulty: ${data.difficulty}\nRound: ${data.round}\n\n` +
       `Would you like to resume? (Cancel to start fresh)`
     );
 
-    if (resume) {
-      resumeSession(data);
-    } else {
-      await apiReset();
-    }
+    if (resume) resumeSession(data);
+    else await apiReset();
   } catch {
-    // Silently fail — show setup panel as normal
+    // Silently fail
   }
 }
 
 function resumeSession(data) {
-  document.getElementById("setup-panel").style.display    = "none";
-  document.getElementById("chip-topic").textContent       = data.topic;
-  document.getElementById("chip-level").textContent       = data.difficulty;
+  document.getElementById("setup-panel").style.display  = "none";
+  document.getElementById("chip-topic").textContent     = data.topic;
+  document.getElementById("chip-level").textContent     = data.difficulty;
   document.getElementById("interview-panel").classList.add("active");
 
   setInterviewActive(true);
@@ -245,21 +220,26 @@ function resumeSession(data) {
   state.scores     = data.scores || [];
   setStatus("Live Interview", true);
 
-  for (const msg of (data.history || [])) {
-    if (msg.role === "assistant") addMessage("recruiter", msg.content);
-    else if (msg.role === "user") addMessage("candidate", msg.content);
+  // Replay history as sealed cards (best effort — no score/ref data available)
+  const history = data.history || [];
+  for (let i = 0; i < history.length - 1; i += 2) {
+    const q = history[i]?.role === "assistant" ? history[i].content : "";
+    const a = history[i + 1]?.role === "user"  ? history[i + 1].content : "";
+    if (q) sealRound({ question: q, answer: a, score: null, refData: null, coachText: null });
   }
 
-  if (state.scores.length > 0) {
-    renderScore(state.scores[state.scores.length - 1]);
+  // Last message is unanswered question
+  const last = history[history.length - 1];
+  if (last?.role === "assistant") {
+    _pendingRound.question = last.content;
+    showQuestion(last.content);
   }
 
   if (data.adaptive_state) {
     setAdaptiveState(data.adaptive_state);
-    const history = data.adaptive_state.action_history || [];
-    if (history.length > 0) {
-      const actionKey = history[history.length - 1].split(":")[0];
-      updateAdaptiveIndicator({ action: actionKey, reasoning: "" });
+    const hist = data.adaptive_state.action_history || [];
+    if (hist.length > 0) {
+      updateAdaptiveIndicator({ action: hist[hist.length - 1].split(":")[0], reasoning: "" });
     }
   }
 }

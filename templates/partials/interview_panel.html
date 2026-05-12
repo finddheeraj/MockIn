@@ -13,48 +13,20 @@
     </div>
   </div>
 
-  <div id="chat-area">
+  <!-- Round cards appear here, one per Q&A -->
+  <div id="rounds-area">
     <div class="chat-empty" id="chat-empty">
       <div class="chat-empty-icon">Q</div>
       <span>Interview starting…</span>
     </div>
   </div>
 
-  <div class="right-panels">
-    <div id="score-panel" class="score-panel" style="display:none;">
-      <div class="score-header">
-        <span class="score-title">Performance</span>
-        <span class="score-round" id="score-round-label">—</span>
-      </div>
-      <div class="score-overall" id="score-overall">—</div>
-      <div class="score-dimensions" id="score-dimensions"></div>
-      <div class="score-rationale" id="score-rationale"></div>
-    </div>
-
-    <div id="reference-panel" class="reference-panel" style="display:none;">
-      <div class="reference-header">
-        <div class="reference-icon">R</div>
-        <div>
-          <div class="reference-title">Reference Answer</div>
-          <div class="reference-subtitle">Ideal response points</div>
-        </div>
-      </div>
-      <div class="reference-content" id="reference-content"></div>
-    </div>
-
-    <div id="coach-panel">
-      <div class="coach-header">
-        <div class="coach-icon">C</div>
-        <div>
-          <div class="coach-title">Coach</div>
-          <div class="coach-subtitle">Only you can see this</div>
-        </div>
-      </div>
-      <div class="coach-empty" id="coach-empty">
-        <div class="coach-empty-icon">--</div>
-        <span>Watching silently…<br>Feedback after your first answer.</span>
-      </div>
-      <div class="coach-entries" id="coach-entries" style="display:none;"></div>
+  <!-- Active question card (current unanswered question) -->
+  <div id="active-question-card" class="active-question-card" style="display:none;">
+    <div class="aq-label">INTERVIEWER</div>
+    <div class="aq-text" id="aq-text"></div>
+    <div class="typing-indicator" id="aq-typing" style="display:none;">
+      <span></span><span></span><span></span>
     </div>
   </div>
 
@@ -63,7 +35,9 @@
     <div class="answer-input-wrap">
       <textarea id="answer-input" placeholder="Type or speak your answer… be specific, mention tools, give examples." rows="4" oninput="updateCharCount(this)"></textarea>
       <button class="btn-mic" id="btn-mic" onclick="toggleSpeech()" title="Hold to speak">
-        <svg id="mic-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-3.07A7 7 0 0 0 19 11h-2z"/></svg>
+        <svg id="mic-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-3.07A7 7 0 0 0 19 11h-2z"/>
+        </svg>
         <div class="mic-pulse" id="mic-pulse"></div>
       </button>
     </div>
@@ -80,7 +54,7 @@
 </div><!-- /interview-panel -->
 
 <!-- Coach Answer Modal -->
-<div id="coach-modal-overlay" onclick="if(event.target===this) closeCoachModal()" style="position:fixed;inset:0;background:rgba(15,42,94,0.45);z-index:1000;align-items:center;justify-content:center;">
+<div id="coach-modal-overlay" onclick="if(event.target===this) closeCoachModal()">
   <div class="coach-modal">
     <div class="coach-modal-header">
       <div style="display:flex;align-items:center;gap:10px;">
@@ -90,7 +64,7 @@
           <div class="coach-subtitle">Only you can see this</div>
         </div>
       </div>
-      <button onclick="closeCoachModal()" class="coach-modal-close">&times;</button>
+      <button onclick="closeCoachModal()" class="modal-close-btn">&times;</button>
     </div>
     <div class="coach-answer-container" id="coach-answer-container">
       <div class="coach-answer-text" id="coach-answer-text"></div>

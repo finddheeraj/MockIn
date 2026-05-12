@@ -18,18 +18,13 @@ import { updateCharCount } from "./modules/ui.js";
 import { fetchCoachAnswer, closeCoachModal, closeEvaluation } from "./modules/panels.js";
 import { toggleSpeech, initSpeechRecognition } from "./modules/speech.js";
 import {
-  startInterview,
-  submitAnswer,
-  skipQuestion,
-  resetInterview,
-  endAndEvaluate,
-  checkForExistingSession,
-  downloadTranscript,
+  startInterview, submitAnswer, skipQuestion,
+  resetInterview, endAndEvaluate, checkForExistingSession, downloadTranscript,
 } from "./modules/session.js";
 import { state } from "./modules/state.js";
+import { toggleRoundCard, switchRoundTab } from "./modules/chat.js";
 
 /* ── Expose to inline HTML handlers ─────────────────────────────────────── */
-// The HTML uses onclick="startInterview()" etc., so these must be on window.
 window.startInterview     = startInterview;
 window.submitAnswer       = submitAnswer;
 window.skipQuestion       = skipQuestion;
@@ -41,6 +36,8 @@ window.closeEvaluation    = closeEvaluation;
 window.toggleSpeech       = toggleSpeech;
 window.downloadTranscript = downloadTranscript;
 window.updateCharCount    = updateCharCount;
+window.toggleRoundCard    = toggleRoundCard;
+window.switchRoundTab     = switchRoundTab;
 
 /* ── Keyboard shortcut: Ctrl/Cmd+Enter submits answer ───────────────────── */
 document.addEventListener("keydown", (e) => {

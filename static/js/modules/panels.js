@@ -1,84 +1,13 @@
 /**
  * panels.js
  * ──────────
- * Functions that render data into the right-hand panels:
- *   - Score panel
- *   - Reference answer panel
- *   - Adaptive difficulty chip
- *   - Coach answer
- *   - Evaluation overlay
- * Depends on: ui.js (escapeHtml, showToast), state.js (roundCount)
+ * - Adaptive difficulty chip
+ * - Coach answer modal (Get Coach Answer button)
+ * - Evaluation overlay
  */
 
 import { escapeHtml, showToast } from "./ui.js";
 import { state } from "./state.js";
-
-/* ── Score ───────────────────────────────────────────────────────────────── */
-
-export function renderScore(scoreData) {
-  const panel = document.getElementById("score-panel");
-  panel.style.display = "block";
-
-  document.getElementById("score-round-label").textContent =
-    `Round ${scoreData.round || state.roundCount}`;
-
-  const overall   = scoreData.overall || 0;
-  const overallEl = document.getElementById("score-overall");
-  overallEl.innerHTML =
-    `<span class="score-number">${overall.toFixed(1)}</span><span class="score-max">/10</span>`;
-  overallEl.className =
-    "score-overall " + (overall >= 7 ? "good" : overall >= 5 ? "ok" : "low");
-
-  const dims   = scoreData.dimensions || {};
-  const dimsEl = document.getElementById("score-dimensions");
-  dimsEl.innerHTML = Object.entries(dims).map(([key, val]) => `
-    <div class="dim-row">
-      <span class="dim-label">${key}</span>
-      <div class="dim-bar">
-        <div class="dim-fill ${val >= 7 ? "good" : val >= 5 ? "ok" : "low"}" style="width:${val * 10}%"></div>
-      </div>
-      <span class="dim-val">${val}</span>
-    </div>
-  `).join("");
-
-  document.getElementById("score-rationale").textContent =
-    scoreData.brief_rationale || "";
-}
-
-/* ── Reference answer ────────────────────────────────────────────────────── */
-
-export function renderReferenceAnswer(refData) {
-  const panel   = document.getElementById("reference-panel");
-  const content = document.getElementById("reference-content");
-
-  if (!refData || (!refData.key_concepts && !refData.ideal_answer_points)) {
-    panel.style.display = "none";
-    return;
-  }
-
-  panel.style.display = "block";
-  let html = "";
-
-  if (refData.key_concepts?.length) {
-    html += `<div class="ref-section"><div class="ref-label">Key Concepts</div><ul class="ref-list">`;
-    refData.key_concepts.forEach(c => { html += `<li>${escapeHtml(c)}</li>`; });
-    html += `</ul></div>`;
-  }
-
-  if (refData.ideal_answer_points?.length) {
-    html += `<div class="ref-section"><div class="ref-label">Ideal Answer Points</div><ul class="ref-list">`;
-    refData.ideal_answer_points.forEach(p => { html += `<li>${escapeHtml(p)}</li>`; });
-    html += `</ul></div>`;
-  }
-
-  if (refData.common_mistakes?.length) {
-    html += `<div class="ref-section"><div class="ref-label">Common Mistakes</div><ul class="ref-list mistakes">`;
-    refData.common_mistakes.forEach(m => { html += `<li>${escapeHtml(m)}</li>`; });
-    html += `</ul></div>`;
-  }
-
-  content.innerHTML = html;
-}
 
 /* ── Adaptive difficulty indicator ──────────────────────────────────────── */
 
@@ -93,12 +22,12 @@ const ACTION_LABELS = {
 export function updateAdaptiveIndicator(adaptiveData) {
   if (!adaptiveData) return;
   const chip = document.getElementById("chip-adaptive");
-  chip.textContent  = ACTION_LABELS[adaptiveData.action] || adaptiveData.action;
+  chip.textContent   = ACTION_LABELS[adaptiveData.action] || adaptiveData.action;
   chip.style.display = "inline-block";
-  chip.title        = adaptiveData.reasoning || "";
+  chip.title         = adaptiveData.reasoning || "";
 }
 
-/* ── Coach answer ────────────────────────────────────────────────────────── */
+/* ── Coach answer modal ──────────────────────────────────────────────────── */
 
 export function renderCoachAnswer(text) {
   const html = text
@@ -111,14 +40,11 @@ export function renderCoachAnswer(text) {
 
   document.getElementById("coach-answer-text").innerHTML = html;
   document.getElementById("coach-answer-container").style.display = "block";
-  const overlay = document.getElementById("coach-modal-overlay");
-  overlay.style.display = "flex";
-  overlay.style.alignItems = "center";
-  overlay.style.justifyContent = "center";
+  document.getElementById("coach-modal-overlay").classList.add("open");
 }
 
 export function closeCoachModal() {
-  document.getElementById("coach-modal-overlay").style.display = "none";
+  document.getElementById("coach-modal-overlay").classList.remove("open");
 }
 
 export async function fetchCoachAnswer() {
@@ -132,9 +58,7 @@ export async function fetchCoachAnswer() {
       headers: { "Content-Type": "application/json" },
     });
     const data = await res.json();
-
     if (data.error) { showToast(data.error); return; }
-
     renderCoachAnswer(data.coach_answer);
   } catch {
     showToast("Failed to generate answer.");
@@ -161,7 +85,6 @@ export function renderEvaluation(evalData) {
   `).join("");
 
   const listHtml = (arr) => (arr || []).map(s => `<li>${escapeHtml(s)}</li>`).join("");
-
   const planHtml = (evalData.improvement_plan || []).map(item => `
     <div class="plan-item priority-${item.priority || "medium"}">
       <div class="plan-area">${escapeHtml(item.area || "")}</div>
@@ -170,19 +93,15 @@ export function renderEvaluation(evalData) {
     </div>
   `).join("");
 
-  const patternsHtml = listHtml(evalData.patterns);
-
   content.innerHTML = `
     <div class="eval-grade">
       <span class="eval-grade-letter">${escapeHtml(evalData.overall_grade || "N/A")}</span>
       <span class="eval-grade-score">${(evalData.overall_score || 0).toFixed(1)}/10</span>
     </div>
-
     <div class="eval-section">
       <h3>Dimension Breakdown</h3>
       <div class="eval-dimensions">${dimHtml}</div>
     </div>
-
     <div class="eval-columns">
       <div class="eval-section">
         <h3>Strengths</h3>
@@ -193,14 +112,11 @@ export function renderEvaluation(evalData) {
         <ul class="eval-list weaknesses">${listHtml(evalData.weaknesses) || "<li>—</li>"}</ul>
       </div>
     </div>
-
-    ${patternsHtml ? `<div class="eval-section"><h3>Patterns Observed</h3><ul class="eval-list patterns">${patternsHtml}</ul></div>` : ""}
-
+    ${listHtml(evalData.patterns) ? `<div class="eval-section"><h3>Patterns Observed</h3><ul class="eval-list patterns">${listHtml(evalData.patterns)}</ul></div>` : ""}
     <div class="eval-section">
       <h3>Improvement Plan</h3>
       <div class="eval-plan">${planHtml || "<p>No specific recommendations.</p>"}</div>
     </div>
-
     <div class="eval-section">
       <h3>Summary</h3>
       <p class="eval-summary">${escapeHtml(evalData.summary || "")}</p>
@@ -211,3 +127,9 @@ export function renderEvaluation(evalData) {
 export function closeEvaluation() {
   document.getElementById("eval-overlay").style.display = "none";
 }
+
+/* ── Stubs for removed panel modal (no longer used) ─────────────────────── */
+export function renderScore()           {}
+export function renderReferenceAnswer() {}
+export function openPanelModal()        {}
+export function closePanelModal()       {}
