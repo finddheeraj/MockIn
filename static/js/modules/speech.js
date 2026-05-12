@@ -86,3 +86,59 @@ export function toggleSpeech() {
     recognition.start();
   }
 }
+
+
+/*------Text to speech (narration)------*/
+
+let ttsEnabled = localStorage.getItem("tts-enabled") === "true";
+
+function _updateSpeakerBtn() {
+  const btn = document.getElementById("btn-speaker");
+  if(!btn) return;
+  btn.classList.toggle("active", ttsEnabled);
+  btn.title = ttsEnabled ? "Narration ON - click to mute" : "Narration OFF - click to unmute";
+}
+
+export function toggleNarration() {
+  ttsEnabled = !ttsEnabled;
+  localStorage.setItem("tts-enabled", ttsEnabled);
+  _updateSpeakerBtn();
+  if(!ttsEnabled) window.speechSynthesis.cancel();
+}
+
+export function speakText(text) {
+  if(!ttsEnabled || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = 0.95;
+  utter.pitch = 1.0;
+
+  const voices = window.speechSynthesis.getVoices();
+  const preffered = voices.find(v => /Google US|Microsoft Mark| Microsoft David|Samantha/i.test(v.name))
+                  || voices.find(v => v.lang.startsWith("en") && v.localService);
+
+  if (preffered) {
+    utter.voice = preffered;
+  }
+
+  window.speechSynthesis.speak(utter);
+}
+
+export function stopSpeaking() {
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+}
+
+export function initNarration() {
+  if(!window.speechSynthesis) {
+    const btn = document.getElementById("btn-speaker");
+    if(btn) btn.style.display = "none";
+    return;
+  }
+  // Voices load async in some browsers
+  window.speechSynthesis.onvoiceschanged = () => {};
+  window.speechSynthesis.getVoices();
+  _updateSpeakerBtn();
+}
+
+

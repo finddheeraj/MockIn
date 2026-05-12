@@ -10,6 +10,7 @@ import { showQuestion, showTyping, hideTyping, sealRound, clearChat, toggleRound
 import { updateAdaptiveIndicator, renderEvaluation, renderCoachAnswer, closeCoachModal, fetchCoachAnswer } from "./panels.js";
 import { setStatus, showToast, setAnswerFormLocked, escapeHtml } from "./ui.js";
 import { state, setInterviewActive, setActiveProvider, setAdaptiveState, pushScore, resetState } from "./state.js";
+import { speakText, stopSpeaking } from "./speech.js";
 
 // Holds the current pending round data while waiting for backend response
 let _pendingRound = { question: "", answer: "" };
@@ -43,6 +44,7 @@ export async function startInterview() {
     const msg = data.recruiter_message || data.recruiter_message_local || "";
     _pendingRound.question = msg;
     showQuestion(msg);
+    speakText(msg);
   } catch {
     showToast("Connection failed. Check your API key.");
     btnStart.disabled    = false;
@@ -54,6 +56,7 @@ export async function startInterview() {
 /* ── Submit answer ───────────────────────────────────────────────────────── */
 
 export async function submitAnswer() {
+  stopSpeaking();
   const input  = document.getElementById("answer-input");
   const answer = input.value.trim();
   if (!answer) { showToast("Please write an answer first."); return; }
@@ -89,7 +92,7 @@ export async function submitAnswer() {
     const nextQ = data.recruiter_message || data.recruiter_message_local || "";
     _pendingRound.question = nextQ;
     showQuestion(nextQ);
-
+    speakText(nextQ);
     // Reset coach answer modal for new round
     document.getElementById("coach-answer-container").style.display = "none";
     const coachBtn = document.getElementById("btn-coach-answer");
@@ -109,6 +112,7 @@ export async function submitAnswer() {
 /* ── Skip ────────────────────────────────────────────────────────────────── */
 
 export async function skipQuestion() {
+  stopSpeaking();
   const question = _pendingRound.question;
 
   setAnswerFormLocked(true);
@@ -126,6 +130,7 @@ export async function skipQuestion() {
     const nextQ = data.recruiter_message || data.recruiter_message_local || "";
     _pendingRound.question = nextQ;
     showQuestion(nextQ);
+    speakText(nextQ);
 
     document.getElementById("coach-answer-container").style.display = "none";
     const coachBtn = document.getElementById("btn-coach-answer");
@@ -146,6 +151,7 @@ export async function skipQuestion() {
 /* ── Reset ───────────────────────────────────────────────────────────────── */
 
 export function resetInterview() {
+  stopSpeaking();
   if (!confirm("End this session and start over?")) return;
 
   apiReset().finally(() => {

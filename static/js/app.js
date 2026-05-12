@@ -16,7 +16,7 @@
 
 import { updateCharCount } from "./modules/ui.js";
 import { fetchCoachAnswer, closeCoachModal, closeEvaluation } from "./modules/panels.js";
-import { toggleSpeech, initSpeechRecognition } from "./modules/speech.js";
+import { toggleSpeech, initSpeechRecognition, toggleNarration, initNarration } from "./modules/speech.js";
 import {
   startInterview, submitAnswer, skipQuestion,
   resetInterview, endAndEvaluate, checkForExistingSession, downloadTranscript,
@@ -38,6 +38,7 @@ window.downloadTranscript = downloadTranscript;
 window.updateCharCount    = updateCharCount;
 window.toggleRoundCard    = toggleRoundCard;
 window.switchRoundTab     = switchRoundTab;
+window.toggleNarration    = toggleNarration;
 
 /* ── Keyboard shortcut: Ctrl/Cmd+Enter submits answer ───────────────────── */
 document.addEventListener("keydown", (e) => {
@@ -49,3 +50,4 @@ document.addEventListener("keydown", (e) => {
 /* ── Initialise on load ──────────────────────────────────────────────────── */
 initSpeechRecognition();
 checkForExistingSession();
+initNarration();
