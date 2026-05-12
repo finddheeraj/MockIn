@@ -197,21 +197,15 @@ export async function endAndEvaluate() {
 
 /* ── Session resumption ──────────────────────────────────────────────────── */
 
+// AFTER
 export async function checkForExistingSession() {
   try {
     const data = await apiSessionStatus();
     if (!data.active) return;
-
-    const resume = confirm(
-      `You have an active interview in progress:\n\n` +
-      `Topic: ${data.topic}\nDifficulty: ${data.difficulty}\nRound: ${data.round}\n\n` +
-      `Would you like to resume? (Cancel to start fresh)`
-    );
-
-    if (resume) resumeSession(data);
-    else await apiReset();
+    // Always auto-resume — refresh should never lose the session
+    resumeSession(data);
   } catch {
-    // Silently fail
+    // Silently fail — show setup panel as normal
   }
 }
 
@@ -253,3 +247,11 @@ function resumeSession(data) {
 export function downloadTranscript() {
   window.location.href = "/download-pdf";
 }
+
+// Warn before tab close / navigation away during an active session
+window.addEventListener("beforeunload", (e) => {
+  if (state.interviewActive) {
+    e.preventDefault();
+    e.returnValue = ""; // Required for Chrome — shows browser's default dialog
+  }
+});
