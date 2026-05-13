@@ -53,8 +53,10 @@ def session_status():
     """
     topic = session.get("topic")
     history = session.get("history", [])
+    
+    has_answer = any(msg.get("role") == "user" for msg in history)
 
-    if topic and len(history) > 0:
+    if topic and has_answer:
         return jsonify({
             "active": True,
             "topic": topic,
