@@ -116,14 +116,45 @@ export async function startInterview() {
   }
 }
 
+// Max words allowed to appear in a single input event (typing physically produces 1 word at a time)
+const PASTE_WORD_THRESHOLD = 8;
+
 function _attachTextareaListeners() {
   const input = document.getElementById("answer-input");
+
+  // Block paste via keyboard shortcut and context menu
+  input.addEventListener("paste", _onPaste);
+
+  // Secondary guard: catch bulk text that slips in via drag-drop or browser autofill
   input.addEventListener("input", _onAnswerInput);
 }
 
+function _onPaste(e) {
+  e.preventDefault();
+  showToast("Paste is disabled — please type your answer or use the mic 🎙");
+}
+
 function _onAnswerInput(e) {
+  const input = e.target;
+
+  // Detect drag-drop or autofill: if word count jumped by more than threshold in one event, strip the addition
+  const previousWordCount = (input.dataset.prevWordCount | 0);
+  const currentWordCount  = input.value.trim().split(/\s+/).filter(Boolean).length;
+  const delta             = currentWordCount - previousWordCount;
+
+  if (delta > PASTE_WORD_THRESHOLD) {
+    // Roll back: restore previous value stored before this event
+    input.value = input.dataset.prevValue || "";
+    showToast("Paste is disabled — please type your answer or use the mic 🎙");
+    return;
+  }
+
+  // Keep a snapshot for the next event
+  input.dataset.prevValue     = input.value;
+  input.dataset.prevWordCount = currentWordCount;
+
   _resetInactivityTimer();
-  _maybeInterrupt(e.target.value);
+  _maybeInterrupt(input.value);
 }
 
 /* ── Submit answer ───────────────────────────────────────────────────────── */
