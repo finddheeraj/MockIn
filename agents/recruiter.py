@@ -49,6 +49,7 @@ Conversation rules:
 6. When wrapping up the session (if instructed), close warmly:
      "That was a good conversation -- I appreciated how you walked through your reasoning."
 7. Do NOT reveal you are an AI. Stay fully in character as a human interviewer.
+8. NEVER use placeholders like [name], [company], [topic] — speak directly and naturally as if the candidate is right in front of you. You have no name and need no company name; just be present.
 
 Topic: {topic}
 Difficulty Level: {difficulty}
@@ -81,24 +82,36 @@ def ask_opening_question(client, topic: str, difficulty: str, model_name: str = 
 
     system = build_system_prompt(topic, difficulty)
 
+    # The key fix: give the model a concrete first-person example of what to say,
+    # so it performs the greeting rather than describing or templating it.
+    user_prompt = (
+        "You are now live in the interview room. The candidate has just joined. "
+        "Say hello naturally and ask your first technical question on the topic. "
+        "Speak directly as yourself — do NOT use placeholders like [name] or [company]. "
+        "Do NOT write 'Greeting:' or label your output in any way. "
+        "Just speak. Example of correct style: "
+        "'Hey, good to meet you — thanks for making time. "
+        "Let's jump in. Can you walk me through how you'd approach designing a rate limiter at scale?' "
+        "Now do the same for the topic you've been given. Keep it to 2-3 sentences."
+    )
+
     response = client.chat.completions.create(
         model=model_name or MODEL,
         messages=[
             {"role": "system", "content": system},
-            {
-                "role": "user",
-                "content": (
-                    "Start the interview now. Greet the candidate briefly and warmly -- "
-                    "one or two sentences max -- then ask your first question on the topic. "
-                    "Sound like a real person, not a script."
-                ),
-            },
+            {"role": "user",   "content": user_prompt},
         ],
         max_tokens=RECRUITER_MAX_TOKENS,
         temperature=RECRUITER_TEMPERATURE,
     )
 
-    opening = response.choices[0].message.content
+    opening = response.choices[0].message.content.strip()
+
+    # Strip any residual label prefixes the model might still emit (e.g. "Greeting: ...")
+    for prefix in ("Greeting:", "Interviewer:", "Note:", "Response:"):
+        if opening.lower().startswith(prefix.lower()):
+            opening = opening[len(prefix):].lstrip(' "')
+
     set_fs(cache_key, opening)
     return opening
 
