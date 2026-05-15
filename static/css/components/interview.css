@@ -373,3 +373,155 @@ textarea:disabled     { opacity: 0.5; }
 .aq-label[data-mode="clarification"] {
   color: var(--coach);
 }
+
+/* ── Interview Body Layout (two-column: chat + cameras) ──────────────────── */
+.interview-body {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.interview-chat-col {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.interview-camera-col {
+  flex: 0 0 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: sticky;
+  top: 80px;
+}
+
+/* ── Camera Box ──────────────────────────────────────────────────────────── */
+.camera-box {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.camera-box__label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 8px 12px 6px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+
+.camera-box__feed {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Interviewer dummy feed */
+.interviewer-dummy {
+  background: linear-gradient(145deg, #1a2a50 0%, #0f2a5e 60%, #122040 100%);
+}
+
+.dummy-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.camera-box__name {
+  font-size: 12px;
+  color: rgba(255,255,255,0.75);
+  font-family: var(--sans);
+  letter-spacing: 0.3px;
+}
+
+/* User camera feed */
+.user-cam-feed {
+  background: #111;
+}
+
+#user-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* mirror effect */
+}
+
+.cam-no-video {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.4);
+  font-size: 12px;
+  z-index: 1;
+}
+
+/* Live badge */
+.cam-live-badge {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
+  border-radius: 20px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-family: var(--mono);
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0.3px;
+  z-index: 2;
+}
+
+.cam-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  flex-shrink: 0;
+  animation: pulse 2s infinite;
+}
+
+/* Shorter textarea override */
+textarea {
+  min-height: 90px !important;
+}
+
+/* ── Responsive: stack on narrow screens ──────────────────────────────────── */
+@media (max-width: 768px) {
+  .interview-body {
+    flex-direction: column;
+  }
+  .interview-camera-col {
+    flex: none;
+    flex-direction: row;
+    position: static;
+    width: 100%;
+  }
+  .camera-box {
+    flex: 1;
+  }
+}

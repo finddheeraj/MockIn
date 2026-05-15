@@ -16,6 +16,7 @@ import { updateAdaptiveIndicator, renderEvaluation, renderCoachAnswer, closeCoac
 import { setStatus, showToast, setAnswerFormLocked, escapeHtml } from "./ui.js";
 import { state, setInterviewActive, setActiveProvider, setAdaptiveState, pushScore, resetState } from "./state.js";
 import { speakText, stopSpeaking } from "./speech.js";
+import { startUserCamera, stopUserCamera } from "./camera.js";
 import {
   showReactionBubble, showInterruptBubble, removeInterruptBubble,
   showNudgeBubble, removeNudgeBubble, showClarificationBubble,
@@ -99,6 +100,7 @@ export async function startInterview() {
     document.getElementById("btn-download").style.display = "inline-flex";
     document.getElementById("btn-coach-answer").style.display = "inline-flex";
     setInterviewActive(true);
+    startUserCamera();
     setStatus("Live Interview", true);
 
     const msg = data.recruiter_message || data.recruiter_message_local || "";
@@ -320,6 +322,7 @@ export function resetInterview() {
 
   apiReset().finally(() => {
     resetState();
+    stopUserCamera();
     _pendingRound = { question: "", answer: "" };
     _interruptFiredThisRound = false;
 
@@ -386,6 +389,7 @@ function resumeSession(data) {
   document.getElementById("interview-panel").classList.add("active");
 
   setInterviewActive(true);
+    startUserCamera();
   state.roundCount = data.round  || 0;
   state.scores     = data.scores || [];
   setStatus("Live Interview", true);
