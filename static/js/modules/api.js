@@ -3,7 +3,6 @@
  * ───────
  * All async fetch calls to the Flask backend.
  * Functions here return data; they do NOT directly mutate the DOM.
- * Callers in app.js are responsible for consuming results and updating UI.
  */
 
 export async function apiStart(topic, difficulty) {
@@ -20,6 +19,32 @@ export async function apiAnswer(answer) {
     method:  "POST",
     headers: { "Content-Type": "application/json" },
     body:    JSON.stringify({ answer }),
+  });
+  return res.json();
+}
+
+export async function apiClarify(answer) {
+  const res = await fetch("/clarify", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ answer }),
+  });
+  return res.json();
+}
+
+export async function apiInterrupt(partialAnswer) {
+  const res = await fetch("/interrupt", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ partial_answer: partialAnswer }),
+  });
+  return res.json();
+}
+
+export async function apiNudge() {
+  const res = await fetch("/nudge", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
   });
   return res.json();
 }

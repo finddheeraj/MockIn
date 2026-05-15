@@ -6,15 +6,23 @@ Responsibilities:
   - Ask the opening question based on topic + difficulty
   - Receive candidate answers and drill into specifics
   - Maintain conversation history across turns
+
+Conversational modes added:
+  - Thread pull       : quotes a fragment from the candidate's last answer
+  - Mid-answer reaction: short verbal acknowledgment before the follow-up question
+  - Interrupt         : called mid-typing with partial answer text
+  - Clarification     : asks the candidate to expand before scoring
 """
 
 import logging
+import random
 from config import MODEL, LOCAL_MODEL_NAME, RECRUITER_MAX_TOKENS, RECRUITER_TEMPERATURE
 from cache import make_key, get_fs, set_fs
 
 logger = logging.getLogger(__name__)
 
-# System prompt template — injected with topic and difficulty at runtime
+# ── System prompt ─────────────────────────────────────────────────────────────
+
 SYSTEM_PROMPT = """You are an experienced technical interviewer at a well-respected company.
 You are warm, curious, and professional -- you genuinely enjoy learning how candidates think.
 
@@ -48,24 +56,22 @@ Difficulty Level: {difficulty}
 
 
 def build_system_prompt(topic: str, difficulty: str) -> str:
-    """Fill the system prompt template with the chosen topic and difficulty."""
     return SYSTEM_PROMPT.format(topic=topic, difficulty=difficulty)
 
 
+# ── Utility ───────────────────────────────────────────────────────────────────
+
+def extract_quote(answer: str, max_words: int = 12) -> str:
+    """Pull the last N words from the candidate's answer for thread-pull prompts."""
+    words = answer.strip().split()
+    if len(words) <= max_words:
+        return answer.strip()
+    return " ".join(words[-max_words:])
+
+
+# ── Opening question ──────────────────────────────────────────────────────────
+
 def ask_opening_question(client, topic: str, difficulty: str, model_name: str = None) -> str:
-    """
-    Called once at the start of an interview session.
-    Returns the recruiter's first question as a plain string.
-
-    Cache: filesystem-backed (survives Render restarts / cold starts).
-    Opening questions for a given (topic, difficulty) pair are reusable —
-    they don't depend on any prior conversation state.
-    A small pool of 3 cached variants is maintained per (topic, difficulty)
-    so the experience doesn't feel identical every time.
-    """
-    import random
-
-    # Pick one of 3 cache slots at random — gives variety while still caching
     slot = random.randint(0, 2)
     cache_key = make_key("opening_question", topic, difficulty, slot)
     cached = get_fs(cache_key)
@@ -79,15 +85,14 @@ def ask_opening_question(client, topic: str, difficulty: str, model_name: str = 
         model=model_name or MODEL,
         messages=[
             {"role": "system", "content": system},
-            #{"role": "user",   "content": "Start the interview now."},
             {
                 "role": "user",
                 "content": (
                     "Start the interview now. Greet the candidate briefly and warmly -- "
                     "one or two sentences max -- then ask your first question on the topic. "
                     "Sound like a real person, not a script."
-                    ),
-    },
+                ),
+            },
         ],
         max_tokens=RECRUITER_MAX_TOKENS,
         temperature=RECRUITER_TEMPERATURE,
@@ -98,23 +103,138 @@ def ask_opening_question(client, topic: str, difficulty: str, model_name: str = 
     return opening
 
 
-CONTEXT_WINDOW = 6  # last 3 exchanges (3 assistant + 3 user messages)
+# ── Follow-up (main conversational turn) ─────────────────────────────────────
+
+CONTEXT_WINDOW = 6
 
 
-def ask_followup(client, topic: str, difficulty: str, history: list, candidate_answer: str, model_name: str = None, adaptive_instructions: str = None) -> str:
+def ask_followup(
+    client,
+    topic: str,
+    difficulty: str,
+    history: list,
+    candidate_answer: str,
+    model_name: str = None,
+    adaptive_instructions: str = None,
+    round_num: int = 0,
+) -> dict:
     """
     Called after every candidate answer.
-    Uses a sliding window of the last 3 exchanges to limit token usage.
-    When adaptive_instructions are provided, they guide what the recruiter asks next.
+
+    Returns a dict:
+      - "reaction"  : short 1-sentence verbal acknowledgment (shown first in UI)
+      - "followup"  : the actual next question
     """
     system = build_system_prompt(topic, difficulty)
+
+    # Thread-pull: every even round, reference a specific phrase the candidate said
+    if round_num > 0 and round_num % 2 == 0:
+        quote = extract_quote(candidate_answer, max_words=10)
+        system += (
+            f'\n\nTHREAD DIRECTIVE: The candidate just said "...{quote}". '
+            "In your follow-up, explicitly reference this phrase and probe it. "
+            f'Example: "You mentioned \'{quote}\' -- can you walk me through what you meant specifically?"'
+        )
 
     if adaptive_instructions:
         system += f"\n\nSTRATEGY DIRECTIVE (follow this for your next question):\n{adaptive_instructions}"
 
     recent_history = [
-    {"role": m["role"], "content": m["content"]}
-    for m in history[-CONTEXT_WINDOW:]
+        {"role": m["role"], "content": m["content"]}
+        for m in history[-CONTEXT_WINDOW:]
+    ]
+
+    messages = (
+        [{"role": "system", "content": system}]
+        + recent_history
+        + [{"role": "user", "content": candidate_answer}]
+    )
+
+    # Step 1: short reaction
+    reaction_system = (
+        "You are a human technical interviewer. The candidate just finished speaking. "
+        "Give ONE short natural verbal reaction -- 1 sentence only, no question yet. "
+        "Vary your phrasing. Examples: 'Hmm, interesting angle.' / 'That's a solid start.' / "
+        "'I want to dig into that.' / 'Okay, I see where you're going.' "
+        "Do NOT ask a question. Do NOT say 'great answer'."
+    )
+    reaction_resp = client.chat.completions.create(
+        model=model_name or MODEL,
+        messages=[
+            {"role": "system", "content": reaction_system},
+            {"role": "user", "content": f"Candidate just said: {candidate_answer[:300]}"},
+        ],
+        max_tokens=60,
+        temperature=0.85,
+    )
+    reaction = reaction_resp.choices[0].message.content.strip()
+
+    # Step 2: follow-up question
+    followup_resp = client.chat.completions.create(
+        model=model_name or MODEL,
+        messages=messages,
+        max_tokens=RECRUITER_MAX_TOKENS,
+        temperature=RECRUITER_TEMPERATURE,
+    )
+    followup = followup_resp.choices[0].message.content.strip()
+
+    return {"reaction": reaction, "followup": followup}
+
+
+# ── Interrupt (mid-answer) ────────────────────────────────────────────────────
+
+def generate_interrupt(client, topic: str, partial_answer: str, model_name: str = None) -> str:
+    """
+    Called with the candidate's partial (incomplete) answer.
+    Returns a short interrupt. Caller decides whether to fire it (~30% of the time).
+    """
+    system = (
+        f"You are a human technical interviewer on the topic: {topic}. "
+        "The candidate is mid-answer. You noticed something specific they just said. "
+        "Jump in with a short clarifying question -- 1-2 sentences. "
+        "Start with a natural interrupt marker: 'Sorry to jump in--', 'Hold on--', "
+        "'Quick question--', or 'Wait--'. Pick ONE thing they said. Don't summarise everything."
+    )
+
+    snippet = partial_answer.strip()[-200:]
+
+    response = client.chat.completions.create(
+        model=model_name or MODEL,
+        messages=[
+            {"role": "system", "content": system},
+            {"role": "user", "content": f"Candidate is mid-sentence: ...{snippet}"},
+        ],
+        max_tokens=80,
+        temperature=0.75,
+    )
+    return response.choices[0].message.content.strip()
+
+
+# ── Clarification request (before scoring) ───────────────────────────────────
+
+def ask_clarification(
+    client,
+    topic: str,
+    difficulty: str,
+    history: list,
+    candidate_answer: str,
+    model_name: str = None,
+) -> str:
+    """
+    Called when a candidate's answer is too short or vague.
+    Scoring is deferred until the candidate replies to the clarification.
+    """
+    system = build_system_prompt(topic, difficulty)
+    system += (
+        "\n\nCLARIFICATION MODE: The candidate gave a brief or vague answer. "
+        "Ask ONE short clarifying question that invites them to expand on a specific part. "
+        "Do NOT score or move to a new topic. Sound genuinely curious. "
+        "Examples: 'When you say X, do you mean...?' / 'Can you be more specific about...?' "
+    )
+
+    recent_history = [
+        {"role": m["role"], "content": m["content"]}
+        for m in history[-4:]
     ]
 
     messages = (
@@ -126,17 +246,15 @@ def ask_followup(client, topic: str, difficulty: str, history: list, candidate_a
     response = client.chat.completions.create(
         model=model_name or MODEL,
         messages=messages,
-        max_tokens=RECRUITER_MAX_TOKENS,
-        temperature=RECRUITER_TEMPERATURE,
+        max_tokens=120,
+        temperature=0.7,
     )
+    return response.choices[0].message.content.strip()
 
-    return response.choices[0].message.content
+
+# ── Session close ─────────────────────────────────────────────────────────────
 
 def close_session(client, topic: str, difficulty: str, history: list, model_name: str = None) -> str:
-    """
-    Generate a warm, human closing remark after the last round.
-    Call this just before showing the end-of-session evaluator.
-    """
     system = build_system_prompt(topic, difficulty)
 
     recent_history = [
@@ -164,5 +282,4 @@ def close_session(client, topic: str, difficulty: str, history: list, model_name
         max_tokens=150,
         temperature=0.8,
     )
-
     return response.choices[0].message.content
