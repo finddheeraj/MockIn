@@ -1,16 +1,16 @@
 /* ── Setup Panel ─────────────────────────────────────────────────────────── */
 #setup-panel {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 56px;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 1fr);
+  gap: clamp(28px, 4vw, 56px);
   align-items: start;
-  min-height: calc(100vh - 108px);
+  min-height: calc(100vh - 92px);
   padding: 6px 0 0;
   box-sizing: border-box;
 }
 
 /* LEFT */
-.setup-left { display: flex; flex-direction: column; gap: 22px; }
+.setup-left { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
 
 .setup-hero h1 {
   font-family: var(--sans);
@@ -42,6 +42,7 @@
   padding: 22px;
   display: flex; flex-direction: column; gap: 14px;
   box-shadow: var(--shadow-sm);
+  max-width: 100%;
 }
 
 .field-group { display: flex; flex-direction: column; gap: 7px; }
@@ -92,6 +93,7 @@ select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-l
   letter-spacing: -0.2px;
   cursor: pointer;
   transition: background 0.2s, transform 0.15s;
+  width: 100%;
 }
 .btn-start:hover { background: #1a3a6b; }
 .btn-start:active { transform: scale(0.98); }
@@ -293,6 +295,7 @@ select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-l
     font-weight: 500;
     cursor: pointer;
     transition: border-color 0.25s, background 0.25s;
+    width: 100%;
 }
 
 .btn-preview:hover {
@@ -312,6 +315,7 @@ select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-l
     border-radius: var(--radius);
     padding: 16px 18px;
     box-shadow: var(--shadow-sm);
+    max-width: 100%;
 }
 
 .resume-card__header {
@@ -337,7 +341,7 @@ select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-l
 
 .resume-controls {
     display: grid;
-    grid-template-columns: minmax(150px, 1fr) minmax(140px, 1fr) auto;
+    grid-template-columns: minmax(130px, 1fr) minmax(130px, 1fr) auto;
     gap: 10px;
     align-items: center;
 }
@@ -587,6 +591,8 @@ select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-l
   padding: 0;
   align-self: start;
   margin-top: 48px;
+  min-width: 0;
+  width: 100%;
 }
 
 .setup-preview-cards {
@@ -594,6 +600,7 @@ select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-l
   align-items: flex-start;
   justify-content: flex-end;
   gap: 12px;
+  max-width: 100%;
 }
 
 .setup-right .resume-card {
@@ -729,6 +736,21 @@ select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-l
   position: relative; z-index: 1;
   flex-shrink: 0;
   align-self: center;
+}
+
+@media (max-width: 1180px) and (min-width: 1025px) {
+  .preview-interviewer-card {
+    width: 292px;
+  }
+
+  .preview-coach-card {
+    width: 168px;
+    padding: 12px;
+  }
+
+  .setup-right .resume-card {
+    width: min(100%, 472px);
+  }
 }
 .pcc-header {
   display: flex; align-items: center; gap: 6px;

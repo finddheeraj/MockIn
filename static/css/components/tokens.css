@@ -31,9 +31,11 @@
 /* ── Reset ───────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; overflow-x: hidden; }
+img, svg, video, canvas { max-width: 100%; }
+button, input, select, textarea { max-width: 100%; }
 
 /* ── Main layout ─────────────────────────────────────────────────────────── */
-main { max-width: 1440px; margin: 0 auto; padding: 0 32px 48px; }
+main { max-width: 1440px; margin: 0 auto; padding: 0 clamp(16px, 2.5vw, 32px) 32px; }
 
 /* ── Animations ──────────────────────────────────────────────────────────── */
 @keyframes pulse    { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
