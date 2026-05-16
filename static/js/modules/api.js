@@ -81,3 +81,32 @@ export async function apiSessionStatus() {
   const res = await fetch("/session-status");
   return res.json();
 }
+
+export async function apiGetQuestions(topic, difficulty, offset=0) {
+  const res = await fetch("/questions", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ topic, difficulty, offset }),
+  });
+  return res.json();
+}
+
+export async function apiDownloadPrepPDF(topic, difficulty, questions) {
+  const res = await fetch("/prep-pdf", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ topic, difficulty, questions }),
+  });
+  if(!res.ok) {
+    throw new Error("Failed to generate PDF.");
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a   = document.createElement("a");
+  a.href    = url;
+  a.download = `mockmind_prep_${topic.replace(/[\s\/]+/g, "_")}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}

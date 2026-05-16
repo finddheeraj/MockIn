@@ -118,3 +118,62 @@ def get_all_subtopics(topic: str) -> list:
     """Return all available subtopics for a given topic."""
     kb = _load_kb()
     return list(kb.get(topic, {}).keys())
+
+_QUESTION_TEMPLATES = [
+    "Can you explain {concept} and its significance in {topic}?",
+    "How does {concept} work, and when would you use it?",
+    "What are the key considerations when working with {concept}?",
+    "Walk me through through your approch to {concept}",
+    "What is {concept}? Can you describe a real world usecase?",
+    "How would you compare different apporoaches to {concept}?",
+    "What common mistakes are made with {concept}, and how would you avoid them?",
+    "Describe the tradeoffs onvolved when using {concept} in a project.",
+]
+
+_DIFFICULTY_CONCEPT_INDEX = {"junior": 0, "Mid-Level": 1, "Senior": 2, "Staff/Principal": 3}
+
+def get_prep_questions(topic: str, difficulty: str, count: int = 10, offset: int=0) -> list:
+    """
+    Generate prep questions based on key concepts for the given topic/subtopic/difficulty.
+    Uses predefined templates and fills in with relevant key concepts.
+    """
+    kb = _load_kb()
+    topic_data = kb.get(topic, {})
+    
+    if not topic_data:
+        return []
+
+    subtopics = list(topic_data.keys())
+    max_concepts = max((len(v.get("key_concepts", [])) for v in topic_data.values()), default=0)
+    pool = []
+    
+    for round_idx in range(max_concepts):
+        for subtopic in subtopics:
+            entry = topic_data[subtopic]
+            concepts = entry.get("key_concepts", [])
+            if round_idx >= len(concepts):
+                continue
+            
+            concept = concepts[round_idx]
+            template = _QUESTION_TEMPLATES[len(pool) % len(_QUESTION_TEMPLATES)]
+            question = template.format(
+                concept=concept,
+                topic=topic,
+                subtopic=subtopic.replace("_", " ").title(),
+            )
+            
+            ideal_points = entry.get("ideal_answer_points", [])
+            answer_lines = [f". {pt}" for pt in ideal_points] if ideal_points \
+                else [f". Explain {concept} clearly with practical examples."]
+                
+            diff_exp = entry.get("difficulty_expectations", {})
+            if isinstance(diff_exp, dict):
+                exp = diff_exp.get(difficulty, "")
+                if exp:
+                    answer_lines.append(f"\nExpected at {difficulty} level:\n {exp}")
+                    
+            pool.append({
+                "question": question,
+                "ideal_answer": "\n".join(answer_lines)
+            })
+    return pool[offset:offset+count]

@@ -17,7 +17,7 @@ Agentic execution order per /answer:
   4. Recruiter + Coach run in parallel (recruiter gets adaptive instructions,
      coach gets KB reference)
 """
-
+import json
 import random
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from flask import Blueprint, request, jsonify, session, make_response
@@ -30,7 +30,7 @@ from agents.coach import get_feedback, generate_answer
 from agents.scorer import score_answer, compute_weak_areas
 from agents.adaptive_controller import decide_next_action, _fallback_decision
 from agents.evaluator import evaluate_session
-from tools.knowledge_base import lookup_reference, detect_subtopic
+from tools.knowledge_base import lookup_reference, detect_subtopic, get_prep_questions
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
@@ -86,6 +86,80 @@ def _get_active_clients() -> dict:
     if LLM_PROVIDER in ("local", "both"):
         clients["local"] = (get_local_client(), LOCAL_MODEL_NAME)
     return clients
+
+# ── /questions ────────────────────────────────────────────────────────────────────
+@interview_bp.route("/questions", methods=["POST"])
+def get_sample_questions():
+    data       = request.json
+    topic      = data.get("topic", "").strip()
+    difficulty = data.get("difficulty", "").strip()
+    offset     = int(data.get("offset", 0))
+
+    if not topic or not difficulty:
+        return jsonify({"error": "Topic and difficulty are required."}), 400
+    
+    questions = get_prep_questions(topic, difficulty, count=10, offset=offset)
+    if not questions and offset == 0:
+        return jsonify({"error": "No questions found for this topic/difficulty."}), 404
+    
+    return jsonify({"questions": questions, "topic": topic, "difficulty": difficulty,
+                    "has_more": len(questions) == 10})
+
+# ── /prep-pdf ────────────────────────────────────────────────────────────────────
+@interview_bp.route("/prep-pdf", methods=["POST"])
+def download_prep_pdf():
+    data       = request.json or {}
+    topic      = data.get("topic", "Preperation")
+    difficulty = data.get("difficulty", "")
+    questions   = data.get("questions", [])
+
+    if not questions:
+        return jsonify({"error": "No questions found for this topic/difficulty."}), 404
+    
+    def esc(t):
+        return t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+    buffer = io.BytesIO()
+    doc    = SimpleDocTemplate(buffer, pagesize=A4,
+                               leftMargin=2*cm, rightMargin=2*cm,
+                               topMargin=2*cm, bottomMargin=2*cm)
+
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle("PrepTitle", parent=styles["Heading1"],
+                                 fontSize=18, textColor=colors.HexColor("#1a1a2e"),
+                                 spaceAfter=12, alignment=TA_CENTER)
+    meta_style  = ParagraphStyle("PrepMeta",  parent=styles["Normal"],
+                                 fontSize=10, textColor=colors.HexColor("#666666"),
+                                 spaceAfter=6, alignment=TA_CENTER)
+    q_style     = ParagraphStyle("PrepQ", parent=styles["Normal"],
+                                 fontSize=11, textColor=colors.HexColor("#1a1a2e"),
+                                 fontName="Helvetica-Bold", spaceAfter=6,
+                                 spaceBefore=12, leftIndent=0)
+    a_style     = ParagraphStyle("PrepA", parent=styles["Normal"],
+                                 fontSize=10, textColor=colors.HexColor("#333333"),
+                                 spaceAfter=4, leftIndent=20, leading=15)
+
+    story = []
+    story.append(Paragraph(f"MockMind — Prep Questions", title_style))
+    story.append(Paragraph(f"Topic: {topic} &nbsp;|&nbsp; Level: {difficulty}", styles["Heading3"]))
+    story.append(Spacer(1, 0.3*cm))
+
+    for i, q in enumerate(questions, start=1):
+        story.append(Paragraph(f"Q{i}: {esc(q.get('question', ''))}", q_style))
+        for line in q.get("answer", "").split("\n"):
+            line = line.strip()
+            if line:
+                story.append(Paragraph(esc(line), a_style))
+        story.append(Spacer(1, 4))
+
+    doc.build(story)
+    buffer.seek(0)
+    
+    safe_topic = topic.replace(" ", "_").replace("/", "_")
+    response = make_response(buffer.read())
+    response.headers["Content-Type"]        = "application/pdf"
+    response.headers["Content-Disposition"] = f"attachment; filename=mockmind_prep_{topic.replace(' ', '_')}.pdf"
+    return response
 
 
 # ── /start ────────────────────────────────────────────────────────────────────

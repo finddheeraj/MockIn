@@ -10,7 +10,7 @@
  *   - Reaction bubble    : shown before the follow-up question on every round
  */
 
-import { apiStart, apiAnswer, apiClarify, apiInterrupt, apiNudge, apiSkip, apiReset, apiEnd, apiSessionStatus } from "./api.js";
+import { apiStart, apiAnswer, apiClarify, apiInterrupt, apiNudge, apiSkip, apiReset, apiEnd, apiSessionStatus, apiGetQuestions, apiDownloadPrepPDF } from "./api.js";
 import { showQuestion, showTyping, hideTyping, sealRound, clearChat, toggleRoundCard, switchRoundTab } from "./chat.js";
 import { updateAdaptiveIndicator, renderEvaluation, renderCoachAnswer, closeCoachModal, fetchCoachAnswer } from "./panels.js";
 import { setStatus, showToast, setAnswerFormLocked, escapeHtml } from "./ui.js";
@@ -26,7 +26,7 @@ import {
 const fillers = ["So,", "Alright,", "Okay,", "Good.", "Let's see.", "Hmm,", "Interesting.", "Well,"];
 
 function speakQuestionNaturally(msg) {
-  const filler   = fillers[Math.floor(Math.random() * fillers.length)];
+  const filler = fillers[Math.floor(Math.random() * fillers.length)];
   const spokenText = `${filler} ${msg}`;
   speakText(spokenText, (revealedText) => {
     let display = revealedText;
@@ -38,9 +38,9 @@ function speakQuestionNaturally(msg) {
 let _pendingRound = { question: "", answer: "" };
 
 // ── Inactivity / nudge timer ──────────────────────────────────────────────────
-let _inactivityTimer    = null;
-let _nudgeDismissed     = false;
-const NUDGE_DELAY_MS    = 20_000; // 20 seconds
+let _inactivityTimer = null;
+let _nudgeDismissed = false;
+const NUDGE_DELAY_MS = 20_000; // 20 seconds
 
 function _resetInactivityTimer() {
   clearTimeout(_inactivityTimer);
@@ -79,11 +79,11 @@ async function _maybeInterrupt(text) {
 /* ── Start ───────────────────────────────────────────────────────────────── */
 
 export async function startInterview() {
-  const topic      = document.getElementById("topic-select").value;
+  const topic = document.getElementById("topic-select").value;
   const difficulty = document.getElementById("difficulty-select").value;
 
-  const btnStart       = document.getElementById("btn-start");
-  btnStart.disabled    = true;
+  const btnStart = document.getElementById("btn-start");
+  btnStart.disabled = true;
   btnStart.textContent = "Connecting…";
   setStatus("Connecting…");
 
@@ -93,9 +93,9 @@ export async function startInterview() {
 
     setActiveProvider(data.provider || "grok");
 
-    document.getElementById("setup-panel").style.display  = "none";
-    document.getElementById("chip-topic").textContent     = topic;
-    document.getElementById("chip-level").textContent     = difficulty;
+    document.getElementById("setup-panel").style.display = "none";
+    document.getElementById("chip-topic").textContent = topic;
+    document.getElementById("chip-level").textContent = difficulty;
     document.getElementById("interview-panel").classList.add("active");
     document.getElementById("btn-download").style.display = "inline-flex";
     document.getElementById("btn-coach-answer").style.display = "inline-flex";
@@ -112,7 +112,7 @@ export async function startInterview() {
     _attachTextareaListeners();
   } catch {
     showToast("Connection failed. Check your API key.");
-    btnStart.disabled    = false;
+    btnStart.disabled = false;
     btnStart.textContent = "Start Interview →";
     setStatus("Error");
   }
@@ -141,8 +141,8 @@ function _onAnswerInput(e) {
 
   // Detect drag-drop or autofill: if word count jumped by more than threshold in one event, strip the addition
   const previousWordCount = (input.dataset.prevWordCount | 0);
-  const currentWordCount  = input.value.trim().split(/\s+/).filter(Boolean).length;
-  const delta             = currentWordCount - previousWordCount;
+  const currentWordCount = input.value.trim().split(/\s+/).filter(Boolean).length;
+  const delta = currentWordCount - previousWordCount;
 
   if (delta > PASTE_WORD_THRESHOLD) {
     // Roll back: restore previous value stored before this event
@@ -152,7 +152,7 @@ function _onAnswerInput(e) {
   }
 
   // Keep a snapshot for the next event
-  input.dataset.prevValue     = input.value;
+  input.dataset.prevValue = input.value;
   input.dataset.prevWordCount = currentWordCount;
 
   _resetInactivityTimer();
@@ -163,7 +163,7 @@ function _onAnswerInput(e) {
 
 export async function submitAnswer() {
   stopSpeaking();
-  const input  = document.getElementById("answer-input");
+  const input = document.getElementById("answer-input");
   const answer = input.value.trim();
   if (!answer) { showToast("Please write an answer first."); return; }
 
@@ -173,7 +173,7 @@ export async function submitAnswer() {
   clearTimeout(_inactivityTimer);
   removeNudgeBubble();
   removeInterruptBubble();
-  _nudgeDismissed          = false;
+  _nudgeDismissed = false;
   _interruptFiredThisRound = false;
 
   // ── Auto-clarification: if answer is very short, ask for clarification first
@@ -231,11 +231,11 @@ export async function submitAnswer() {
     }
 
     sealRound({
-      question:  question,
-      answer:    answer,
-      score:     data.score             || null,
-      refData:   data.reference_answer  || null,
-      coachText: data.coach_feedback    || null,
+      question: question,
+      answer: answer,
+      score: data.score || null,
+      refData: data.reference_answer || null,
+      coachText: data.coach_feedback || null,
     });
 
     const nextQ = data.recruiter_message || data.recruiter_message_local || "";
@@ -247,7 +247,7 @@ export async function submitAnswer() {
     document.getElementById("coach-answer-container").style.display = "none";
     const coachBtn = document.getElementById("btn-coach-answer");
     if (coachBtn) {
-      coachBtn.disabled    = false;
+      coachBtn.disabled = false;
       coachBtn.textContent = "Get Coach Answer";
     }
 
@@ -295,7 +295,7 @@ export async function skipQuestion() {
     document.getElementById("coach-answer-container").style.display = "none";
     const coachBtn = document.getElementById("btn-coach-answer");
     if (coachBtn) {
-      coachBtn.disabled    = false;
+      coachBtn.disabled = false;
       coachBtn.textContent = "Get Coach Answer";
     }
 
@@ -331,8 +331,8 @@ export function resetInterview() {
     clearChat();
 
     document.getElementById("setup-panel").style.display = "flex";
-    const btnStart       = document.getElementById("btn-start");
-    btnStart.disabled    = false;
+    const btnStart = document.getElementById("btn-start");
+    btnStart.disabled = false;
     btnStart.textContent = "Start Interview →";
     setStatus("Ready");
   });
@@ -383,21 +383,21 @@ export async function checkForExistingSession() {
 }
 
 function resumeSession(data) {
-  document.getElementById("setup-panel").style.display  = "none";
-  document.getElementById("chip-topic").textContent     = data.topic;
-  document.getElementById("chip-level").textContent     = data.difficulty;
+  document.getElementById("setup-panel").style.display = "none";
+  document.getElementById("chip-topic").textContent = data.topic;
+  document.getElementById("chip-level").textContent = data.difficulty;
   document.getElementById("interview-panel").classList.add("active");
 
   setInterviewActive(true);
-    startUserCamera();
-  state.roundCount = data.round  || 0;
-  state.scores     = data.scores || [];
+  startUserCamera();
+  state.roundCount = data.round || 0;
+  state.scores = data.scores || [];
   setStatus("Live Interview", true);
 
   const history = data.history || [];
   for (let i = 0; i < history.length - 1; i += 2) {
     const q = history[i]?.role === "assistant" ? history[i].content : "";
-    const a = history[i + 1]?.role === "user"  ? history[i + 1].content : "";
+    const a = history[i + 1]?.role === "user" ? history[i + 1].content : "";
     if (q) sealRound({ question: q, answer: a, score: null, refData: null, coachText: null });
   }
 
@@ -421,6 +421,174 @@ function resumeSession(data) {
 
 export function downloadTranscript() {
   window.location.href = "/download-pdf";
+}
+
+/* ── Preview Questions ──────────────────────────────────────────────────── */
+
+let _prepQuestions
+
+function _renderQAPairs(pairs, startNum) {
+  return pairs.map((qa, i) => `
+    <div class="qs-qa-item">
+    <div class="qs-question" onclick="toggleQAItem(this)">
+    <span class="qs-q-num">${startNum + i}.</span>
+    <span class="qs-q-text">${escapeHtml(qa.question)}</span>
+    <svg class="qs-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="qs-answer">
+    <div class="qs-answer-text">${escapeHtml(qa.ideal_answer || '')}</div>
+    </div>
+    </div>
+    `).join("");
+}
+
+export async function previewQuestions() {
+  const topic = document.getElementById("topic-select").value;
+  const difficulty = document.getElementById("difficulty-select").value;
+  const btn = document.getElementById("btn-preview");
+  const container = document.getElementById("questions-preview");
+
+  _prepQuestions = [];
+  btn.disabled = true;
+  btn.textContent = "Loading...";
+  document.getElementById("questions-modal-overlay").style.display = "flex";
+  document.getElementById("questions-modal-overlay").onclick = (e) => {
+    if (e.target === document.getElementById("questions-modal-overlay")) closeQuestionsPreview();
+  };
+
+
+  container.innerHTML = '<div class="qs-loading">Loading questions...</div>';
+
+  try {
+    const data = await apiGetQuestions(topic, difficulty, 0);
+
+    if (data.error) {
+      container.innerHTML = `<div class="qs-error">${escapeHtml(data.error)}</div>`;
+      return;
+    }
+
+    _prepQuestions = data.questions || [];
+    const hasMore = data.has_more;
+
+    container.innerHTML = `
+            <div class="qs-header">
+                <div class="qs-header-left">
+                    <span class="qs-title">Preparation Questions</span>
+                    <span class="qs-meta">${escapeHtml(topic)} • ${escapeHtml(difficulty)}</span>
+                </div>
+                <button class="qs-close" onclick="closeQuestionsPreview()">✕</button>
+            </div>
+            <div id="qs-pairs-container">
+                ${_renderQAPairs(_prepQuestions, 1)}
+            </div>
+            <div class="qs-actions">
+                <button class="btn-load-more" id="btn-load-more" onclick="loadMoreQuestions()"
+                    ${hasMore ? "" : "style='display:none'"}>
+                    Load 10 More
+                </button>
+                <button class="btn-download-prep" onclick="downloadPrepPDF()">
+                    <!-- SVG icon here -->
+                    Download PDF
+                </button>
+            </div>
+        `;
+  } catch (err) {
+    console.error('previewQuestions error:', err);
+    container.innerHTML = '<div class="qs-error">Failed to load questions. Try again.</div>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Preview Questions";
+  }
+}
+
+export async function loadMoreQuestions() {
+  const topic = document.getElementById("topic-select").value;
+  const difficulty = document.getElementById("difficulty-select").value;
+  const offset = _prepQuestions.length;
+
+  const btn = document.getElementById("btn-load-more");
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Loading...";
+  }
+
+  try {
+    const data = await apiGetQuestions(topic, difficulty, offset);
+
+    if (data.error) {
+      showToast(data.error);
+      return;
+    }
+
+    const newPairs = data.questions || [];
+
+    if (newPairs.length === 0) {
+      if (btn) btn.style.display = "none";
+      return;
+    }
+
+    const startNum = _prepQuestions.length + 1;
+    _prepQuestions = _prepQuestions.concat(newPairs);
+
+    const pairsContainer = document.getElementById("qs-pairs-container");
+    if (pairsContainer) {
+      pairsContainer.insertAdjacentHTML("beforeend", _renderQAPairs(newPairs, startNum));
+    }
+
+    if (!data.has_more && btn) {
+      btn.style.display = "none";
+    }
+  } catch {
+    showToast("Failed to load more questions.");
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "Load 10 More";
+    }
+  }
+}
+
+export async function downloadPrepPDF() {
+  if (_prepQuestions.length === 0) {
+    showToast("Load questions first.");
+    return;
+  }
+
+  const topic = document.getElementById("topic-select").value;
+  const difficulty = document.getElementById("difficulty-select").value;
+  const btn = document.querySelector(".btn-download-prep");
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Generating...";
+  }
+
+  try {
+    await apiDownloadPrepPDF(topic, difficulty, _prepQuestions);
+  } catch {
+    showToast("Failed to generate PDF.");
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg> 
+                Download PDF
+            `;
+    }
+  }
+}
+
+export function toggleQAItem(questionEl) {
+  questionEl.closest(".qs-qa-item").classList.toggle("open");
+}
+
+export function closeQuestionsPreview() {
+  document.getElementById("questions-modal-overlay").style.display = "none";
+  _prepQuestions = [];
 }
 
 window.addEventListener("beforeunload", (e) => {

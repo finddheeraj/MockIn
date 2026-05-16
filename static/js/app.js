@@ -20,6 +20,7 @@ import { toggleSpeech, initSpeechRecognition, toggleNarration, initNarration } f
 import {
   startInterview, submitAnswer, skipQuestion,
   resetInterview, endAndEvaluate, checkForExistingSession, downloadTranscript,
+  previewQuestions, closeQuestionsPreview, loadMoreQuestions, downloadPrepPDF, toggleQAItem
 } from "./modules/session.js";
 import { state } from "./modules/state.js";
 import { toggleRoundCard, switchRoundTab } from "./modules/chat.js";
@@ -39,6 +40,11 @@ window.updateCharCount    = updateCharCount;
 window.toggleRoundCard    = toggleRoundCard;
 window.switchRoundTab     = switchRoundTab;
 window.toggleNarration    = toggleNarration;
+window.previewQuestions   = previewQuestions;
+window.closeQuestionsPreview = closeQuestionsPreview;
+window.loadMoreQuestions  = loadMoreQuestions;
+window.downloadPrepPDF    = downloadPrepPDF;
+window.toggleQAItem       = toggleQAItem;
 
 /* ── Keyboard shortcut: Ctrl/Cmd+Enter submits answer ───────────────────── */
 document.addEventListener("keydown", (e) => {

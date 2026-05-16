@@ -26,7 +26,8 @@ export function updateCharCount(el) {
 
 /** Prevent XSS — escape user/AI text before injecting into innerHTML. */
 export function escapeHtml(text) {
-  return text
+  if (text == null) return '';
+  return String(text)
     .replace(/&/g,  "&amp;")
     .replace(/</g,  "&lt;")
     .replace(/>/g,  "&gt;")
