@@ -30,8 +30,13 @@
 
   .setup-right {
     justify-content: center;
+    align-items: center;
     align-self: auto;
     margin-top: 0;
+  }
+
+  .setup-preview-cards {
+    justify-content: center;
   }
 
   .deco-ring {
@@ -94,6 +99,11 @@
   }
 
   .setup-right {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .setup-preview-cards {
     flex-direction: column;
     align-items: center;
   }
