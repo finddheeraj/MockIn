@@ -18,6 +18,7 @@ Agentic execution order per /answer:
      coach gets KB reference)
 """
 import json
+import logging
 import random
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from flask import Blueprint, request, jsonify, session, make_response
@@ -42,6 +43,8 @@ from reportlab.lib.enums import TA_LEFT, TA_CENTER
 from llm_client import get_grok_client, get_local_client
 from config import LLM_PROVIDER, MODEL, LOCAL_MODEL_NAME, MIN_ROUNDS_FOR_EVAL
 from cache import stats as cache_stats
+
+logger = logging.getLogger(__name__)
 
 interview_bp = Blueprint("interview", __name__)
 
@@ -97,27 +100,52 @@ def get_sample_questions():
 
     if not topic or not difficulty:
         return jsonify({"error": "Topic and difficulty are required."}), 400
-    
+
     questions = get_prep_questions(topic, difficulty, count=10, offset=offset)
     if not questions and offset == 0:
         return jsonify({"error": "No questions found for this topic/difficulty."}), 404
-    
+
+    # Enrich with coach-generated ideal answers (filesystem-cached — no repeat LLM calls)
+    try:
+        clients = _get_active_clients()
+        provider_name, (client, model_name) = next(iter(clients.items()))
+        if client:
+            for q in questions:
+                q["ideal_answer"] = generate_answer(
+                    client, topic, difficulty, q["question"],
+                    model_name=model_name
+                )
+    except Exception as e:
+        logger.warning("generate_answer failed, falling back to ideal_answer_points: %s", e)
+        # ideal_answer already set by get_prep_questions — just keep it
+
     return jsonify({"questions": questions, "topic": topic, "difficulty": difficulty,
                     "has_more": len(questions) == 10})
 
 # ── /prep-pdf ────────────────────────────────────────────────────────────────────
 @interview_bp.route("/prep-pdf", methods=["POST"])
 def download_prep_pdf():
+    import re
     data       = request.json or {}
-    topic      = data.get("topic", "Preperation")
+    topic      = data.get("topic", "Preparation")
     difficulty = data.get("difficulty", "")
-    questions   = data.get("questions", [])
+    questions  = data.get("questions", [])
 
     if not questions:
         return jsonify({"error": "No questions found for this topic/difficulty."}), 404
-    
+
     def esc(t):
         return t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+    def md_to_rl(text):
+        """Convert a single line of markdown to ReportLab inline XML."""
+        # Escape HTML special chars first
+        text = esc(text)
+        # **bold** → <b>bold</b>
+        text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', text)
+        # *italic* → <i>italic</i>
+        text = re.sub(r'\*(.+?)\*', r'<i>\1</i>', text)
+        return text
 
     buffer = io.BytesIO()
     doc    = SimpleDocTemplate(buffer, pagesize=A4,
@@ -125,37 +153,68 @@ def download_prep_pdf():
                                topMargin=2*cm, bottomMargin=2*cm)
 
     styles = getSampleStyleSheet()
-    title_style = ParagraphStyle("PrepTitle", parent=styles["Heading1"],
-                                 fontSize=18, textColor=colors.HexColor("#1a1a2e"),
-                                 spaceAfter=12, alignment=TA_CENTER)
-    meta_style  = ParagraphStyle("PrepMeta",  parent=styles["Normal"],
-                                 fontSize=10, textColor=colors.HexColor("#666666"),
-                                 spaceAfter=6, alignment=TA_CENTER)
-    q_style     = ParagraphStyle("PrepQ", parent=styles["Normal"],
-                                 fontSize=11, textColor=colors.HexColor("#1a1a2e"),
-                                 fontName="Helvetica-Bold", spaceAfter=6,
-                                 spaceBefore=12, leftIndent=0)
-    a_style     = ParagraphStyle("PrepA", parent=styles["Normal"],
-                                 fontSize=10, textColor=colors.HexColor("#333333"),
-                                 spaceAfter=4, leftIndent=20, leading=15)
+
+    title_style   = ParagraphStyle("PrepTitle", parent=styles["Heading1"],
+                                   fontSize=18, textColor=colors.HexColor("#1a1a2e"),
+                                   spaceAfter=12, alignment=TA_CENTER)
+    q_style       = ParagraphStyle("PrepQ", parent=styles["Normal"],
+                                   fontSize=12, textColor=colors.HexColor("#1a1a2e"),
+                                   fontName="Helvetica-Bold", spaceAfter=6,
+                                   spaceBefore=16, leftIndent=0)
+    section_style = ParagraphStyle("PrepSection", parent=styles["Normal"],
+                                   fontSize=10, textColor=colors.HexColor("#1a1a2e"),
+                                   fontName="Helvetica-Bold", spaceAfter=3,
+                                   spaceBefore=6, leftIndent=20)
+    body_style    = ParagraphStyle("PrepBody", parent=styles["Normal"],
+                                   fontSize=10, textColor=colors.HexColor("#333333"),
+                                   spaceAfter=3, leftIndent=20, leading=15)
+    bullet_style  = ParagraphStyle("PrepBullet", parent=styles["Normal"],
+                                   fontSize=10, textColor=colors.HexColor("#333333"),
+                                   spaceAfter=2, leftIndent=36, bulletIndent=24,
+                                   leading=14)
 
     story = []
-    story.append(Paragraph(f"MockMind — Prep Questions", title_style))
-    story.append(Paragraph(f"Topic: {topic} &nbsp;|&nbsp; Level: {difficulty}", styles["Heading3"]))
-    story.append(Spacer(1, 0.3*cm))
+    story.append(Paragraph("MockMind — Prep Questions", title_style))
+    story.append(Paragraph(f"Topic: {esc(topic)} &nbsp;|&nbsp; Level: {esc(difficulty)}", styles["Heading3"]))
+    story.append(Spacer(1, 0.4*cm))
 
     for i, q in enumerate(questions, start=1):
-        story.append(Paragraph(f"Q{i}: {esc(q.get('question', ''))}", q_style))
-        for line in q.get("answer", "").split("\n"):
-            line = line.strip()
-            if line:
-                story.append(Paragraph(esc(line), a_style))
-        story.append(Spacer(1, 4))
+        # Question heading
+        story.append(Paragraph(f"Q{i}: {md_to_rl(q.get('question', ''))}", q_style))
+
+        # Parse and render the answer
+        raw = q.get("ideal_answer", q.get("answer", ""))
+        for line in raw.split("\n"):
+            stripped = line.strip()
+            if not stripped:
+                story.append(Spacer(1, 3))
+                continue
+
+            # * heading line (markdown section header like "* **Key Points:**")
+            if re.match(r'^\*\s+\*\*', stripped):
+                text = re.sub(r'^\*\s+', '', stripped)
+                story.append(Paragraph(md_to_rl(text), section_style))
+
+            # + bullet or - bullet
+            elif stripped.startswith(("+ ", "- ", "• ")):
+                text = re.sub(r'^[+\-•]\s+', '', stripped)
+                story.append(Paragraph(f"• {md_to_rl(text)}", bullet_style))
+
+            # Numbered list  1. 2. etc
+            elif re.match(r'^\d+\.\s+', stripped):
+                text = re.sub(r'^\d+\.\s+', '', stripped)
+                num  = re.match(r'^(\d+)\.', stripped).group(1)
+                story.append(Paragraph(f"{num}. {md_to_rl(text)}", bullet_style))
+
+            # Plain paragraph
+            else:
+                story.append(Paragraph(md_to_rl(stripped), body_style))
+
+        story.append(Spacer(1, 6))
 
     doc.build(story)
     buffer.seek(0)
-    
-    safe_topic = topic.replace(" ", "_").replace("/", "_")
+
     response = make_response(buffer.read())
     response.headers["Content-Type"]        = "application/pdf"
     response.headers["Content-Disposition"] = f"attachment; filename=mockmind_prep_{topic.replace(' ', '_')}.pdf"

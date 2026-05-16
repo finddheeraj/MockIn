@@ -8,6 +8,7 @@ Reference data is split into per-topic JSON files under data/references/.
 """
 
 import json
+from multiprocessing import pool
 import os
 import glob
 
@@ -163,14 +164,32 @@ def get_prep_questions(topic: str, difficulty: str, count: int = 10, offset: int
             )
             
             ideal_points = entry.get("ideal_answer_points", [])
-            answer_lines = [f". {pt}" for pt in ideal_points] if ideal_points \
-                else [f". Explain {concept} clearly with practical examples."]
-                
+            key_concepts  = entry.get("key_concepts", [])
+            common_mistakes = entry.get("common_mistakes", [])
+
+            answer_lines = []
+
+            # Full answer points
+            if ideal_points:
+                answer_lines.append("What to cover:")
+                answer_lines += [f"  • {pt}" for pt in ideal_points]
+
+            # Key concepts
+            if key_concepts:
+                answer_lines.append("\nKey concepts to mention:")
+                answer_lines += [f"  • {kc}" for kc in key_concepts]
+
+            # Common mistakes
+            if common_mistakes:
+                answer_lines.append("\nCommon mistakes to avoid:")
+                answer_lines += [f"  • {m}" for m in common_mistakes]
+
+            # Level expectation
             diff_exp = entry.get("difficulty_expectations", {})
             if isinstance(diff_exp, dict):
                 exp = diff_exp.get(difficulty, "")
                 if exp:
-                    answer_lines.append(f"\nExpected at {difficulty} level:\n {exp}")
+                    answer_lines.append(f"\nExpected at {difficulty} level:\n  {exp}")
                     
             pool.append({
                 "question": question,
