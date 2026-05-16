@@ -228,9 +228,12 @@ def start_interview():
     data       = request.json
     topic      = data.get("topic", "System Design")
     difficulty = data.get("difficulty", "Mid-Level")
+    prep_questions = data.get("prep_questions", [])
 
     session["topic"]      = topic
     session["difficulty"] = difficulty
+    session["prep_questions"] = [q["question"] for q in prep_questions] 
+    session["prep_index"] = 0 
     session["history"]    = []
     session["scores"]     = []
     session["round"]      = 0
@@ -249,7 +252,8 @@ def start_interview():
 
     if len(clients) == 1:
         provider_name, (client, model_name) = next(iter(clients.items()))
-        opening_question = ask_opening_question(client, topic, difficulty, model_name)
+        prep_questions = session.get("prep_questions", [])
+        opening_question = ask_opening_question(client, topic, difficulty, model_name, prep_questions)
         session["history"] = [{"role": "assistant", "content": opening_question}]
         return jsonify({
             "recruiter_message": opening_question,
@@ -259,9 +263,10 @@ def start_interview():
 
     # Both providers in parallel
     results = {}
+    prep_questions = session.get("prep_questions", [])
     with ThreadPoolExecutor(max_workers=2) as executor:
         futures = {
-            executor.submit(ask_opening_question, client, topic, difficulty, model_name): name
+            executor.submit(ask_opening_question, client, topic, difficulty, model_name, prep_questions): name
             for name, (client, model_name) in clients.items()
         }
         for future in as_completed(futures):
@@ -366,10 +371,15 @@ def submit_answer():
         provider_name, (client, model_name) = next(iter(clients.items()))
 
         with ThreadPoolExecutor(max_workers=2) as executor:
+            prep_questions = session.get("prep_questions", [])
+            prep_index     = session.get("prep_index", 0)
+            session["prep_index"] = prep_index + 1
+
             recruiter_future = executor.submit(
                 ask_followup,
                 client, topic, adaptive_state.get("current_difficulty", difficulty),
                 history, candidate_answer, model_name, adaptive_instructions, round_num,
+                prep_questions, prep_index,
             )
             coach_future = executor.submit(
                 get_feedback, client, topic, difficulty, history,
@@ -413,11 +423,16 @@ def submit_answer():
     results = {}
     with ThreadPoolExecutor(max_workers=4) as executor:
         futures = {}
+        prep_questions = session.get("prep_questions", [])
+        prep_index     = session.get("prep_index", 0)
+        session["prep_index"] = prep_index + 1
+
         for name, (client, model_name) in clients.items():
             futures[executor.submit(
                 ask_followup,
                 client, topic, adaptive_state.get("current_difficulty", difficulty),
                 history, candidate_answer, model_name, adaptive_instructions, round_num,
+                prep_questions, prep_index,
             )] = (name, "recruiter")
             futures[executor.submit(
                 get_feedback, client, topic, difficulty, history,
@@ -563,9 +578,13 @@ def skip_question():
 
     if len(clients) == 1:
         provider_name, (client, model_name) = next(iter(clients.items()))
+        prep_index = session.get("prep_index", 0)
+        session["prep_index"] = prep_index + 1
+
         recruiter_result = ask_followup(
             client, topic, difficulty, history,
             "I'd like to skip this question.", model_name, skip_instruction, 0,
+            session.get("prep_questions", []), prep_index,
         )
         next_q = recruiter_result.get("followup", "") if isinstance(recruiter_result, dict) else str(recruiter_result)
         history.append({"role": "user",      "content": "[Skipped]"})
@@ -573,12 +592,16 @@ def skip_question():
         session["history"] = history
         return jsonify({"recruiter_message": next_q, "provider": provider_name})
 
+    prep_index = session.get("prep_index", 0)
+    session["prep_index"] = prep_index + 1
+
     results = {}
     with ThreadPoolExecutor(max_workers=2) as executor:
         futures = {
             executor.submit(
                 ask_followup, client, topic, difficulty, history,
                 "I'd like to skip this question.", model_name, skip_instruction, 0,
+                session.get("prep_questions", []), prep_index,
             ): name
             for name, (client, model_name) in clients.items()
         }

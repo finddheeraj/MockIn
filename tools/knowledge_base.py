@@ -121,14 +121,14 @@ def get_all_subtopics(topic: str) -> list:
     return list(kb.get(topic, {}).keys())
 
 _QUESTION_TEMPLATES = [
-    "Can you explain {concept} and its significance in {topic}?",
-    "How does {concept} work, and when would you use it?",
-    "What are the key considerations when working with {concept}?",
-    "Walk me through through your approch to {concept}",
-    "What is {concept}? Can you describe a real world usecase?",
-    "How would you compare different apporoaches to {concept}?",
-    "What common mistakes are made with {concept}, and how would you avoid them?",
-    "Describe the tradeoffs onvolved when using {concept} in a project.",
+    "Walk me through how you would apply {concept} in a real {topic} scenario.",
+    "Suppose you are using {concept} in production and it starts failing at scale. How would you debug it?",
+    "What tradeoffs would you consider before choosing an approach based on {concept}?",
+    "Tell me about a time or example where {concept} would materially change your design decisions.",
+    "How would you explain {concept} to an interviewer while also showing practical depth?",
+    "If a teammate proposed a different approach to {concept}, how would you evaluate the options?",
+    "What mistakes do candidates commonly make when discussing {concept}, and how would you avoid them?",
+    "Let's make this concrete: how would you design or implement something that depends on {concept}?",
 ]
 
 _DIFFICULTY_CONCEPT_INDEX = {"junior": 0, "Mid-Level": 1, "Senior": 2, "Staff/Principal": 3}

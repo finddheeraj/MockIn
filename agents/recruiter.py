@@ -72,28 +72,38 @@ def extract_quote(answer: str, max_words: int = 12) -> str:
 
 # ── Opening question ──────────────────────────────────────────────────────────
 
-def ask_opening_question(client, topic: str, difficulty: str, model_name: str = None) -> str:
+def ask_opening_question(client, topic: str, difficulty: str, model_name: str = None, prep_questions: list = None) -> str:
     slot = random.randint(0, 2)
-    cache_key = make_key("opening_question", topic, difficulty, slot)
+    first_q = prep_questions[0] if prep_questions else ""
+    cache_key = make_key("opening_question", topic, difficulty, slot, first_q[:40])
     cached = get_fs(cache_key)
     if cached is not None:
         logger.debug("ask_opening_question fs cache hit: slot=%d %s", slot, cache_key[:8])
         return cached
 
     system = build_system_prompt(topic, difficulty)
-
-    # The key fix: give the model a concrete first-person example of what to say,
-    # so it performs the greeting rather than describing or templating it.
-    user_prompt = (
-        "You are now live in the interview room. The candidate has just joined. "
-        "Say hello naturally and ask your first technical question on the topic. "
-        "Speak directly as yourself — do NOT use placeholders like [name] or [company]. "
-        "Do NOT write 'Greeting:' or label your output in any way. "
-        "Just speak. Example of correct style: "
-        "'Hey, good to meet you — thanks for making time. "
-        "Let's jump in. Can you walk me through how you'd approach designing a rate limiter at scale?' "
-        "Now do the same for the topic you've been given. Keep it to 2-3 sentences."
-    )
+    
+    if prep_questions:
+        first_q = prep_questions[0]
+        user_prompt = (
+            "You are now live in the interview room. The candidate has just joined. "
+            "Say hello naturally, then ask this exact question (word for word): "
+            f"\"{first_q}\" "
+            "Do NOT add other questions. Keep it to 2-3 sentences total."
+        )
+    else:
+        # The key fix: give the model a concrete first-person example of what to say,
+        # so it performs the greeting rather than describing or templating it.
+        user_prompt = (
+            "You are now live in the interview room. The candidate has just joined. "
+            "Say hello naturally and ask your first technical question on the topic. "
+            "Speak directly as yourself — do NOT use placeholders like [name] or [company]. "
+            "Do NOT write 'Greeting:' or label your output in any way. "
+            "Just speak. Example of correct style: "
+            "'Hey, good to meet you — thanks for making time. "
+            "Let's jump in. Can you walk me through how you'd approach designing a rate limiter at scale?' "
+            "Now do the same for the topic you've been given. Keep it to 2-3 sentences."
+        )
 
     response = client.chat.completions.create(
         model=model_name or MODEL,
@@ -130,6 +140,8 @@ def ask_followup(
     model_name: str = None,
     adaptive_instructions: str = None,
     round_num: int = 0,
+    prep_questions=None,
+    prep_index=0
 ) -> dict:
     """
     Called after every candidate answer.
@@ -139,6 +151,13 @@ def ask_followup(
       - "followup"  : the actual next question
     """
     system = build_system_prompt(topic, difficulty)
+    
+    if prep_questions and prep_index < len(prep_questions):
+        next_q = prep_questions[prep_index]
+        system += (
+            f"\n\nQUESTION DIRECTIVE: Your next question MUST be (word for word): "
+            f"\"{next_q}\" — wrap it naturally after your reaction, but do not change the wording."
+        )
 
     # Thread-pull: every even round, reference a specific phrase the candidate said
     if round_num > 0 and round_num % 2 == 0:

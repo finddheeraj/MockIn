@@ -88,7 +88,7 @@ export async function startInterview() {
   setStatus("Connecting…");
 
   try {
-    const data = await apiStart(topic, difficulty);
+    const data = await apiStart(topic, difficulty, _prepQuestions);
     if (data.error) { showToast(data.error); return; }
 
     setActiveProvider(data.provider || "grok");
@@ -427,6 +427,71 @@ export function downloadTranscript() {
 
 let _prepQuestions
 
+function _renderAnswerInline(text) {
+  return escapeHtml(text)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>");
+}
+
+function _cleanAnswerMarker(line) {
+  return line
+    .replace(/^(\s*(?:[-+*]|\d+\.|â€¢|\u2022)\s*)+/, "")
+    .replace(/^\*+\s*/, "")
+    .trim();
+}
+
+function _renderPreviewAnswer(answer) {
+  const lines = (answer || "").split("\n");
+  const html = [];
+  let listItems = [];
+
+  function flushList() {
+    if (listItems.length === 0) return;
+    html.push(`<ul class="qs-answer-list">${listItems.join("")}</ul>`);
+    listItems = [];
+  }
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) {
+      flushList();
+      continue;
+    }
+
+    const isBullet = /^(\s*(?:[-+*]|\d+\.|â€¢|\u2022)\s*)+/.test(rawLine);
+    const cleaned = _cleanAnswerMarker(line);
+    const plain = cleaned.replace(/\*\*/g, "").trim();
+
+    if (!plain) continue;
+
+    const isSection =
+      /^\*+\s*\*\*.+\*\*:?\s*$/.test(line) ||
+      (/^[A-Z][A-Za-z\s]+:$/.test(plain) && plain.length <= 40);
+
+    if (isSection) {
+      flushList();
+      html.push(`<div class="qs-answer-section">${_renderAnswerInline(plain.replace(/:$/, ""))}</div>`);
+      continue;
+    }
+
+    if (isBullet) {
+      listItems.push(`<li>${_renderAnswerInline(cleaned)}</li>`);
+      continue;
+    }
+
+    flushList();
+    html.push(`<p class="qs-answer-paragraph">${_renderAnswerInline(cleaned)}</p>`);
+  }
+
+  flushList();
+
+  if (html.length === 0) {
+    return '<p class="qs-answer-empty">Answer not available yet.</p>';
+  }
+
+  return html.join("");
+}
+
 function _renderQAPairs(pairs, startNum) {
   return pairs.map((qa, i) => `
     <div class="qs-qa-item">
@@ -436,7 +501,7 @@ function _renderQAPairs(pairs, startNum) {
     <svg class="qs-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="qs-answer">
-    <div class="qs-answer-text">${escapeHtml(qa.ideal_answer || '')}</div>
+    <div class="qs-answer-text">${_renderPreviewAnswer(qa.ideal_answer || '')}</div>
     </div>
     </div>
     `).join("");
@@ -497,7 +562,7 @@ export async function previewQuestions() {
     container.innerHTML = '<div class="qs-error">Failed to load questions. Try again.</div>';
   } finally {
     btn.disabled = false;
-    btn.textContent = "Preview Questions";
+    btn.textContent = "Prepare Questions";
   }
 }
 

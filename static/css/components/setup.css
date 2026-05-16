@@ -161,7 +161,52 @@ select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-l
     font-size: 13px;
     color: var(--text);
     line-height: 1.7;
-    white-space: pre-line;
+}
+
+.qs-answer-section {
+    margin: 12px 0 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--navy);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.qs-answer-section:first-child {
+    margin-top: 0;
+}
+
+.qs-answer-list {
+    margin: 0 0 10px;
+    padding: 0;
+    list-style: none;
+}
+
+.qs-answer-list li {
+    position: relative;
+    margin: 0 0 6px;
+    padding-left: 18px;
+    color: var(--text);
+}
+
+.qs-answer-list li::before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 0.72em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+}
+
+.qs-answer-paragraph {
+    margin: 0 0 10px;
+}
+
+.qs-answer-empty {
+    margin: 0;
+    color: var(--text-muted);
 }
 
 /* Action bar */
@@ -506,6 +551,8 @@ select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-l
   width: 90vw;
   max-width: 900px;
   max-height: 90vh;
+  padding: 28px;
+  box-sizing: border-box;
   overflow-y: auto;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
 }
