@@ -24,6 +24,7 @@ import {
 } from "./modules/session.js";
 import { state } from "./modules/state.js";
 import { toggleRoundCard, switchRoundTab } from "./modules/chat.js";
+import { generateResumeQuestions, closeResumeQuestions, initResumeUpload } from "./modules/resume.js";
 
 /* ── Expose to inline HTML handlers ─────────────────────────────────────── */
 window.startInterview     = startInterview;
@@ -45,6 +46,8 @@ window.closeQuestionsPreview = closeQuestionsPreview;
 window.loadMoreQuestions  = loadMoreQuestions;
 window.downloadPrepPDF    = downloadPrepPDF;
 window.toggleQAItem       = toggleQAItem;
+window.generateResumeQuestions = generateResumeQuestions;
+window.closeResumeQuestions = closeResumeQuestions;
 
 /* ── Keyboard shortcut: Ctrl/Cmd+Enter submits answer ───────────────────── */
 document.addEventListener("keydown", (e) => {
@@ -57,3 +60,4 @@ document.addEventListener("keydown", (e) => {
 initSpeechRecognition();
 checkForExistingSession();
 initNarration();
+initResumeUpload();

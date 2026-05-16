@@ -14,6 +14,7 @@ from flask import Flask
 from flask_session import Session
 from routes.interview import interview_bp
 from routes.pages import pages_bp
+from routes.resume import resume_bp
 
 
 def create_app():
@@ -36,6 +37,7 @@ def create_app():
     # Register route blueprints
     app.register_blueprint(pages_bp)
     app.register_blueprint(interview_bp)
+    app.register_blueprint(resume_bp)
 
     return app
 

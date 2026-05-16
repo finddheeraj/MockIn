@@ -30,6 +30,8 @@
 
   .setup-right {
     justify-content: center;
+    align-self: auto;
+    margin-top: 0;
   }
 
   .deco-ring {

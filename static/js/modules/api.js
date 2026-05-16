@@ -110,3 +110,16 @@ export async function apiDownloadPrepPDF(topic, difficulty, questions) {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+export async function apiGenerateResumeQuestions(file, role, difficulty) {
+  const formData = new FormData();
+  formData.append("resume", file);
+  formData.append("role", role);
+  formData.append("difficulty", difficulty);
+
+  const res = await fetch("/resume-questions", {
+    method: "POST",
+    body: formData,
+  });
+  return res.json();
+}
