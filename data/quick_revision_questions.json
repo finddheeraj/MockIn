@@ -3,43 +3,89 @@
     "Fundamentals": [
       {
         "question": "What is an AI agent?",
-        "answer": "An AI agent is a system that can perceive information, reason about goals, take actions, observe results, and adapt based on feedback.\n\nUnlike a normal LLM interaction where the model only generates text, an AI agent can perform tasks using tools, APIs, memory, and decision-making loops.\n\nA simple AI agent usually follows:\n- Observe\n- Think\n- Act\n- Repeat\n\nExample: An AI travel agent can search flights, compare prices, book tickets, and send confirmations automatically."
+        "answer": "An AI agent is a sophisticated, autonomous software entity that can perceive its environment (through inputs, tools, or sensors), reason about objectives, make decisions, execute actions in the real or digital world using tools, observe the outcomes of those actions, learn from feedback, and iteratively adapt its strategy until the goal is achieved or deemed unachievable. \n\nUnlike traditional software that follows rigid if-then rules, AI agents are goal-oriented and exhibit flexible, intelligent behavior. They typically operate in a continuous loop often called OODA (Observe-Orient-Decide-Act) or Observe → Think → Act → Reflect. \n\nKey characteristics include autonomy, reactivity, proactivity, and social ability (in multi-agent setups). \n\nExample: A personal AI travel agent doesn't just answer questions — it understands a vague request like 'Plan a budget honeymoon in Europe for 7 days', searches for flights and hotels, checks visa requirements, builds a day-by-day itinerary, books reservations, creates packing lists, sets calendar reminders, and monitors for price drops or disruptions."
       },
       {
         "question": "How is an AI agent different from a traditional chatbot?",
-        "answer": "Traditional chatbots mostly generate conversational responses, while AI agents are goal-oriented systems that can take actions.\n\nChatbots are usually reactive and stateless, whereas AI agents can:\n- Maintain memory\n- Use tools\n- Plan tasks\n- Interact with external systems\n\nExample: A chatbot may answer weather queries, but an AI agent can reschedule meetings automatically if rain is predicted."
+        "answer": "Traditional chatbots are mostly reactive systems designed for conversation. They rely on pattern matching, predefined scripts, or basic intent recognition and usually return text responses without taking meaningful external actions. They are often stateless or have very limited context. \n\nAI agents, on the other hand, are proactive, goal-driven, and action-oriented. They maintain memory across sessions, use external tools and APIs, create plans, execute multi-step workflows, reflect on results, and persist until the objective is completed. \n\nA chatbot might say 'It’s raining in Pune', while an AI agent can check your schedule, reschedule outdoor meetings, suggest indoor alternatives, book a cab, and notify relevant people."
       },
       {
         "question": "What are the core components of an AI agent?",
-        "answer": "Core components include:\n- LLM / Reasoning Engine: The brain of the agent\n- Memory: Stores context and preferences\n- Tools: APIs, databases, calculators, web search, etc.\n- Planning Module: Breaks large tasks into smaller steps\n- Execution Layer: Performs actions\n- Feedback Loop: Evaluates success and retries if needed"
+        "answer": "Modern AI agents typically consist of the following core components:\n\n1. **LLM / Reasoning Engine** — The cognitive core (e.g., GPT-4o, Claude 3.5, Grok, Llama 3.1) responsible for understanding, planning, and decision-making.\n2. **Memory System** — Short-term (conversation history), long-term (vector DB + structured DB), and episodic memory.\n3. **Tool Use Layer** — Interface to external capabilities (search, code execution, APIs, email, calendars, etc.).\n4. **Planning & Reasoning Module** — Task decomposition, Chain-of-Thought, Tree-of-Thoughts, hierarchical planning.\n5. **Execution & Orchestration Engine** — Runs actions, manages state transitions, handles parallelism.\n6. **Reflection / Self-Correction Module** — Evaluates outputs, detects errors, generates improvements.\n7. **Feedback & Learning Loop** — Incorporates results to refine future behavior.\n\nThese components work together in a tightly integrated architecture."
+      }
+    ],
+    "LLM + Agent Architecture": [
+      {
+        "question": "Explain the architecture of an LLM-powered AI agent.",
+        "answer": "An LLM-powered AI agent architecture generally follows this flow:\n\n1. **Input Layer** — User query + system prompt + retrieved context.\n2. **Reasoning Engine** — LLM analyzes the goal and current state.\n3. **Memory Retrieval** — Pulls relevant short-term and long-term memories.\n4. **Decision Phase** — LLM decides whether to call tools, continue planning, or generate final output.\n5. **Tool Execution** — External tools are called and results observed.\n6. **Reflection Phase** — Agent critiques its actions and results.\n7. **State Update** — Memory and planner are updated.\n8. **Loop** — Repeat until termination condition (success, max steps, user stop).\n\nPopular implementations use frameworks like LangGraph (graph-based state machines) or CrewAI (role-based orchestration)."
       },
       {
-        "question": "What is the difference between reactive and autonomous agents?",
-        "answer": "Reactive agents respond immediately to inputs and usually have limited planning.\n\nAutonomous agents can:\n- Plan tasks\n- Use tools\n- Make decisions independently\n- Adapt dynamically\n\nReactive agents follow:\n- Input -> Response\n\nAutonomous agents follow:\n- Goal -> Plan -> Execute -> Evaluate"
+        "question": "What is the ReAct framework?",
+        "answer": "ReAct (Reason + Act) is a foundational agentic prompting paradigm introduced by Yao et al. In this framework, the LLM generates interleaved reasoning traces ('Thought') and actions ('Action') in each step. After executing an action, the result ('Observation') is fed back, and the cycle continues. This approach significantly improves performance on complex tasks by combining reasoning with interaction with the external world, making the agent's thought process transparent and easier to debug."
+      }
+    ],
+    "Memory in AI Agents": [
+      {
+        "question": "What is long-term memory?",
+        "answer": "Long-term memory in AI agents refers to persistent storage mechanisms that retain information across multiple sessions and time periods. It enables personalization, continuity, and cumulative learning. Common implementations include Vector Databases (for semantic retrieval), Knowledge Graphs (for structured relationships), Relational Databases (for user profiles and structured data), and hybrid systems. Advanced long-term memory systems also support forgetting mechanisms, importance scoring, and periodic consolidation/summarization."
       },
       {
-        "question": "What is the difference between single-agent and multi-agent systems?",
-        "answer": "Single-agent systems use one agent to perform all tasks. Multi-agent systems involve multiple specialized agents collaborating together.\n\nExample: An AI interviewer may contain:\n- Question generation agent\n- Scoring agent\n- Feedback agent\n- Difficulty controller agent\n\nMulti-agent systems provide specialization and scalability, but they are harder to coordinate."
-      },
+        "question": "Explain RAG in the context of AI agents.",
+        "answer": "Retrieval-Augmented Generation (RAG) is a technique where an agent first retrieves relevant information from external knowledge sources before generating a response. In agentic systems, RAG is dynamic — the agent decides when and what to retrieve during reasoning. It greatly reduces hallucinations, grounds responses in real data, and allows agents to work with massive knowledge bases without exceeding context limits."
+      }
+    ],
+    "Tools & Function Calling": [
       {
-        "question": "What makes an LLM agentic?",
-        "answer": "An LLM becomes agentic when it can:\n- Make decisions\n- Use tools\n- Maintain memory\n- Plan tasks\n- Execute actions\n- Reflect and self-correct\n\nA plain LLM generates responses, while an agentic LLM actively works toward completing goals."
-      },
+        "question": "What security risks exist with tool calling?",
+        "answer": "Major risks include prompt injection (malicious instructions in user input), unauthorized tool usage, data exfiltration, privilege escalation, infinite loops consuming resources, and supply-chain attacks on third-party tools/APIs. Mitigation strategies involve strict tool permission systems, sandboxing, output validation, human-in-the-loop for sensitive actions, prompt guarding, and using structured outputs with schema validation."
+      }
+    ],
+    "Planning & Reasoning": [
       {
-        "question": "What is agent orchestration?",
-        "answer": "Agent orchestration is the coordination and management of agents, tools, workflows, and execution pipelines.\n\nIt controls:\n- Which agent acts next\n- What tools are used\n- Information flow\n- Failure handling\n\nFrameworks like LangGraph, CrewAI, and AutoGen are commonly used for orchestration."
-      },
+        "question": "What is Tree of Thoughts?",
+        "answer": "Tree of Thoughts (ToT) is an advanced reasoning technique that extends Chain-of-Thought by exploring multiple possible reasoning paths in a tree structure. The model generates several 'thoughts' at each step, evaluates their promise using the LLM itself or external scorers, and selectively explores the most promising branches. This enables deeper search and better performance on complex planning and problem-solving tasks compared to linear Chain-of-Thought."
+      }
+    ],
+    "Multi-Agent Systems": [
       {
-        "question": "What is the role of planning in AI agents?",
-        "answer": "Planning helps agents break complex tasks into smaller steps and determine execution order.\n\nExample: For creating a market research report:\n1. Search market data\n2. Analyze competitors\n3. Summarize findings\n4. Generate report\n\nPlanning improves reliability, accuracy, and task completion."
-      },
+        "question": "What is a multi-agent system?",
+        "answer": "A multi-agent system consists of multiple AI agents, each with specialized roles, that communicate, collaborate, delegate tasks, debate, critique, and collectively solve problems that are too complex for a single agent. Examples include manager-worker hierarchies, democratic debating systems, and competitive setups. They offer advantages in specialization, parallel execution, error correction through diversity, and emergent intelligence."
+      }
+    ],
+    "Frameworks & Ecosystem": [
       {
-        "question": "What are tools in agentic systems?",
-        "answer": "Tools are external systems or functions an AI agent can use.\n\nExamples:\n- APIs\n- Databases\n- Web search\n- Calculators\n- Python execution\n- Email systems\n\nTools allow AI agents to perform real-world actions instead of only generating text."
-      },
+        "question": "Why would you use LangGraph over LangChain?",
+        "answer": "LangGraph offers superior control for building stateful, cyclical, and multi-actor workflows using graph-based execution. It provides built-in persistence, checkpointing, human-in-the-loop support, and better debugging compared to the more linear chains in traditional LangChain. It is particularly powerful for complex agentic applications that require branching logic, retries, and memory management."
+      }
+    ],
+    "System Design Questions": [
       {
-        "question": "Why do AI agents need memory?",
-        "answer": "Memory enables continuity, personalization, and long-term context retention.\n\nWithout memory, agents forget everything after each interaction.\n\nWith memory:\n- User preferences can be remembered\n- Long workflows can continue\n- Context is preserved\n- Reasoning improves over time\n\nTypes of memory include:\n- Short-term memory\n- Long-term memory\n- Semantic memory\n- Episodic memory"
+        "question": "Design an AI interview agent.",
+        "answer": "A robust AI interview agent should include multiple specialized agents: Question Generator, Real-time Evaluator, Follow-up Questioner, Difficulty Controller, Behavioral Analyst, and Final Scorer. It maintains candidate memory, adapts difficulty dynamically, records responses, provides fair scoring with explanations, and generates detailed feedback reports. Multi-agent collaboration with human-in-the-loop for final decisions is recommended."
+      }
+    ],
+    "Production & Engineering": [
+      {
+        "question": "How do you evaluate AI agents?",
+        "answer": "Evaluation should be multi-dimensional: Success Rate / Goal Completion, Efficiency (steps & time), Cost per task, Human preference scores (Elo or Likert), Hallucination rate, Safety & Compliance score, and domain-specific metrics. Use benchmark suites, golden datasets, and continuous A/B testing in production."
+      }
+    ],
+    "Security & Safety": [
+      {
+        "question": "What is prompt injection?",
+        "answer": "Prompt injection is a security vulnerability where an attacker crafts input that tricks the LLM into ignoring its original system instructions and instead follows the attacker’s commands. This can lead to data leakage, unauthorized actions, or harmful outputs. Defenses include privilege separation, output sanitization, prompt guarding models, and using separate LLMs for input validation."
+      }
+    ],
+    "Advanced Questions": [
+      {
+        "question": "What are the limitations of current agentic systems?",
+        "answer": "Current limitations include: restricted context windows, high latency and cost for long-running tasks, unreliable long-horizon planning, weak persistent memory and learning, difficulty in evaluation and debugging, security vulnerabilities, tendency to get stuck in loops, and lack of true understanding or common sense reasoning."
+      }
+    ],
+    "Questions Often Asked in Real Interviews": [
+      {
+        "question": "Tell me about an AI agent project you built.",
+        "answer": "Structure your answer using STAR method (Situation, Task, Action, Result). Highlight the problem, architecture choices (tools, memory, planning, frameworks), challenges faced (hallucinations, cost, reliability), how you solved them, metrics improved, and key learnings."
       }
     ]
   }
