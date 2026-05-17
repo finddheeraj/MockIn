@@ -111,6 +111,29 @@ export async function apiDownloadPrepPDF(topic, difficulty, questions) {
   URL.revokeObjectURL(url);
 }
 
+export async function apiGetQuickRevisionTopics() {
+  const res = await fetch("/quick-revision/topics");
+  return res.json();
+}
+
+export async function apiGetQuickRevisionSubtopics(topic) {
+  const res = await fetch("/quick-revision/subtopics", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ topic }),
+  });
+  return res.json();
+}
+
+export async function apiGetQuickRevisionQuestions(topic, subtopic) {
+  const res = await fetch("/quick-revision", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ topic, subtopic }),
+  });
+  return res.json();
+}
+
 export async function apiGenerateResumeQuestions(file, role, difficulty) {
   const formData = new FormData();
   formData.append("resume", file);

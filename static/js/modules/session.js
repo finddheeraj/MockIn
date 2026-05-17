@@ -10,7 +10,11 @@
  *   - Reaction bubble    : shown before the follow-up question on every round
  */
 
-import { apiStart, apiAnswer, apiClarify, apiInterrupt, apiNudge, apiSkip, apiReset, apiEnd, apiSessionStatus, apiGetQuestions, apiDownloadPrepPDF } from "./api.js";
+import {
+  apiStart, apiAnswer, apiClarify, apiInterrupt, apiNudge, apiSkip, apiReset,
+  apiEnd, apiSessionStatus, apiGetQuestions, apiDownloadPrepPDF,
+  apiGetQuickRevisionTopics, apiGetQuickRevisionSubtopics, apiGetQuickRevisionQuestions,
+} from "./api.js";
 import { showQuestion, showTyping, hideTyping, sealRound, clearChat, toggleRoundCard, switchRoundTab } from "./chat.js";
 import { updateAdaptiveIndicator, renderEvaluation, renderCoachAnswer, closeCoachModal, fetchCoachAnswer } from "./panels.js";
 import { setStatus, showToast, setAnswerFormLocked, escapeHtml } from "./ui.js";
@@ -426,6 +430,8 @@ export function downloadTranscript() {
 /* ── Preview Questions ──────────────────────────────────────────────────── */
 
 let _prepQuestions
+let _quickRevisionTopicsLoaded = false;
+let _quickRevisionSubtopicsByTopic = {};
 
 function _renderAnswerInline(text) {
   return escapeHtml(text)
@@ -566,6 +572,163 @@ export async function previewQuestions() {
   }
 }
 
+function _renderQuickRevisionQuestions(questions) {
+  if (!questions || questions.length === 0) {
+    return '<div class="qs-error">No quick revision questions found for this topic.</div>';
+  }
+
+  return questions.map((item, i) => `
+    <div class="qs-qa-item">
+      <div class="qs-question" onclick="toggleQAItem(this)">
+        <span class="qs-q-num">${i + 1}.</span>
+        <span class="qs-q-text">${escapeHtml(item.question || "")}</span>
+        <svg class="qs-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="qs-answer">
+        <div class="qs-answer-text">${_renderPreviewAnswer(item.answer || "")}</div>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function _loadQuickRevisionTopics() {
+  const select = document.getElementById("quick-topic-select");
+  if (!select || _quickRevisionTopicsLoaded) return;
+
+  const data = await apiGetQuickRevisionTopics();
+  const topics = data.topics || [];
+  select.innerHTML = topics
+    .map(topic => `<option value="${escapeHtml(topic)}">${escapeHtml(topic)}</option>`)
+    .join("");
+
+  const currentTopic = document.getElementById("topic-select")?.value;
+  if (currentTopic && topics.includes(currentTopic)) {
+    select.value = currentTopic;
+  }
+
+  _quickRevisionTopicsLoaded = true;
+}
+
+async function _loadQuickRevisionSubtopics(topic) {
+  const select = document.getElementById("quick-subtopic-select");
+  if (!select || !topic) return;
+
+  if (!_quickRevisionSubtopicsByTopic[topic]) {
+    const data = await apiGetQuickRevisionSubtopics(topic);
+    if (data.error) throw new Error(data.error);
+    _quickRevisionSubtopicsByTopic[topic] = data.subtopics || [];
+  }
+
+  const subtopics = _quickRevisionSubtopicsByTopic[topic];
+  select.innerHTML = subtopics
+    .map(subtopic => `<option value="${escapeHtml(subtopic)}">${escapeHtml(subtopic)}</option>`)
+    .join("");
+}
+
+export async function updateQuickRevisionSubtopics() {
+  const topic = document.getElementById("quick-topic-select")?.value;
+  const results = document.getElementById("quick-revision-results");
+
+  try {
+    await _loadQuickRevisionSubtopics(topic);
+  } catch (err) {
+    console.error("quick revision subtopics error:", err);
+    if (results) results.innerHTML = '<div class="qs-error">Failed to load subtopics.</div>';
+  }
+}
+
+export async function openQuickRevision() {
+  const overlay = document.getElementById("quick-revision-modal-overlay");
+  const content = document.getElementById("quick-revision-preview");
+  if (!overlay || !content) return;
+
+  overlay.style.display = "flex";
+  overlay.onclick = (e) => {
+    if (e.target === overlay) closeQuickRevision();
+  };
+
+  content.innerHTML = `
+    <div class="qs-header">
+      <div class="qs-header-left">
+        <span class="qs-title">Quick Revision</span>
+        <span class="qs-meta">Predefined questions for quick revision</span>
+      </div>
+      <button class="qs-close" onclick="closeQuickRevision()">×</button>
+    </div>
+    <div class="quick-revision-controls">
+      <div class="select-wrap">
+        <select id="quick-topic-select" onchange="updateQuickRevisionSubtopics()">
+          <option value="">Loading topics...</option>
+        </select>
+      </div>
+      <div class="select-wrap">
+        <select id="quick-subtopic-select">
+          <option value="">Select subtopic</option>
+        </select>
+      </div>
+      <button class="btn-load-more" id="btn-fetch-quick-revision" onclick="fetchQuickRevisionQuestions()">
+        Fetch Questions
+      </button>
+    </div>
+    <div id="quick-revision-results" class="quick-revision-results">
+      <div class="qs-loading">Choose a topic and fetch questions.</div>
+    </div>
+  `;
+
+  try {
+    await _loadQuickRevisionTopics();
+    await updateQuickRevisionSubtopics();
+  } catch (err) {
+    console.error("quick revision topics error:", err);
+    document.getElementById("quick-revision-results").innerHTML =
+      '<div class="qs-error">Failed to load topics.</div>';
+  }
+}
+
+export async function fetchQuickRevisionQuestions() {
+  const topic = document.getElementById("quick-topic-select")?.value;
+  const subtopic = document.getElementById("quick-subtopic-select")?.value;
+  const results = document.getElementById("quick-revision-results");
+  const btn = document.getElementById("btn-fetch-quick-revision");
+
+  if (!topic || !subtopic) {
+    showToast("Choose a topic and subtopic first.");
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Fetching...";
+  }
+  results.innerHTML = '<div class="qs-loading">Loading questions...</div>';
+
+  try {
+    const data = await apiGetQuickRevisionQuestions(topic, subtopic);
+    if (data.error) {
+      results.innerHTML = `<div class="qs-error">${escapeHtml(data.error)}</div>`;
+      return;
+    }
+
+    results.innerHTML = `
+      <div class="qs-header quick-revision-result-header">
+        <div class="qs-header-left">
+          <span class="qs-title">${escapeHtml(data.topic || topic)}</span>
+          <span class="qs-meta">${escapeHtml(data.subtopic || subtopic)} • ${(data.questions || []).length} quick revision questions</span>
+        </div>
+      </div>
+      <div>${_renderQuickRevisionQuestions(data.questions || [])}</div>
+    `;
+  } catch (err) {
+    console.error("quick revision questions error:", err);
+    results.innerHTML = '<div class="qs-error">Failed to fetch quick revision questions.</div>';
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "Fetch Questions";
+    }
+  }
+}
+
 export async function loadMoreQuestions() {
   const topic = document.getElementById("topic-select").value;
   const difficulty = document.getElementById("difficulty-select").value;
@@ -654,6 +817,10 @@ export function toggleQAItem(questionEl) {
 export function closeQuestionsPreview() {
   document.getElementById("questions-modal-overlay").style.display = "none";
   _prepQuestions = [];
+}
+
+export function closeQuickRevision() {
+  document.getElementById("quick-revision-modal-overlay").style.display = "none";
 }
 
 window.addEventListener("beforeunload", (e) => {

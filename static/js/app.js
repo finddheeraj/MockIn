@@ -20,7 +20,8 @@ import { toggleSpeech, initSpeechRecognition, toggleNarration, initNarration } f
 import {
   startInterview, submitAnswer, skipQuestion,
   resetInterview, endAndEvaluate, checkForExistingSession, downloadTranscript,
-  previewQuestions, closeQuestionsPreview, loadMoreQuestions, downloadPrepPDF, toggleQAItem
+  previewQuestions, closeQuestionsPreview, loadMoreQuestions, downloadPrepPDF, toggleQAItem,
+  openQuickRevision, updateQuickRevisionSubtopics, fetchQuickRevisionQuestions, closeQuickRevision
 } from "./modules/session.js";
 import { state } from "./modules/state.js";
 import { toggleRoundCard, switchRoundTab } from "./modules/chat.js";
@@ -46,6 +47,10 @@ window.closeQuestionsPreview = closeQuestionsPreview;
 window.loadMoreQuestions  = loadMoreQuestions;
 window.downloadPrepPDF    = downloadPrepPDF;
 window.toggleQAItem       = toggleQAItem;
+window.openQuickRevision  = openQuickRevision;
+window.updateQuickRevisionSubtopics = updateQuickRevisionSubtopics;
+window.fetchQuickRevisionQuestions = fetchQuickRevisionQuestions;
+window.closeQuickRevision = closeQuickRevision;
 window.generateResumeQuestions = generateResumeQuestions;
 window.closeResumeQuestions = closeResumeQuestions;
 

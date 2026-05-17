@@ -131,6 +131,11 @@
     grid-template-columns: 1fr;
   }
 
+  .prep-actions,
+  .quick-revision-controls {
+    grid-template-columns: 1fr;
+  }
+
   .btn-resume-questions,
   .resume-upload,
   .resume-role-input {

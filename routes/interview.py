@@ -32,6 +32,11 @@ from agents.scorer import score_answer, compute_weak_areas
 from agents.adaptive_controller import decide_next_action, _fallback_decision
 from agents.evaluator import evaluate_session
 from tools.knowledge_base import lookup_reference, detect_subtopic, get_prep_questions
+from tools.quick_revision import (
+    get_quick_revision_topics,
+    get_quick_revision_subtopics,
+    get_quick_revision_questions,
+)
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
@@ -123,6 +128,42 @@ def get_sample_questions():
                     "has_more": len(questions) == 10})
 
 # ── /prep-pdf ────────────────────────────────────────────────────────────────────
+@interview_bp.route("/quick-revision/topics", methods=["GET"])
+def quick_revision_topics():
+    return jsonify({"topics": get_quick_revision_topics()})
+
+
+@interview_bp.route("/quick-revision/subtopics", methods=["POST"])
+def quick_revision_subtopics():
+    data = request.json or {}
+    topic = data.get("topic", "").strip()
+
+    if not topic:
+        return jsonify({"error": "Topic is required."}), 400
+
+    subtopics = get_quick_revision_subtopics(topic)
+    if not subtopics:
+        return jsonify({"error": "No quick revision subtopics found for this topic."}), 404
+
+    return jsonify({"topic": topic, "subtopics": subtopics})
+
+
+@interview_bp.route("/quick-revision", methods=["POST"])
+def quick_revision_questions():
+    data = request.json or {}
+    topic = data.get("topic", "").strip()
+    subtopic = data.get("subtopic", "").strip()
+
+    if not topic or not subtopic:
+        return jsonify({"error": "Topic and subtopic are required."}), 400
+
+    questions = get_quick_revision_questions(topic, subtopic)
+    if not questions:
+        return jsonify({"error": "No quick revision questions found for this topic/subtopic."}), 404
+
+    return jsonify({"topic": topic, "subtopic": subtopic, "questions": questions})
+
+
 @interview_bp.route("/prep-pdf", methods=["POST"])
 def download_prep_pdf():
     import re

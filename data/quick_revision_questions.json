@@ -1,0 +1,46 @@
+{
+  "AI agents": {
+    "Fundamentals": [
+      {
+        "question": "What is an AI agent?",
+        "answer": "An AI agent is a system that can perceive information, reason about goals, take actions, observe results, and adapt based on feedback.\n\nUnlike a normal LLM interaction where the model only generates text, an AI agent can perform tasks using tools, APIs, memory, and decision-making loops.\n\nA simple AI agent usually follows:\n- Observe\n- Think\n- Act\n- Repeat\n\nExample: An AI travel agent can search flights, compare prices, book tickets, and send confirmations automatically."
+      },
+      {
+        "question": "How is an AI agent different from a traditional chatbot?",
+        "answer": "Traditional chatbots mostly generate conversational responses, while AI agents are goal-oriented systems that can take actions.\n\nChatbots are usually reactive and stateless, whereas AI agents can:\n- Maintain memory\n- Use tools\n- Plan tasks\n- Interact with external systems\n\nExample: A chatbot may answer weather queries, but an AI agent can reschedule meetings automatically if rain is predicted."
+      },
+      {
+        "question": "What are the core components of an AI agent?",
+        "answer": "Core components include:\n- LLM / Reasoning Engine: The brain of the agent\n- Memory: Stores context and preferences\n- Tools: APIs, databases, calculators, web search, etc.\n- Planning Module: Breaks large tasks into smaller steps\n- Execution Layer: Performs actions\n- Feedback Loop: Evaluates success and retries if needed"
+      },
+      {
+        "question": "What is the difference between reactive and autonomous agents?",
+        "answer": "Reactive agents respond immediately to inputs and usually have limited planning.\n\nAutonomous agents can:\n- Plan tasks\n- Use tools\n- Make decisions independently\n- Adapt dynamically\n\nReactive agents follow:\n- Input -> Response\n\nAutonomous agents follow:\n- Goal -> Plan -> Execute -> Evaluate"
+      },
+      {
+        "question": "What is the difference between single-agent and multi-agent systems?",
+        "answer": "Single-agent systems use one agent to perform all tasks. Multi-agent systems involve multiple specialized agents collaborating together.\n\nExample: An AI interviewer may contain:\n- Question generation agent\n- Scoring agent\n- Feedback agent\n- Difficulty controller agent\n\nMulti-agent systems provide specialization and scalability, but they are harder to coordinate."
+      },
+      {
+        "question": "What makes an LLM agentic?",
+        "answer": "An LLM becomes agentic when it can:\n- Make decisions\n- Use tools\n- Maintain memory\n- Plan tasks\n- Execute actions\n- Reflect and self-correct\n\nA plain LLM generates responses, while an agentic LLM actively works toward completing goals."
+      },
+      {
+        "question": "What is agent orchestration?",
+        "answer": "Agent orchestration is the coordination and management of agents, tools, workflows, and execution pipelines.\n\nIt controls:\n- Which agent acts next\n- What tools are used\n- Information flow\n- Failure handling\n\nFrameworks like LangGraph, CrewAI, and AutoGen are commonly used for orchestration."
+      },
+      {
+        "question": "What is the role of planning in AI agents?",
+        "answer": "Planning helps agents break complex tasks into smaller steps and determine execution order.\n\nExample: For creating a market research report:\n1. Search market data\n2. Analyze competitors\n3. Summarize findings\n4. Generate report\n\nPlanning improves reliability, accuracy, and task completion."
+      },
+      {
+        "question": "What are tools in agentic systems?",
+        "answer": "Tools are external systems or functions an AI agent can use.\n\nExamples:\n- APIs\n- Databases\n- Web search\n- Calculators\n- Python execution\n- Email systems\n\nTools allow AI agents to perform real-world actions instead of only generating text."
+      },
+      {
+        "question": "Why do AI agents need memory?",
+        "answer": "Memory enables continuity, personalization, and long-term context retention.\n\nWithout memory, agents forget everything after each interaction.\n\nWith memory:\n- User preferences can be remembered\n- Long workflows can continue\n- Context is preserved\n- Reasoning improves over time\n\nTypes of memory include:\n- Short-term memory\n- Long-term memory\n- Semantic memory\n- Episodic memory"
+      }
+    ]
+  }
+}
