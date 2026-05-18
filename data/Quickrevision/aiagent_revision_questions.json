@@ -19,9 +19,38 @@
         "question": "Explain the architecture of an LLM-powered AI agent.",
         "answer": "An LLM-powered AI agent architecture generally follows this flow:\n\n1. **Input Layer** — User query + system prompt + retrieved context.\n2. **Reasoning Engine** — LLM analyzes the goal and current state.\n3. **Memory Retrieval** — Pulls relevant short-term and long-term memories.\n4. **Decision Phase** — LLM decides whether to call tools, continue planning, or generate final output.\n5. **Tool Execution** — External tools are called and results observed.\n6. **Reflection Phase** — Agent critiques its actions and results.\n7. **State Update** — Memory and planner are updated.\n8. **Loop** — Repeat until termination condition (success, max steps, user stop).\n\nPopular implementations use frameworks like LangGraph (graph-based state machines) or CrewAI (role-based orchestration)."
       },
+      
+      {
+        "question": "How does an AI agent decide which tool to use?",
+        "answer": "AI agents use the reasoning capabilities of the LLM to determine whether external tools are needed.\n\nThe model analyzes:\n- User intent\n- Task requirements\n- Available tool descriptions\n- Expected outputs\n\nThe agent then selects the most relevant tool.\n\nExamples:\n- Weather question -> Weather API\n- Mathematical calculation -> Calculator tool\n- File lookup -> Database or retrieval tool\n- Internet research -> Web search tool\n\nModern systems often use function calling or structured tool schemas so the LLM can automatically choose tools and generate correct parameters."
+      },
+      {
+        "question": "What is function/tool calling?",
+        "answer": "Function or tool calling is a mechanism that allows an LLM to invoke external functions, APIs, or systems.\n\nInstead of only generating text, the model can produce structured outputs specifying:\n- Which function to call\n- What arguments to pass\n- How the result should be used\n\nExample:\nA weather assistant may call:\nget_weather(city='Pune')\n\nThe API returns weather data, and the agent uses the result to continue reasoning.\n\nTool calling significantly expands the capabilities of AI systems by enabling:\n- Real-time data access\n- External actions\n- Database interaction\n- Automation workflows\n- Code execution"
+      },
       {
         "question": "What is the ReAct framework?",
         "answer": "ReAct (Reason + Act) is a foundational agentic prompting paradigm introduced by Yao et al. In this framework, the LLM generates interleaved reasoning traces ('Thought') and actions ('Action') in each step. After executing an action, the result ('Observation') is fed back, and the cycle continues. This approach significantly improves performance on complex tasks by combining reasoning with interaction with the external world, making the agent's thought process transparent and easier to debug."
+      },
+      {
+        "question": "What is chain-of-thought prompting?",
+        "answer": "Chain-of-thought prompting encourages the model to reason step-by-step before generating the final answer.\n\nInstead of directly producing an output, the model explains intermediate reasoning steps.\n\nThis improves performance in:\n- Mathematics\n- Logical reasoning\n- Planning tasks\n- Multi-step decision making\n\nExample:\nInstead of immediately answering a math problem, the model first breaks the problem into smaller calculations.\n\nBenefits include:\n- Better reasoning quality\n- Reduced mistakes\n- Improved explainability\n- More reliable outputs"
+      },
+      {
+        "question": "What is the difference between ReAct and chain-of-thought prompting?",
+        "answer": "Chain-of-thought prompting focuses on generating intermediate reasoning steps to improve the quality of the final answer. It is primarily a prompting technique to enhance the model's internal reasoning process. \n\nReAct, on the other hand, is a more comprehensive framework that combines reasoning (similar to chain-of-thought) with actions that interact with external tools or environments. ReAct explicitly includes action generation and observation feedback, making it suitable for agentic systems that need to perform tasks in the real world or digital environment. \n\nIn summary, chain-of-thought is about improving reasoning, while ReAct integrates reasoning with action execution."
+      },
+      {
+        "question": "What are some limitations of the ReAct framework?",
+        "answer": "While ReAct is powerful, it has limitations:\n- It can be inefficient for simple tasks due to overhead of reasoning and action cycles.\n- It may struggle with long-horizon planning where many steps are needed.\n- The model may generate irrelevant or incorrect actions, leading to failure.\n- Debugging can be complex if the reasoning and action generation are intertwined.\n- It relies heavily on the quality of the LLM's reasoning capabilities, which can vary."
+      },
+      {
+        "question": "What are some common tools used by AI agents?",
+        "answer": "Common tools include:\n- Web search APIs (e.g., Google Search, Bing Search)\n- Knowledge bases (e.g., Wikipedia, Wolfram Alpha)\n- Code execution environments (e.g., Python REPL, Jupyter)\n- Databases (e.g., SQL, Vector DBs)\n- Communication tools (e.g., Email, Slack)\n- Scheduling tools (e.g., Calendar APIs)\n- File management systems (e.g., Google Drive, Dropbox)\n- Specialized APIs (e.g., Weather API, Stock API)"
+      },
+      {
+        "question": "How do AI agents use tools to enhance their capabilities?",
+        "answer": "AI agents leverage tools to access real-time information, perform complex computations, manipulate data, and interact with external systems. By calling tools, agents can go beyond the static knowledge of the LLM and execute actions in the world. For example, an agent can use a web search tool to find current events, a calculator tool for math problems, or a calendar API to schedule meetings. This allows agents to solve a wider range of tasks and provide more accurate and actionable responses."
       }
     ],
     "Memory in AI Agents": [
