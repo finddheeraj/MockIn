@@ -12,6 +12,30 @@
       {
         "question": "What are the core components of an AI agent?",
         "answer": "Modern AI agents typically consist of the following core components:\n\n1. **LLM / Reasoning Engine** — The cognitive core (e.g., GPT-4o, Claude 3.5, Grok, Llama 3.1) responsible for understanding, planning, and decision-making.\n2. **Memory System** — Short-term (conversation history), long-term (vector DB + structured DB), and episodic memory.\n3. **Tool Use Layer** — Interface to external capabilities (search, code execution, APIs, email, calendars, etc.).\n4. **Planning & Reasoning Module** — Task decomposition, Chain-of-Thought, Tree-of-Thoughts, hierarchical planning.\n5. **Execution & Orchestration Engine** — Runs actions, manages state transitions, handles parallelism.\n6. **Reflection / Self-Correction Module** — Evaluates outputs, detects errors, generates improvements.\n7. **Feedback & Learning Loop** — Incorporates results to refine future behavior.\n\nThese components work together in a tightly integrated architecture."
+      },
+      {
+        "question": "What is the difference between reactive and autonomous agents?",
+        "answer": "Reactive agents respond directly to user inputs or environmental changes without long-term reasoning or independent decision-making. They typically follow predefined rules or immediate context to generate responses. For example, a chatbot answering FAQs based only on the current message is a reactive agent.\n\nAutonomous agents, on the other hand, can independently plan, reason, make decisions, and execute actions to achieve goals with minimal human intervention. They maintain context, use memory, interact with tools, and adapt their behavior dynamically. For example, an AI travel assistant that researches flights, compares prices, books tickets, and updates schedules automatically is an autonomous agent."
+      },
+      {
+        "question": "What is the difference between single-agent and multi-agent systems?",
+        "answer": "A single-agent system consists of one AI agent responsible for handling the entire task or workflow. The agent performs all reasoning, planning, tool usage, and response generation by itself. Single-agent systems are simpler to design and are suitable for straightforward tasks.\n\nA multi-agent system consists of multiple specialized agents working together collaboratively or competitively to solve complex problems. Each agent typically has a dedicated role, such as planning, research, validation, coding, or scoring. These agents communicate and coordinate with each other to improve performance, scalability, and reliability.\n\nFor example, in an AI interview platform, one agent may generate questions, another may evaluate answers, and another may decide the next difficulty level."
+      },
+      {
+        "question": "What makes an LLM “agentic”?",
+        "answer": "An LLM becomes “agentic” when it goes beyond simple text generation and starts acting toward achieving goals autonomously. A normal LLM mainly predicts the next token based on input prompts, while an agentic LLM can reason, plan tasks, use tools, maintain memory, make decisions, and take actions iteratively.\n\nAgentic behavior usually includes capabilities such as:\n- Goal-oriented decision making\n- Planning multi-step workflows\n- Using external tools or APIs\n- Maintaining short-term or long-term memory\n- Observing outcomes and adjusting actions\n- Acting with minimal human supervision\n\nFor example, an agentic coding assistant may analyze requirements, search documentation, write code, debug errors, and retry failed steps automatically."
+      },
+      {
+        "question": "What is agent orchestration?",
+        "answer": "Agent orchestration is the process of coordinating multiple agents, tools, workflows, and decision-making steps to accomplish a task efficiently. It manages how agents communicate, delegate tasks, share information, and execute actions in the correct sequence.\n\nAn orchestration layer typically decides:\n- Which agent should handle a task\n- When tools should be used\n- How outputs are passed between agents\n- How failures or retries are managed\n- How the final response is combined\n\nFor example, in a research AI system, an orchestrator may send one agent to gather information, another to summarize findings, and another to fact-check the output before presenting the final answer."
+      },
+      {
+        "question": "What is the role of planning in AI agents?",
+        "answer": "Planning allows AI agents to break down complex goals into smaller actionable steps and determine the best sequence of actions required to achieve the objective. Instead of responding immediately, the agent analyzes the problem, considers available tools and resources, and creates a strategy before acting.\n\nPlanning helps agents:\n- Handle multi-step tasks\n- Reduce errors and unnecessary actions\n- Adapt dynamically when conditions change\n- Optimize resource usage\n- Improve reasoning and task completion accuracy\n\nFor example, if a user asks an AI agent to organize a trip, the planning process may involve checking budgets, searching flights, booking hotels, creating itineraries, and setting reminders in a structured order."
+      },
+      {
+        "question": "What are tools in agentic systems?",
+        "answer": "Tools in agentic systems are external functions, APIs, software services, or utilities that AI agents can use to perform actions beyond text generation. Tools extend the capabilities of AI agents by allowing them to interact with external systems, retrieve real-time data, execute code, access databases, or automate workflows.\n\nCommon examples of tools include:\n- Web search APIs\n- Database queries\n- Calculators\n- Code execution environments\n- Email or messaging services\n- File management systems\n- Calendar and scheduling APIs\n\nFor example, an AI coding agent may use a code execution tool to run and test generated programs, while a customer support agent may use CRM APIs to retrieve customer information."
       }
     ],
     "LLM + Agent Architecture": [
@@ -19,7 +43,6 @@
         "question": "Explain the architecture of an LLM-powered AI agent.",
         "answer": "An LLM-powered AI agent architecture generally follows this flow:\n\n1. **Input Layer** — User query + system prompt + retrieved context.\n2. **Reasoning Engine** — LLM analyzes the goal and current state.\n3. **Memory Retrieval** — Pulls relevant short-term and long-term memories.\n4. **Decision Phase** — LLM decides whether to call tools, continue planning, or generate final output.\n5. **Tool Execution** — External tools are called and results observed.\n6. **Reflection Phase** — Agent critiques its actions and results.\n7. **State Update** — Memory and planner are updated.\n8. **Loop** — Repeat until termination condition (success, max steps, user stop).\n\nPopular implementations use frameworks like LangGraph (graph-based state machines) or CrewAI (role-based orchestration)."
       },
-      
       {
         "question": "How does an AI agent decide which tool to use?",
         "answer": "AI agents use the reasoning capabilities of the LLM to determine whether external tools are needed.\n\nThe model analyzes:\n- User intent\n- Task requirements\n- Available tool descriptions\n- Expected outputs\n\nThe agent then selects the most relevant tool.\n\nExamples:\n- Weather question -> Weather API\n- Mathematical calculation -> Calculator tool\n- File lookup -> Database or retrieval tool\n- Internet research -> Web search tool\n\nModern systems often use function calling or structured tool schemas so the LLM can automatically choose tools and generate correct parameters."
