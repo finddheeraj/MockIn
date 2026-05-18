@@ -36,6 +36,7 @@ from tools.quick_revision import (
     get_quick_revision_topics,
     get_quick_revision_subtopics,
     get_quick_revision_questions,
+    get_quick_revision_mindmap,
 )
 
 from reportlab.lib.pagesizes import A4
@@ -146,6 +147,22 @@ def quick_revision_subtopics():
         return jsonify({"error": "No quick revision subtopics found for this topic."}), 404
 
     return jsonify({"topic": topic, "subtopics": subtopics})
+
+
+@interview_bp.route("/quick-revision/mindmap", methods=["POST"])
+def quick_revision_mindmap():
+    data = request.json or {}
+    topic = data.get("topic", "").strip()
+    subtopic = data.get("subtopic", "").strip()
+
+    if not topic or not subtopic:
+        return jsonify({"error": "Topic and subtopic are required."}), 400
+
+    mindmap = get_quick_revision_mindmap(topic, subtopic)
+    if not mindmap:
+        return jsonify({"error": "No mind map found for this topic/subtopic."}), 404
+
+    return jsonify({"topic": topic, "subtopic": subtopic, "mindmap": mindmap})
 
 
 @interview_bp.route("/quick-revision", methods=["POST"])

@@ -21,7 +21,8 @@ import {
   startInterview, submitAnswer, skipQuestion,
   resetInterview, endAndEvaluate, checkForExistingSession, downloadTranscript,
   previewQuestions, closeQuestionsPreview, loadMoreQuestions, downloadPrepPDF, toggleQAItem,
-  openQuickRevision, updateQuickRevisionSubtopics, fetchQuickRevisionQuestions, closeQuickRevision
+  openQuickRevision, updateQuickRevisionSubtopics, onQuickRevisionSubtopicChange,
+  fetchQuickRevisionQuestions, toggleMindmapBranch, closeQuickRevision
 } from "./modules/session.js";
 import { state } from "./modules/state.js";
 import { toggleRoundCard, switchRoundTab } from "./modules/chat.js";
@@ -49,7 +50,9 @@ window.downloadPrepPDF    = downloadPrepPDF;
 window.toggleQAItem       = toggleQAItem;
 window.openQuickRevision  = openQuickRevision;
 window.updateQuickRevisionSubtopics = updateQuickRevisionSubtopics;
+window.onQuickRevisionSubtopicChange = onQuickRevisionSubtopicChange;
 window.fetchQuickRevisionQuestions = fetchQuickRevisionQuestions;
+window.toggleMindmapBranch = toggleMindmapBranch;
 window.closeQuickRevision = closeQuickRevision;
 window.generateResumeQuestions = generateResumeQuestions;
 window.closeResumeQuestions = closeResumeQuestions;

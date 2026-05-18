@@ -14,6 +14,7 @@ import {
   apiStart, apiAnswer, apiClarify, apiInterrupt, apiNudge, apiSkip, apiReset,
   apiEnd, apiSessionStatus, apiGetQuestions, apiDownloadPrepPDF,
   apiGetQuickRevisionTopics, apiGetQuickRevisionSubtopics, apiGetQuickRevisionQuestions,
+  apiGetQuickRevisionMindmap,
 } from "./api.js";
 import { showQuestion, showTyping, hideTyping, sealRound, clearChat, toggleRoundCard, switchRoundTab } from "./chat.js";
 import { updateAdaptiveIndicator, renderEvaluation, renderCoachAnswer, closeCoachModal, fetchCoachAnswer } from "./panels.js";
@@ -432,6 +433,7 @@ export function downloadTranscript() {
 let _prepQuestions
 let _quickRevisionTopicsLoaded = false;
 let _quickRevisionSubtopicsByTopic = {};
+let _mindmapNodeId = 0;
 
 function _renderAnswerInline(text) {
   return escapeHtml(text)
@@ -572,6 +574,73 @@ export async function previewQuestions() {
   }
 }
 
+function _nextMindmapNodeId() {
+  _mindmapNodeId += 1;
+  return `mm-node-${_mindmapNodeId}`;
+}
+
+function _renderMindmapNode(node, depth = 0) {
+  const hasChildren = Array.isArray(node.children) && node.children.length > 0;
+  const label = escapeHtml(node.label || "");
+
+  if (!hasChildren) {
+    return `<li class="mm-leaf" style="--depth:${depth}">${label}</li>`;
+  }
+
+  const id = _nextMindmapNodeId();
+  return `
+    <li class="mm-branch" style="--depth:${depth}">
+      <button type="button" class="mm-toggle" aria-expanded="false"
+              onclick="toggleMindmapBranch(this)" data-target="${id}">
+        <span class="mm-chevron" aria-hidden="true">▶</span>
+        <span>${label}</span>
+      </button>
+      <ul id="${id}" class="mm-children" hidden>
+        ${node.children.map(child => _renderMindmapNode(child, depth + 1)).join("")}
+      </ul>
+    </li>`;
+}
+
+function _renderMindmap(tree) {
+  const rootLabel = escapeHtml(tree.label || "Overview");
+  const children = Array.isArray(tree.children) ? tree.children : [];
+  return `
+    <div class="quick-revision-mindmap">
+      <div class="mm-root">${rootLabel}</div>
+      <ul class="mm-tree">
+        ${children.map(node => _renderMindmapNode(node, 0)).join("")}
+      </ul>
+    </div>`;
+}
+
+export function toggleMindmapBranch(btn) {
+  const ul = document.getElementById(btn.dataset.target);
+  if (!ul) return;
+  const open = ul.hidden;
+  ul.hidden = !open;
+  btn.setAttribute("aria-expanded", String(open));
+  const chevron = btn.querySelector(".mm-chevron");
+  if (chevron) chevron.textContent = open ? "▼" : "▶";
+}
+
+async function _loadQuickRevisionMindmap(topic, subtopic) {
+  const container = document.getElementById("quick-revision-mindmap");
+  if (!container || !topic || !subtopic) return;
+
+  container.innerHTML = '<div class="qs-loading">Loading mind map...</div>';
+  try {
+    const data = await apiGetQuickRevisionMindmap(topic, subtopic);
+    if (data.error) {
+      container.innerHTML = '<div class="qs-meta">No mind map available for this subtopic.</div>';
+      return;
+    }
+    container.innerHTML = _renderMindmap(data.mindmap || {});
+  } catch (err) {
+    console.error("quick revision mindmap error:", err);
+    container.innerHTML = '<div class="qs-error">Failed to load mind map.</div>';
+  }
+}
+
 function _renderQuickRevisionQuestions(questions) {
   if (!questions || questions.length === 0) {
     return '<div class="qs-error">No quick revision questions found for this topic.</div>';
@@ -625,12 +694,21 @@ async function _loadQuickRevisionSubtopics(topic) {
     .join("");
 }
 
+export async function onQuickRevisionSubtopicChange() {
+  const topic = document.getElementById("quick-topic-select")?.value;
+  const subtopic = document.getElementById("quick-subtopic-select")?.value;
+  const questions = document.getElementById("quick-revision-questions");
+  if (questions) questions.innerHTML = "";
+  await _loadQuickRevisionMindmap(topic, subtopic);
+}
+
 export async function updateQuickRevisionSubtopics() {
   const topic = document.getElementById("quick-topic-select")?.value;
   const results = document.getElementById("quick-revision-results");
 
   try {
     await _loadQuickRevisionSubtopics(topic);
+    await onQuickRevisionSubtopicChange();
   } catch (err) {
     console.error("quick revision subtopics error:", err);
     if (results) results.innerHTML = '<div class="qs-error">Failed to load subtopics.</div>';
@@ -641,6 +719,9 @@ export async function openQuickRevision() {
   const overlay = document.getElementById("quick-revision-modal-overlay");
   const content = document.getElementById("quick-revision-preview");
   if (!overlay || !content) return;
+
+  _quickRevisionTopicsLoaded = false;
+  _mindmapNodeId = 0;
 
   overlay.style.display = "flex";
   overlay.onclick = (e) => {
@@ -662,7 +743,7 @@ export async function openQuickRevision() {
         </select>
       </div>
       <div class="select-wrap">
-        <select id="quick-subtopic-select">
+        <select id="quick-subtopic-select" onchange="onQuickRevisionSubtopicChange()">
           <option value="">Select subtopic</option>
         </select>
       </div>
@@ -671,7 +752,13 @@ export async function openQuickRevision() {
       </button>
     </div>
     <div id="quick-revision-results" class="quick-revision-results">
-      <div class="qs-loading">Choose a topic and fetch questions.</div>
+      <div class="quick-revision-mindmap-section">
+        <div class="quick-revision-mindmap-heading">Concept map</div>
+        <div id="quick-revision-mindmap">
+          <div class="qs-loading">Select a topic and subtopic to view the mind map.</div>
+        </div>
+      </div>
+      <div id="quick-revision-questions" class="quick-revision-questions-section"></div>
     </div>
   `;
 
@@ -688,7 +775,7 @@ export async function openQuickRevision() {
 export async function fetchQuickRevisionQuestions() {
   const topic = document.getElementById("quick-topic-select")?.value;
   const subtopic = document.getElementById("quick-subtopic-select")?.value;
-  const results = document.getElementById("quick-revision-results");
+  const questionsEl = document.getElementById("quick-revision-questions");
   const btn = document.getElementById("btn-fetch-quick-revision");
 
   if (!topic || !subtopic) {
@@ -696,20 +783,22 @@ export async function fetchQuickRevisionQuestions() {
     return;
   }
 
+  if (!questionsEl) return;
+
   if (btn) {
     btn.disabled = true;
     btn.textContent = "Fetching...";
   }
-  results.innerHTML = '<div class="qs-loading">Loading questions...</div>';
+  questionsEl.innerHTML = '<div class="qs-loading">Loading questions...</div>';
 
   try {
     const data = await apiGetQuickRevisionQuestions(topic, subtopic);
     if (data.error) {
-      results.innerHTML = `<div class="qs-error">${escapeHtml(data.error)}</div>`;
+      questionsEl.innerHTML = `<div class="qs-error">${escapeHtml(data.error)}</div>`;
       return;
     }
 
-    results.innerHTML = `
+    questionsEl.innerHTML = `
       <div class="qs-header quick-revision-result-header">
         <div class="qs-header-left">
           <span class="qs-title">${escapeHtml(data.topic || topic)}</span>
@@ -720,7 +809,7 @@ export async function fetchQuickRevisionQuestions() {
     `;
   } catch (err) {
     console.error("quick revision questions error:", err);
-    results.innerHTML = '<div class="qs-error">Failed to fetch quick revision questions.</div>';
+    questionsEl.innerHTML = '<div class="qs-error">Failed to fetch quick revision questions.</div>';
   } finally {
     if (btn) {
       btn.disabled = false;

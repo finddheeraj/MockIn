@@ -134,6 +134,15 @@ export async function apiGetQuickRevisionQuestions(topic, subtopic) {
   return res.json();
 }
 
+export async function apiGetQuickRevisionMindmap(topic, subtopic) {
+  const res = await fetch("/quick-revision/mindmap", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ topic, subtopic }),
+  });
+  return res.json();
+}
+
 export async function apiGenerateResumeQuestions(file, role, difficulty) {
   const formData = new FormData();
   formData.append("resume", file);

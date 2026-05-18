@@ -5,13 +5,23 @@ Loads all JSON files from data/Quickrevision/ and merges them into a
 single question bank. To add a new topic, drop a new JSON file in that
 directory — no code changes needed.
 
-Each file must follow the same structure:
+Question files (*.json, excluding *_mindmaps.json) must follow:
 {
   "<Topic Name>": {
     "<Subtopic Name>": [
       { "question": "...", "answer": "..." },
       ...
     ]
+  }
+}
+
+Mind map files (*_mindmaps.json) must follow:
+{
+  "<Topic Name>": {
+    "<Subtopic Name>": {
+      "label": "Root label",
+      "children": [ { "label": "...", "children": [...] }, ... ]
+    }
   }
 }
 """
@@ -25,6 +35,7 @@ _QUICKREVISION_DIR = os.path.join(
     os.path.dirname(__file__), "..", "data", "Quickrevision"
 )
 _cache = None
+_mindmap_cache = None
 
 
 def _load_questions() -> dict:
@@ -48,6 +59,8 @@ def _load_questions() -> dict:
         )
 
     for filepath in files:
+        if filepath.endswith("_mindmaps.json"):
+            continue
         with open(filepath, "r", encoding="utf-8") as f:
             data = json.load(f)
 
@@ -75,6 +88,8 @@ def get_quick_revision_subtopics(topic: str) -> list:
 def get_quick_revision_questions(topic: str, subtopic: str) -> list:
     topic_data = _load_questions().get(topic, {})
     questions = topic_data.get(subtopic, []) if isinstance(topic_data, dict) else []
+    if not isinstance(questions, list):
+        return []
     return [
         {
             "question": str(q.get("question", "")).strip(),
@@ -83,3 +98,40 @@ def get_quick_revision_questions(topic: str, subtopic: str) -> list:
         for q in questions
         if isinstance(q, dict) and str(q.get("question", "")).strip()
     ]
+
+
+def _load_mindmaps() -> dict:
+    """
+    Merge all *_mindmaps.json files in data/Quickrevision/ into one dict.
+    Structure per subtopic: { "label": "...", "children": [ ... ] }
+    """
+    global _mindmap_cache
+    if _mindmap_cache is not None:
+        return _mindmap_cache
+
+    merged: dict = {}
+    pattern = os.path.join(_QUICKREVISION_DIR, "*_mindmaps.json")
+    files = sorted(glob.glob(pattern))
+
+    for filepath in files:
+        with open(filepath, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        for topic, subtopics in data.items():
+            if topic not in merged:
+                merged[topic] = {}
+            if isinstance(subtopics, dict):
+                merged[topic].update(subtopics)
+
+    _mindmap_cache = merged
+    return _mindmap_cache
+
+
+def get_quick_revision_mindmap(topic: str, subtopic: str) -> dict | None:
+    topic_data = _load_mindmaps().get(topic, {})
+    if not isinstance(topic_data, dict):
+        return None
+    mindmap = topic_data.get(subtopic)
+    if not isinstance(mindmap, dict) or not mindmap.get("label"):
+        return None
+    return mindmap

@@ -1,0 +1,290 @@
+{
+  "AI agents": {
+    "Fundamentals": {
+      "label": "AI Agent Fundamentals",
+      "children": [
+        {
+          "label": "Definition & behavior",
+          "children": [
+            { "label": "What is an AI agent?" },
+            { "label": "OODA: Observe → Think → Act → Reflect" },
+            { "label": "Autonomy, reactivity, proactivity" }
+          ]
+        },
+        {
+          "label": "Agent vs chatbot",
+          "children": [
+            { "label": "Chatbot: reactive, text-only, limited context" },
+            { "label": "Agent: goals, tools, memory, multi-step workflows" }
+          ]
+        },
+        {
+          "label": "Core components",
+          "children": [
+            { "label": "LLM / reasoning engine" },
+            { "label": "Memory system (short, long, episodic)" },
+            { "label": "Tool use layer" },
+            { "label": "Planning & reasoning module" },
+            { "label": "Execution & orchestration engine" },
+            { "label": "Reflection / self-correction" },
+            { "label": "Feedback & learning loop" }
+          ]
+        },
+        {
+          "label": "Agent types",
+          "children": [
+            {
+              "label": "Reactive vs autonomous",
+              "children": [
+                { "label": "Reactive: immediate input → response" },
+                { "label": "Autonomous: plan, act, adapt with little supervision" }
+              ]
+            },
+            {
+              "label": "Single vs multi-agent",
+              "children": [
+                { "label": "Single: one agent handles entire workflow" },
+                { "label": "Multi: specialized roles collaborate" }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Agentic LLM",
+          "children": [
+            { "label": "Goal-oriented decision making" },
+            { "label": "Multi-step planning & tool use" },
+            { "label": "Memory and outcome-driven iteration" }
+          ]
+        },
+        {
+          "label": "Orchestration & planning",
+          "children": [
+            { "label": "Orchestration: delegate, sequence, retry, combine outputs" },
+            { "label": "Planning: decompose goals into ordered steps" }
+          ]
+        },
+        {
+          "label": "Tools in agentic systems",
+          "children": [
+            { "label": "APIs, search, code run, DB, email, calendars" },
+            { "label": "Extend LLM beyond text generation" }
+          ]
+        }
+      ]
+    },
+    "LLM + Agent Architecture": {
+      "label": "LLM + Agent Architecture",
+      "children": [
+        {
+          "label": "Architecture flow",
+          "children": [
+            { "label": "Input → Reasoning → Memory retrieval" },
+            { "label": "Decision → Tool execution → Reflection" },
+            { "label": "State update → Loop until done" },
+            { "label": "LangGraph, CrewAI" }
+          ]
+        },
+        {
+          "label": "Tool selection & calling",
+          "children": [
+            { "label": "Intent, requirements, tool schemas" },
+            { "label": "Function calling: name + args + use result" }
+          ]
+        },
+        {
+          "label": "Reasoning paradigms",
+          "children": [
+            {
+              "label": "ReAct (Reason + Act)",
+              "children": [
+                { "label": "Thought → Action → Observation loop" },
+                { "label": "Transparent, debuggable agent traces" }
+              ]
+            },
+            {
+              "label": "Chain-of-thought",
+              "children": [
+                { "label": "Step-by-step reasoning before answer" },
+                { "label": "ReAct adds external actions + observations" }
+              ]
+            },
+            { "label": "ReAct limitations: overhead, long horizons, bad actions" }
+          ]
+        },
+        {
+          "label": "Common agent tools",
+          "children": [
+            { "label": "Search, KB, code REPL, DB, comms, calendars" },
+            { "label": "Real-time data & world interaction" }
+          ]
+        }
+      ]
+    },
+    "Memory in AI Agents": {
+      "label": "Memory in AI Agents",
+      "children": [
+        {
+          "label": "Long-term memory",
+          "children": [
+            { "label": "Persists across sessions" },
+            { "label": "Vector DB, knowledge graphs, relational DB" },
+            { "label": "Forgetting, importance, consolidation" }
+          ]
+        },
+        {
+          "label": "RAG for agents",
+          "children": [
+            { "label": "Retrieve before generate" },
+            { "label": "Dynamic retrieval during reasoning" },
+            { "label": "Reduces hallucinations, scales knowledge" }
+          ]
+        }
+      ]
+    },
+    "Tools & Function Calling": {
+      "label": "Tools & Function Calling",
+      "children": [
+        {
+          "label": "Security risks",
+          "children": [
+            { "label": "Prompt injection & unauthorized tool use" },
+            { "label": "Data exfiltration, privilege escalation" },
+            { "label": "Infinite loops, supply-chain attacks" }
+          ]
+        },
+        {
+          "label": "Mitigations",
+          "children": [
+            { "label": "Permissions, sandboxing, schema validation" },
+            { "label": "Human-in-the-loop for sensitive actions" }
+          ]
+        }
+      ]
+    },
+    "Planning & Reasoning": {
+      "label": "Planning & Reasoning",
+      "children": [
+        {
+          "label": "Tree of Thoughts (ToT)",
+          "children": [
+            { "label": "Multiple reasoning branches per step" },
+            { "label": "Evaluate & explore promising paths" },
+            { "label": "Better than linear CoT for complex planning" }
+          ]
+        }
+      ]
+    },
+    "Multi-Agent Systems": {
+      "label": "Multi-Agent Systems",
+      "children": [
+        {
+          "label": "Concepts",
+          "children": [
+            { "label": "Specialized roles collaborate or compete" },
+            { "label": "Delegate, debate, critique, combine results" },
+            { "label": "Manager-worker, democratic, competitive patterns" }
+          ]
+        },
+        {
+          "label": "Benefits",
+          "children": [
+            { "label": "Specialization & parallel execution" },
+            { "label": "Error correction through diversity" }
+          ]
+        }
+      ]
+    },
+    "Frameworks & Ecosystem": {
+      "label": "Frameworks & Ecosystem",
+      "children": [
+        {
+          "label": "LangGraph vs LangChain",
+          "children": [
+            { "label": "Graph-based stateful, cyclical workflows" },
+            { "label": "Checkpointing & human-in-the-loop" },
+            { "label": "Branching, retries, memory for complex agents" }
+          ]
+        }
+      ]
+    },
+    "System Design Questions": {
+      "label": "System Design: AI Interview Agent",
+      "children": [
+        {
+          "label": "Specialized agents",
+          "children": [
+            { "label": "Question generator" },
+            { "label": "Real-time evaluator & follow-up questioner" },
+            { "label": "Difficulty controller & behavioral analyst" },
+            { "label": "Final scorer" }
+          ]
+        },
+        {
+          "label": "Platform concerns",
+          "children": [
+            { "label": "Candidate memory & adaptive difficulty" },
+            { "label": "Fair scoring with explanations" },
+            { "label": "Human-in-the-loop for final decisions" }
+          ]
+        }
+      ]
+    },
+    "Production & Engineering": {
+      "label": "Production & Engineering",
+      "children": [
+        {
+          "label": "Agent evaluation metrics",
+          "children": [
+            { "label": "Success rate / goal completion" },
+            { "label": "Efficiency, cost per task" },
+            { "label": "Human preference, hallucination rate" },
+            { "label": "Safety & domain-specific metrics" },
+            { "label": "Benchmarks, golden sets, A/B tests" }
+          ]
+        }
+      ]
+    },
+    "Security & Safety": {
+      "label": "Security & Safety",
+      "children": [
+        {
+          "label": "Prompt injection",
+          "children": [
+            { "label": "Attacker overrides system instructions" },
+            { "label": "Risk: leakage, unauthorized actions" },
+            { "label": "Defenses: privilege separation, sanitization, guard models" }
+          ]
+        }
+      ]
+    },
+    "Advanced Questions": {
+      "label": "Advanced: Agent Limitations",
+      "children": [
+        {
+          "label": "Current limitations",
+          "children": [
+            { "label": "Context windows, latency, cost" },
+            { "label": "Unreliable long-horizon planning" },
+            { "label": "Weak persistent learning" },
+            { "label": "Hard to evaluate & debug; loop traps" }
+          ]
+        }
+      ]
+    },
+    "Questions Often Asked in Real Interviews": {
+      "label": "Interview storytelling",
+      "children": [
+        {
+          "label": "STAR method",
+          "children": [
+            { "label": "Situation, Task, Action, Result" },
+            { "label": "Architecture: tools, memory, planning, frameworks" },
+            { "label": "Challenges: hallucinations, cost, reliability" },
+            { "label": "Metrics improved & key learnings" }
+          ]
+        }
+      ]
+    }
+  }
+}

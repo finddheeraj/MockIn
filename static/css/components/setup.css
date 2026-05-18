@@ -331,6 +331,87 @@ select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-l
     margin-bottom: 10px;
 }
 
+.quick-revision-mindmap-section {
+    margin-bottom: 16px;
+}
+
+.quick-revision-mindmap-heading {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted, #6b7280);
+    margin-bottom: 10px;
+}
+
+.quick-revision-mindmap {
+    padding: 12px 14px;
+    background: var(--surface, #f9fafb);
+    border: 1px solid var(--border);
+    border-radius: var(--radius, 8px);
+}
+
+.mm-root {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: var(--text, #111827);
+}
+
+.mm-tree,
+.mm-children {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mm-children {
+    margin-top: 4px;
+    padding-left: calc(8px + var(--depth, 0) * 14px);
+    border-left: 1px solid var(--border);
+}
+
+.mm-branch {
+    margin: 2px 0;
+}
+
+.mm-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 4px 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+}
+
+.mm-toggle:hover {
+    color: var(--accent, #6366f1);
+}
+
+.mm-chevron {
+    flex-shrink: 0;
+    width: 12px;
+    font-size: 0.65rem;
+    opacity: 0.7;
+}
+
+.mm-leaf {
+    padding: 3px 0 3px 18px;
+    font-size: 0.9rem;
+    color: var(--text-muted, #4b5563);
+    line-height: 1.4;
+}
+
+.quick-revision-questions-section {
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+}
+
 /* Resume question generator */
 .resume-card {
     background: var(--surface);
