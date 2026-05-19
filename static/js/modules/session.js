@@ -13,9 +13,8 @@
 import {
   apiStart, apiAnswer, apiClarify, apiInterrupt, apiNudge, apiSkip, apiReset,
   apiEnd, apiSessionStatus, apiGetQuestions, apiDownloadPrepPDF,
-  apiGetQuickRevisionTopics, apiGetQuickRevisionSubtopics, apiGetQuickRevisionQuestions,
-  apiGetQuickRevisionMindmap,
 } from "./api.js";
+import { renderPreviewAnswer } from "./previewAnswer.js";
 import { showQuestion, showTyping, hideTyping, sealRound, clearChat, toggleRoundCard, switchRoundTab } from "./chat.js";
 import { updateAdaptiveIndicator, renderEvaluation, renderCoachAnswer, closeCoachModal, fetchCoachAnswer } from "./panels.js";
 import { setStatus, showToast, setAnswerFormLocked, escapeHtml } from "./ui.js";
@@ -430,75 +429,7 @@ export function downloadTranscript() {
 
 /* ── Preview Questions ──────────────────────────────────────────────────── */
 
-let _prepQuestions
-let _quickRevisionTopicsLoaded = false;
-let _quickRevisionSubtopicsByTopic = {};
-let _mindmapNodeId = 0;
-
-function _renderAnswerInline(text) {
-  return escapeHtml(text)
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/g, "<em>$1</em>");
-}
-
-function _cleanAnswerMarker(line) {
-  return line
-    .replace(/^(\s*(?:[-+*]|\d+\.|â€¢|\u2022)\s*)+/, "")
-    .replace(/^\*+\s*/, "")
-    .trim();
-}
-
-function _renderPreviewAnswer(answer) {
-  const lines = (answer || "").split("\n");
-  const html = [];
-  let listItems = [];
-
-  function flushList() {
-    if (listItems.length === 0) return;
-    html.push(`<ul class="qs-answer-list">${listItems.join("")}</ul>`);
-    listItems = [];
-  }
-
-  for (const rawLine of lines) {
-    const line = rawLine.trim();
-    if (!line) {
-      flushList();
-      continue;
-    }
-
-    const isBullet = /^(\s*(?:[-+*]|\d+\.|â€¢|\u2022)\s*)+/.test(rawLine);
-    const cleaned = _cleanAnswerMarker(line);
-    const plain = cleaned.replace(/\*\*/g, "").trim();
-
-    if (!plain) continue;
-
-    const isSection =
-      /^\*+\s*\*\*.+\*\*:?\s*$/.test(line) ||
-      (/^[A-Z][A-Za-z\s]+:$/.test(plain) && plain.length <= 40);
-
-    if (isSection) {
-      flushList();
-      html.push(`<div class="qs-answer-section">${_renderAnswerInline(plain.replace(/:$/, ""))}</div>`);
-      continue;
-    }
-
-    if (isBullet) {
-      listItems.push(`<li>${_renderAnswerInline(cleaned)}</li>`);
-      continue;
-    }
-
-    flushList();
-    html.push(`<p class="qs-answer-paragraph">${_renderAnswerInline(cleaned)}</p>`);
-  }
-
-  flushList();
-
-  if (html.length === 0) {
-    return '<p class="qs-answer-empty">Answer not available yet.</p>';
-  }
-
-  return html.join("");
-}
+let _prepQuestions = [];
 
 function _renderQAPairs(pairs, startNum) {
   return pairs.map((qa, i) => `
@@ -509,7 +440,7 @@ function _renderQAPairs(pairs, startNum) {
     <svg class="qs-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="qs-answer">
-    <div class="qs-answer-text">${_renderPreviewAnswer(qa.ideal_answer || '')}</div>
+    <div class="qs-answer-text">${renderPreviewAnswer(qa.ideal_answer || '')}</div>
     </div>
     </div>
     `).join("");
@@ -571,250 +502,6 @@ export async function previewQuestions() {
   } finally {
     btn.disabled = false;
     btn.textContent = "Prepare Questions";
-  }
-}
-
-function _nextMindmapNodeId() {
-  _mindmapNodeId += 1;
-  return `mm-node-${_mindmapNodeId}`;
-}
-
-function _renderMindmapNode(node, depth = 0) {
-  const hasChildren = Array.isArray(node.children) && node.children.length > 0;
-  const label = escapeHtml(node.label || "");
-
-  if (!hasChildren) {
-    return `<li class="mm-leaf" style="--depth:${depth}">${label}</li>`;
-  }
-
-  const id = _nextMindmapNodeId();
-  return `
-    <li class="mm-branch" style="--depth:${depth}">
-      <button type="button" class="mm-toggle" aria-expanded="false"
-              onclick="toggleMindmapBranch(this)" data-target="${id}">
-        <span class="mm-chevron" aria-hidden="true">▶</span>
-        <span>${label}</span>
-      </button>
-      <ul id="${id}" class="mm-children" hidden>
-        ${node.children.map(child => _renderMindmapNode(child, depth + 1)).join("")}
-      </ul>
-    </li>`;
-}
-
-function _renderMindmap(tree) {
-  const rootLabel = escapeHtml(tree.label || "Overview");
-  const children = Array.isArray(tree.children) ? tree.children : [];
-  return `
-    <div class="quick-revision-mindmap">
-      <div class="mm-root">${rootLabel}</div>
-      <ul class="mm-tree">
-        ${children.map(node => _renderMindmapNode(node, 0)).join("")}
-      </ul>
-    </div>`;
-}
-
-export function toggleMindmapBranch(btn) {
-  const ul = document.getElementById(btn.dataset.target);
-  if (!ul) return;
-  const open = ul.hidden;
-  ul.hidden = !open;
-  btn.setAttribute("aria-expanded", String(open));
-  const chevron = btn.querySelector(".mm-chevron");
-  if (chevron) chevron.textContent = open ? "▼" : "▶";
-}
-
-async function _loadQuickRevisionMindmap(topic, subtopic) {
-  const container = document.getElementById("quick-revision-mindmap");
-  if (!container || !topic || !subtopic) return;
-
-  container.innerHTML = '<div class="qs-loading">Loading mind map...</div>';
-  try {
-    const data = await apiGetQuickRevisionMindmap(topic, subtopic);
-    if (data.error) {
-      container.innerHTML = '<div class="qs-meta">No mind map available for this subtopic.</div>';
-      return;
-    }
-    container.innerHTML = _renderMindmap(data.mindmap || {});
-  } catch (err) {
-    console.error("quick revision mindmap error:", err);
-    container.innerHTML = '<div class="qs-error">Failed to load mind map.</div>';
-  }
-}
-
-function _renderQuickRevisionQuestions(questions) {
-  if (!questions || questions.length === 0) {
-    return '<div class="qs-error">No quick revision questions found for this topic.</div>';
-  }
-
-  return questions.map((item, i) => `
-    <div class="qs-qa-item">
-      <div class="qs-question" onclick="toggleQAItem(this)">
-        <span class="qs-q-num">${i + 1}.</span>
-        <span class="qs-q-text">${escapeHtml(item.question || "")}</span>
-        <svg class="qs-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
-      <div class="qs-answer">
-        <div class="qs-answer-text">${_renderPreviewAnswer(item.answer || "")}</div>
-      </div>
-    </div>
-  `).join("");
-}
-
-async function _loadQuickRevisionTopics() {
-  const select = document.getElementById("quick-topic-select");
-  if (!select || _quickRevisionTopicsLoaded) return;
-
-  const data = await apiGetQuickRevisionTopics();
-  const topics = data.topics || [];
-  select.innerHTML = topics
-    .map(topic => `<option value="${escapeHtml(topic)}">${escapeHtml(topic)}</option>`)
-    .join("");
-
-  const currentTopic = document.getElementById("topic-select")?.value;
-  if (currentTopic && topics.includes(currentTopic)) {
-    select.value = currentTopic;
-  }
-
-  _quickRevisionTopicsLoaded = true;
-}
-
-async function _loadQuickRevisionSubtopics(topic) {
-  const select = document.getElementById("quick-subtopic-select");
-  if (!select || !topic) return;
-
-  if (!_quickRevisionSubtopicsByTopic[topic]) {
-    const data = await apiGetQuickRevisionSubtopics(topic);
-    if (data.error) throw new Error(data.error);
-    _quickRevisionSubtopicsByTopic[topic] = data.subtopics || [];
-  }
-
-  const subtopics = _quickRevisionSubtopicsByTopic[topic];
-  select.innerHTML = subtopics
-    .map(subtopic => `<option value="${escapeHtml(subtopic)}">${escapeHtml(subtopic)}</option>`)
-    .join("");
-}
-
-export async function onQuickRevisionSubtopicChange() {
-  const topic = document.getElementById("quick-topic-select")?.value;
-  const subtopic = document.getElementById("quick-subtopic-select")?.value;
-  const questions = document.getElementById("quick-revision-questions");
-  if (questions) questions.innerHTML = "";
-  await _loadQuickRevisionMindmap(topic, subtopic);
-}
-
-export async function updateQuickRevisionSubtopics() {
-  const topic = document.getElementById("quick-topic-select")?.value;
-  const results = document.getElementById("quick-revision-results");
-
-  try {
-    await _loadQuickRevisionSubtopics(topic);
-    await onQuickRevisionSubtopicChange();
-  } catch (err) {
-    console.error("quick revision subtopics error:", err);
-    if (results) results.innerHTML = '<div class="qs-error">Failed to load subtopics.</div>';
-  }
-}
-
-export async function openQuickRevision() {
-  const overlay = document.getElementById("quick-revision-modal-overlay");
-  const content = document.getElementById("quick-revision-preview");
-  if (!overlay || !content) return;
-
-  _quickRevisionTopicsLoaded = false;
-  _mindmapNodeId = 0;
-
-  overlay.style.display = "flex";
-  overlay.onclick = (e) => {
-    if (e.target === overlay) closeQuickRevision();
-  };
-
-  content.innerHTML = `
-    <div class="qs-header">
-      <div class="qs-header-left">
-        <span class="qs-title">Quick Revision</span>
-        <span class="qs-meta">Predefined questions for quick revision</span>
-      </div>
-      <button class="qs-close" onclick="closeQuickRevision()">×</button>
-    </div>
-    <div class="quick-revision-controls">
-      <div class="select-wrap">
-        <select id="quick-topic-select" onchange="updateQuickRevisionSubtopics()">
-          <option value="">Loading topics...</option>
-        </select>
-      </div>
-      <div class="select-wrap">
-        <select id="quick-subtopic-select" onchange="onQuickRevisionSubtopicChange()">
-          <option value="">Select subtopic</option>
-        </select>
-      </div>
-      <button class="btn-load-more" id="btn-fetch-quick-revision" onclick="fetchQuickRevisionQuestions()">
-        Fetch Questions
-      </button>
-    </div>
-    <div id="quick-revision-results" class="quick-revision-results">
-      <div class="quick-revision-mindmap-section">
-        <div class="quick-revision-mindmap-heading">Concept map</div>
-        <div id="quick-revision-mindmap">
-          <div class="qs-loading">Select a topic and subtopic to view the mind map.</div>
-        </div>
-      </div>
-      <div id="quick-revision-questions" class="quick-revision-questions-section"></div>
-    </div>
-  `;
-
-  try {
-    await _loadQuickRevisionTopics();
-    await updateQuickRevisionSubtopics();
-  } catch (err) {
-    console.error("quick revision topics error:", err);
-    document.getElementById("quick-revision-results").innerHTML =
-      '<div class="qs-error">Failed to load topics.</div>';
-  }
-}
-
-export async function fetchQuickRevisionQuestions() {
-  const topic = document.getElementById("quick-topic-select")?.value;
-  const subtopic = document.getElementById("quick-subtopic-select")?.value;
-  const questionsEl = document.getElementById("quick-revision-questions");
-  const btn = document.getElementById("btn-fetch-quick-revision");
-
-  if (!topic || !subtopic) {
-    showToast("Choose a topic and subtopic first.");
-    return;
-  }
-
-  if (!questionsEl) return;
-
-  if (btn) {
-    btn.disabled = true;
-    btn.textContent = "Fetching...";
-  }
-  questionsEl.innerHTML = '<div class="qs-loading">Loading questions...</div>';
-
-  try {
-    const data = await apiGetQuickRevisionQuestions(topic, subtopic);
-    if (data.error) {
-      questionsEl.innerHTML = `<div class="qs-error">${escapeHtml(data.error)}</div>`;
-      return;
-    }
-
-    questionsEl.innerHTML = `
-      <div class="qs-header quick-revision-result-header">
-        <div class="qs-header-left">
-          <span class="qs-title">${escapeHtml(data.topic || topic)}</span>
-          <span class="qs-meta">${escapeHtml(data.subtopic || subtopic)} • ${(data.questions || []).length} quick revision questions</span>
-        </div>
-      </div>
-      <div>${_renderQuickRevisionQuestions(data.questions || [])}</div>
-    `;
-  } catch (err) {
-    console.error("quick revision questions error:", err);
-    questionsEl.innerHTML = '<div class="qs-error">Failed to fetch quick revision questions.</div>';
-  } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.textContent = "Fetch Questions";
-    }
   }
 }
 
@@ -906,10 +593,6 @@ export function toggleQAItem(questionEl) {
 export function closeQuestionsPreview() {
   document.getElementById("questions-modal-overlay").style.display = "none";
   _prepQuestions = [];
-}
-
-export function closeQuickRevision() {
-  document.getElementById("quick-revision-modal-overlay").style.display = "none";
 }
 
 window.addEventListener("beforeunload", (e) => {

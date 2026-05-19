@@ -21,9 +21,11 @@ import {
   startInterview, submitAnswer, skipQuestion,
   resetInterview, endAndEvaluate, checkForExistingSession, downloadTranscript,
   previewQuestions, closeQuestionsPreview, loadMoreQuestions, downloadPrepPDF, toggleQAItem,
-  openQuickRevision, updateQuickRevisionSubtopics, onQuickRevisionSubtopicChange,
-  fetchQuickRevisionQuestions, toggleMindmapBranch, closeQuickRevision
 } from "./modules/session.js";
+import {
+  openQuickRevision, updateQuickRevisionSubtopics, onQuickRevisionSubtopicChange,
+  fetchQuickRevisionQuestions, closeQuickRevision, toggleMindmapBranch,
+} from "./modules/quickRevision.js";
 import { state } from "./modules/state.js";
 import { toggleRoundCard, switchRoundTab } from "./modules/chat.js";
 import { generateResumeQuestions, closeResumeQuestions, initResumeUpload } from "./modules/resume.js";
