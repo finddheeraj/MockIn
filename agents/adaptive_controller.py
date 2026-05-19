@@ -45,6 +45,7 @@ Available actions:
 
 Current interview context:
 - Main topic: {topic}
+- Candidate focus preference: {focus_preference}
 - Current difficulty: {current_difficulty}
 - Current subtopic: {current_subtopic}
 - Weak areas identified: {weak_areas}
@@ -72,6 +73,7 @@ def decide_next_action(
     latest_score: dict,
     scores_history: list,
     model_name: str = None,
+    focus_preference: str = "",
 ) -> dict:
     """
     Decide what the recruiter should do next based on performance data.
@@ -85,8 +87,11 @@ def decide_next_action(
     score_values = [s.get("overall", 5.0) for s in scores_history]
     score_history_str = ", ".join(f"{s:.1f}" for s in score_values[-5:])
 
+    focus = (focus_preference or "").strip() or "none (general coverage)"
+
     system = SYSTEM_PROMPT.format(
         topic=topic,
+        focus_preference=focus,
         current_difficulty=current_difficulty,
         current_subtopic=current_subtopic,
         weak_areas=", ".join(weak_areas) if weak_areas else "none yet",

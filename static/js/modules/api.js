@@ -5,11 +5,16 @@
  * Functions here return data; they do NOT directly mutate the DOM.
  */
 
-export async function apiStart(topic, difficulty, prepQuestions = []) {
+export async function apiStart(topic, difficulty, prepQuestions = [], focusPreference = "") {
   const res = await fetch("/start", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ topic, difficulty, prep_questions: prepQuestions }),
+    body: JSON.stringify({
+      topic,
+      difficulty,
+      prep_questions: prepQuestions,
+      focus_preference: focusPreference,
+    }),
   });
   return res.json();
 }

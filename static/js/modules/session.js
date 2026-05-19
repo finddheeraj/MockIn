@@ -82,9 +82,23 @@ async function _maybeInterrupt(text) {
 
 /* ── Start ───────────────────────────────────────────────────────────────── */
 
+function _setFocusChip(focusPreference) {
+  const chip = document.getElementById("chip-focus");
+  if (!chip) return;
+  const focus = (focusPreference || "").trim();
+  if (focus) {
+    chip.textContent = focus;
+    chip.style.display = "";
+  } else {
+    chip.textContent = "";
+    chip.style.display = "none";
+  }
+}
+
 export async function startInterview() {
   const topic = document.getElementById("topic-select").value;
   const difficulty = document.getElementById("difficulty-select").value;
+  const focusPreference = document.getElementById("focus-preference")?.value?.trim() || "";
 
   const btnStart = document.getElementById("btn-start");
   btnStart.disabled = true;
@@ -92,7 +106,7 @@ export async function startInterview() {
   setStatus("Connecting…");
 
   try {
-    const data = await apiStart(topic, difficulty, _prepQuestions);
+    const data = await apiStart(topic, difficulty, _prepQuestions, focusPreference);
     if (data.error) { showToast(data.error); return; }
 
     setActiveProvider(data.provider || "grok");
@@ -100,6 +114,7 @@ export async function startInterview() {
     document.getElementById("setup-panel").style.display = "none";
     document.getElementById("chip-topic").textContent = topic;
     document.getElementById("chip-level").textContent = difficulty;
+    _setFocusChip(focusPreference);
     document.getElementById("interview-panel").classList.add("active");
     document.getElementById("btn-download").style.display = "inline-flex";
     document.getElementById("btn-coach-answer").style.display = "inline-flex";
@@ -390,6 +405,7 @@ function resumeSession(data) {
   document.getElementById("setup-panel").style.display = "none";
   document.getElementById("chip-topic").textContent = data.topic;
   document.getElementById("chip-level").textContent = data.difficulty;
+  _setFocusChip(data.focus_preference);
   document.getElementById("interview-panel").classList.add("active");
 
   setInterviewActive(true);

@@ -16,6 +16,7 @@
 .meta-chip          { font-family: var(--mono); font-size: 11px; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); color: var(--text-muted); }
 .meta-chip.topic    { color: var(--navy); border-color: rgba(15,42,94,0.2); background: rgba(15,42,94,0.05); }
 .meta-chip.level    { color: var(--coach); border-color: rgba(18,184,134,0.25); background: var(--coach-glow); }
+.meta-chip.focus    { color: var(--accent); border-color: rgba(79,110,247,0.25); background: var(--accent-light); max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .meta-chip.adaptive { color: #d97706; border-color: rgba(217,119,6,0.25); background: rgba(217,119,6,0.06); }
 .meta-chip.provider { color: var(--accent); border-color: rgba(79,110,247,0.2); background: var(--accent-light); }
 .interview-actions  { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }

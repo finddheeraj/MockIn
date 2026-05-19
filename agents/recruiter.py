@@ -56,8 +56,18 @@ Difficulty Level: {difficulty}
 """
 
 
-def build_system_prompt(topic: str, difficulty: str) -> str:
-    return SYSTEM_PROMPT.format(topic=topic, difficulty=difficulty)
+def _focus_block(focus_preference: str = "") -> str:
+    focus = (focus_preference or "").strip()
+    if not focus:
+        return ""
+    return (
+        f"\nCandidate focus preference: {focus}\n"
+        "Prioritize questions and follow-ups around this focus while staying within the main topic."
+    )
+
+
+def build_system_prompt(topic: str, difficulty: str, focus_preference: str = "") -> str:
+    return SYSTEM_PROMPT.format(topic=topic, difficulty=difficulty) + _focus_block(focus_preference)
 
 
 # ── Utility ───────────────────────────────────────────────────────────────────
@@ -72,16 +82,24 @@ def extract_quote(answer: str, max_words: int = 12) -> str:
 
 # ── Opening question ──────────────────────────────────────────────────────────
 
-def ask_opening_question(client, topic: str, difficulty: str, model_name: str = None, prep_questions: list = None) -> str:
+def ask_opening_question(
+    client,
+    topic: str,
+    difficulty: str,
+    model_name: str = None,
+    prep_questions: list = None,
+    focus_preference: str = "",
+) -> str:
     slot = random.randint(0, 2)
     first_q = prep_questions[0] if prep_questions else ""
-    cache_key = make_key("opening_question", topic, difficulty, slot, first_q[:40])
+    focus = (focus_preference or "").strip()
+    cache_key = make_key("opening_question", topic, difficulty, slot, first_q[:40], focus[:40])
     cached = get_fs(cache_key)
     if cached is not None:
         logger.debug("ask_opening_question fs cache hit: slot=%d %s", slot, cache_key[:8])
         return cached
 
-    system = build_system_prompt(topic, difficulty)
+    system = build_system_prompt(topic, difficulty, focus_preference)
     
     if prep_questions:
         first_q = prep_questions[0]
@@ -92,8 +110,12 @@ def ask_opening_question(client, topic: str, difficulty: str, model_name: str = 
             "Do NOT add other questions. Keep it to 2-3 sentences total."
         )
     else:
-        # The key fix: give the model a concrete first-person example of what to say,
-        # so it performs the greeting rather than describing or templating it.
+        focus_hint = ""
+        if focus:
+            focus_hint = (
+                f" The candidate asked to focus on: {focus}. "
+                "Your first question must center on that area within the topic."
+            )
         user_prompt = (
             "You are now live in the interview room. The candidate has just joined. "
             "Say hello naturally and ask your first technical question on the topic. "
@@ -102,7 +124,7 @@ def ask_opening_question(client, topic: str, difficulty: str, model_name: str = 
             "Just speak. Example of correct style: "
             "'Hey, good to meet you — thanks for making time. "
             "Let's jump in. Can you walk me through how you'd approach designing a rate limiter at scale?' "
-            "Now do the same for the topic you've been given. Keep it to 2-3 sentences."
+            f"Now do the same for the topic you've been given.{focus_hint} Keep it to 2-3 sentences."
         )
 
     response = client.chat.completions.create(
@@ -141,7 +163,8 @@ def ask_followup(
     adaptive_instructions: str = None,
     round_num: int = 0,
     prep_questions=None,
-    prep_index=0
+    prep_index=0,
+    focus_preference: str = "",
 ) -> dict:
     """
     Called after every candidate answer.
@@ -150,7 +173,7 @@ def ask_followup(
       - "reaction"  : short 1-sentence verbal acknowledgment (shown first in UI)
       - "followup"  : the actual next question
     """
-    system = build_system_prompt(topic, difficulty)
+    system = build_system_prompt(topic, difficulty, focus_preference)
     
     if prep_questions and prep_index < len(prep_questions):
         next_q = prep_questions[prep_index]
@@ -215,13 +238,21 @@ def ask_followup(
 
 # ── Interrupt (mid-answer) ────────────────────────────────────────────────────
 
-def generate_interrupt(client, topic: str, partial_answer: str, model_name: str = None) -> str:
+def generate_interrupt(
+    client,
+    topic: str,
+    partial_answer: str,
+    model_name: str = None,
+    focus_preference: str = "",
+) -> str:
     """
     Called with the candidate's partial (incomplete) answer.
     Returns a short interrupt. Caller decides whether to fire it (~30% of the time).
     """
+    focus_line = _focus_block(focus_preference)
     system = (
         f"You are a human technical interviewer on the topic: {topic}. "
+        f"{focus_line}"
         "The candidate is mid-answer. You noticed something specific they just said. "
         "Jump in with a short clarifying question -- 1-2 sentences. "
         "Start with a natural interrupt marker: 'Sorry to jump in--', 'Hold on--', "
@@ -251,12 +282,13 @@ def ask_clarification(
     history: list,
     candidate_answer: str,
     model_name: str = None,
+    focus_preference: str = "",
 ) -> str:
     """
     Called when a candidate's answer is too short or vague.
     Scoring is deferred until the candidate replies to the clarification.
     """
-    system = build_system_prompt(topic, difficulty)
+    system = build_system_prompt(topic, difficulty, focus_preference)
     system += (
         "\n\nCLARIFICATION MODE: The candidate gave a brief or vague answer. "
         "Ask ONE short clarifying question that invites them to expand on a specific part. "
@@ -286,8 +318,15 @@ def ask_clarification(
 
 # ── Session close ─────────────────────────────────────────────────────────────
 
-def close_session(client, topic: str, difficulty: str, history: list, model_name: str = None) -> str:
-    system = build_system_prompt(topic, difficulty)
+def close_session(
+    client,
+    topic: str,
+    difficulty: str,
+    history: list,
+    model_name: str = None,
+    focus_preference: str = "",
+) -> str:
+    system = build_system_prompt(topic, difficulty, focus_preference)
 
     recent_history = [
         {"role": m["role"], "content": m["content"]}

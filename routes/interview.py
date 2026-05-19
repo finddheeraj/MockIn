@@ -55,6 +55,10 @@ logger = logging.getLogger(__name__)
 interview_bp = Blueprint("interview", __name__)
 
 
+def _session_focus() -> str:
+    return (session.get("focus_preference") or "").strip()
+
+
 @interview_bp.route("/cache-stats", methods=["GET"])
 def get_cache_stats():
     """Debug endpoint: shows current LRU and filesystem cache sizes."""
@@ -73,6 +77,7 @@ def session_status():
             "active":         True,
             "topic":          topic,
             "difficulty":     session.get("difficulty", ""),
+            "focus_preference": session.get("focus_preference", ""),
             "round":          session.get("round", 0),
             "history":        history,
             "scores":         session.get("scores", []),
@@ -286,10 +291,12 @@ def start_interview():
     data       = request.json
     topic      = data.get("topic", "System Design")
     difficulty = data.get("difficulty", "Mid-Level")
+    focus_preference = (data.get("focus_preference") or "").strip()
     prep_questions = data.get("prep_questions", [])
 
     session["topic"]      = topic
     session["difficulty"] = difficulty
+    session["focus_preference"] = focus_preference
     session["prep_questions"] = [q["question"] for q in prep_questions] 
     session["prep_index"] = 0 
     session["history"]    = []
@@ -311,7 +318,9 @@ def start_interview():
     if len(clients) == 1:
         provider_name, (client, model_name) = next(iter(clients.items()))
         prep_questions = session.get("prep_questions", [])
-        opening_question = ask_opening_question(client, topic, difficulty, model_name, prep_questions)
+        opening_question = ask_opening_question(
+            client, topic, difficulty, model_name, prep_questions, focus_preference,
+        )
         session["history"] = [{"role": "assistant", "content": opening_question}]
         return jsonify({
             "recruiter_message": opening_question,
@@ -324,7 +333,9 @@ def start_interview():
     prep_questions = session.get("prep_questions", [])
     with ThreadPoolExecutor(max_workers=2) as executor:
         futures = {
-            executor.submit(ask_opening_question, client, topic, difficulty, model_name, prep_questions): name
+            executor.submit(
+                ask_opening_question, client, topic, difficulty, model_name, prep_questions, focus_preference,
+            ): name
             for name, (client, model_name) in clients.items()
         }
         for future in as_completed(futures):
@@ -362,6 +373,7 @@ def submit_answer():
 
     topic          = session.get("topic",      "System Design")
     difficulty     = session.get("difficulty", "Mid-Level")
+    focus          = _session_focus()
     history        = session.get("history",    [])
     scores         = session.get("scores",     [])
     adaptive_state = session.get("adaptive_state", {})
@@ -402,7 +414,7 @@ def submit_answer():
 
     if round_num % 2 == 0 and score_delta >= 1.5:
         adaptive_decision = decide_next_action(
-            primary_client, topic, adaptive_state, score_result, scores, primary_model
+            primary_client, topic, adaptive_state, score_result, scores, primary_model, focus,
         )
     else:
         adaptive_decision = _fallback_decision(
@@ -437,7 +449,7 @@ def submit_answer():
                 ask_followup,
                 client, topic, adaptive_state.get("current_difficulty", difficulty),
                 history, candidate_answer, model_name, adaptive_instructions, round_num,
-                prep_questions, prep_index,
+                prep_questions, prep_index, focus,
             )
             coach_future = executor.submit(
                 get_feedback, client, topic, difficulty, history,
@@ -490,7 +502,7 @@ def submit_answer():
                 ask_followup,
                 client, topic, adaptive_state.get("current_difficulty", difficulty),
                 history, candidate_answer, model_name, adaptive_instructions, round_num,
-                prep_questions, prep_index,
+                prep_questions, prep_index, focus,
             )] = (name, "recruiter")
             futures[executor.submit(
                 get_feedback, client, topic, difficulty, history,
@@ -556,6 +568,7 @@ def interrupt_answer():
     data           = request.json
     partial_answer = data.get("partial_answer", "").strip()
     topic          = session.get("topic", "System Design")
+    focus          = _session_focus()
 
     if not partial_answer or len(partial_answer.split()) < 40:
         return jsonify({"should_interrupt": False})
@@ -565,7 +578,7 @@ def interrupt_answer():
         return jsonify({"should_interrupt": False})
 
     primary_client, primary_model = _get_primary_client()
-    message = generate_interrupt(primary_client, topic, partial_answer, primary_model)
+    message = generate_interrupt(primary_client, topic, partial_answer, primary_model, focus)
 
     return jsonify({"should_interrupt": True, "interrupt_message": message})
 
@@ -586,11 +599,12 @@ def request_clarification():
 
     topic      = session.get("topic",      "System Design")
     difficulty = session.get("difficulty", "Mid-Level")
+    focus      = _session_focus()
     history    = session.get("history",    [])
 
     primary_client, primary_model = _get_primary_client()
     clarification_q = ask_clarification(
-        primary_client, topic, difficulty, history, candidate_answer, primary_model
+        primary_client, topic, difficulty, history, candidate_answer, primary_model, focus,
     )
 
     # Stash the original answer; scoring happens when candidate replies via /answer
@@ -625,6 +639,7 @@ def nudge_candidate():
 def skip_question():
     topic      = session.get("topic",      "System Design")
     difficulty = session.get("difficulty", "Mid-Level")
+    focus      = _session_focus()
     history    = session.get("history",    [])
     adaptive_state = session.get("adaptive_state", {})
 
@@ -642,7 +657,7 @@ def skip_question():
         recruiter_result = ask_followup(
             client, topic, difficulty, history,
             "I'd like to skip this question.", model_name, skip_instruction, 0,
-            session.get("prep_questions", []), prep_index,
+            session.get("prep_questions", []), prep_index, focus,
         )
         next_q = recruiter_result.get("followup", "") if isinstance(recruiter_result, dict) else str(recruiter_result)
         history.append({"role": "user",      "content": "[Skipped]"})
@@ -659,7 +674,7 @@ def skip_question():
             executor.submit(
                 ask_followup, client, topic, difficulty, history,
                 "I'd like to skip this question.", model_name, skip_instruction, 0,
-                session.get("prep_questions", []), prep_index,
+                session.get("prep_questions", []), prep_index, focus,
             ): name
             for name, (client, model_name) in clients.items()
         }
@@ -717,6 +732,7 @@ def end_interview():
     history        = session.get("history",    [])
     topic          = session.get("topic",      "System Design")
     difficulty     = session.get("difficulty", "Mid-Level")
+    focus          = _session_focus()
     adaptive_state = session.get("adaptive_state", {})
 
     if len(scores) < MIN_ROUNDS_FOR_EVAL:
@@ -726,7 +742,7 @@ def end_interview():
 
     primary_client, primary_model = _get_primary_client()
 
-    closing_message = close_session(primary_client, topic, difficulty, history, primary_model)
+    closing_message = close_session(primary_client, topic, difficulty, history, primary_model, focus)
     evaluation      = evaluate_session(
         primary_client, topic, difficulty, history, scores, adaptive_state, primary_model
     )
